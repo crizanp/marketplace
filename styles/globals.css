@@ -1,21 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0b0f19;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* ASCII Background */
+body::after {
+  content: '░▒▓▒░ GEKKOAI.fun - The Future of AI Agents ░▒▓▒░';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  font-size: 4vw;
+  font-family: 'Courier New', monospace;
+  color: rgba(79, 70, 229, 0.05);
+  white-space: pre-wrap;
+  z-index: -1;
+  pointer-events: none;
+  line-height: 1.5;
 }

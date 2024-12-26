@@ -1,0 +1,436 @@
+[
+    {
+      "id": 1,
+      "name": "GekkoBrain",
+      "ticker": "GBR",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmapAq9WtNrtyaDtjZPAHHNYmpSZAQU6HywwvfSWq4dQVV?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Advanced AI for strategic insights.",
+      "marketCap": "1.25B",
+      "contractaddress":"5mbK36SZ7J19An8jFochhQS4of8g6BwUjbeCSxBSoWdp",
+      "creator": "HNYNVV",
+      "time": "2 months",
+      "replies": 1434,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 2,
+      "name": "NeuralNexus",
+      "ticker": "NNX",
+      "logo": "https://ipfs.io/ipfs/QmQ4H6Y23dSEjn9LKB85M7KpVFiDu6KfDNZAcrqiCwFQQH?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Your personal AI-powered assistant.",
+      "marketCap": "980M",
+      "contractaddress":"eL5fUxj2J4CiQsmW85k5FG9DvuQjjUoBHoQBi2Kpump",
+
+      "creator": "Hr9Jupu",
+      "time": "2 months",
+      "replies": 6346,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 3,
+      "name": "VisionCore",
+      "ticker": "VCR",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmNdTtJauw39u4DzGyTaZ35rRx4VgAxqb91wE89zjyHWd2?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "AI vision for smarter analytics.",
+      "marketCap": "1.1B",
+      "contractaddress":"KENJSUYLASHUMfHyy5o4Hp2FdNqZg1AsUPhfH2kYvEP",
+
+      "creator": "EZx7c1",
+      "time": "3 months",
+      "replies": 3159,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 4,
+      "name": "SynthAI",
+      "ticker": "SAI",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmPDJuEobBcLZihjFCvkWA8c1FiW7UzM2ctFdiffSLxf1d?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Synthesis AI for creative tasks.",
+      "marketCap": "870M",
+      "contractaddress":"A8C3xuqscfmyLrte3VmTqrAq8kgMASius9AFNANwpump",
+      "creator": "AI_Artist",
+      "time": "1 month",
+      "replies": 4500,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 5,
+      "name": "OmniBot",
+      "ticker": "OMB",
+      "logo": "https://ipfs.io/ipfs/QmTQrP6R7ieRSbKzwzLAy1i8c2U66b7LM6bSUmK1dfYc5b?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Omnipresent AI for daily tasks.",
+      "marketCap": "750M",
+      "contractaddress":"8x5VqbHA8D7NkD52uNuS5nnt3PwA8pLD34ymskeSo2Wn",
+      "creator": "TaskMaster",
+      "time": "1 week",
+      "replies": 1200,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 6,
+      "name": "AlgoMaster",
+      "ticker": "ALG",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmYqwkPV1p4DraqN5TfLZVhyrAusSkHfvFDZMJAWALZJxj?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Master algorithmic trading with AI.",
+      "marketCap": "1.5B",
+      "contractaddress":"CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump",
+      "creator": "TradeKing",
+      "time": "4 months",
+      "replies": 9876,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 7,
+      "name": "DataGenius",
+      "ticker": "DGN",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmbN2UccKMabyX4SBwebM9C3eFpM7QgEPd8muB1mDt5jRK?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Analyze and predict with data science AI.",
+      "marketCap": "1.2B",
+      "contractaddress":"2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump",
+      "creator": "DataWizard",
+      "time": "5 months",
+      "replies": 7890,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 8,
+      "name": "MindMesh",
+      "ticker": "MMH",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmUbDNeYK1Rea6ZUzozzijvXtDJMHJnkL5f5rmpSathHBx?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Collaborative AI for better brainstorming.",
+      "marketCap": "900M",
+      "contractaddress":"9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+      "creator": "ThinkTank",
+      "time": "6 months",
+      "replies": 5432,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 9,
+      "name": "CodeAI",
+      "ticker": "CAI",
+      "logo": "https://ipfs.io/ipfs/QmXQ2NFebNVS1GQGvdXpj8PLM8H1P96A7pRVXF6geMtrnJ?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Your AI coding assistant.",
+      "marketCap": "880M",
+      "contractaddress":"8McGgUg8hxfDJuTHuDugnEqMVu89AYzaurcQUEoupump",
+      "creator": "CodeNinja",
+      "time": "7 months",
+      "replies": 4321,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 10,
+      "name": "LogicPro",
+      "ticker": "LPR",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmR2DdZaMF56TcHRprpzaJdDuFpDTgz7qLs9tX1JrViXU4?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "AI for logical reasoning and decision making.",
+      "marketCap": "1.05B",
+      "contractaddress":"AiptTXxG6Tbm8SBDAag7AfUasjgAMakgNzyAuX5mpump",
+      "creator": "LogicLord",
+      "time": "8 months",
+      "replies": 3210,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 11,
+      "name": "EchoMind",
+      "ticker": "ECH",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmXRKBceEnjWV1EvDRNLAzMTBCvfzmFajopWevczU7bYY1?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "AI that listens and learns from conversations.",
+      "marketCap": "770M",
+      "contractaddress":"9U9rfjePyskwUskk7hiKizRFeUUmJNMARMhYbggspump",
+      "creator": "EchoVoice",
+      "time": "9 months",
+      "replies": 2109,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+      "id": 12,
+      "name": "QuantumAI",
+      "ticker": "QAI",
+      "logo": "https://pump.mypinata.cloud/ipfs/QmXzAST4nsjNAFzmBfWNjWYnpvUu5ZXVuzCbuiDNsg7d9w?img-width=128&img-dpr=2&img-onerror=redirect",
+      "description": "Harnessing quantum computing for AI.",
+      "marketCap": "2.0B",
+      "contractaddress":"",
+      "creator": "QuantumLeap",
+      "time": "10 months",
+      "replies": 1098,
+      "socials": {
+        "twitter": "#",
+        "instagram": "#",
+        "facebook": "#",
+        "telegram": "#"
+      }
+    },
+    {
+        "id": 13,
+        "name": "SmartLogic",
+        "ticker": "SLG",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmNdTtJauw39u4DzGyTaZ35rRx4VgAxqb91wE89zjyHWd2?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "AI for logical problem solving.",
+        "marketCap": "1.8B",
+        "contractaddress":"",
+        "creator": "LogicEngine",
+        "time": "8 weeks",
+        "replies": 4500,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 14,
+        "name": "NeuroSphere",
+        "ticker": "NSP",
+        "logo": "https://ipfs.io/ipfs/QmQ4H6Y23dSEjn9LKB85M7KpVFiDu6KfDNZAcrqiCwFQQH?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "AI for enhanced neural insights.",
+        "marketCap": "1.6B",
+        "contractaddress":"",
+        "creator": "SphereAI",
+        "time": "6 weeks",
+        "replies": 789,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 15,
+        "name": "CogniAI",
+        "ticker": "CAI",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmUbDNeYK1Rea6ZUzozzijvXtDJMHJnkL5f5rmpSathHBx?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "Your cognitive AI assistant.",
+        "marketCap": "700M",
+        "contractaddress":"",
+        "creator": "ThinkQuick",
+        "time": "2 months",
+        "replies": 2430,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 16,
+        "name": "StreamMind",
+        "ticker": "STM",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmapAq9WtNrtyaDtjZPAHHNYmpSZAQU6HywwvfSWq4dQVV?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "Streaming intelligence for real-time solutions.",
+        "marketCap": "1.3B",
+        "contractaddress":"",
+        "creator": "LiveAI",
+        "time": "3 weeks",
+        "replies": 510,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 17,
+        "name": "MetaBot",
+        "ticker": "MTB",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmYqwkPV1p4DraqN5TfLZVhyrAusSkHfvFDZMJAWALZJxj?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "AI bot for metaverse exploration.",
+        "marketCap": "950M",
+        "contractaddress":"",
+        "creator": "MetaGenius",
+        "time": "1 week",
+        "replies": 1100,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 18,
+        "name": "VisionBot",
+        "ticker": "VBOT",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmNdTtJauw39u4DzGyTaZ35rRx4VgAxqb91wE89zjyHWd2?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "Visual insights through AI.",
+        "marketCap": "800M",
+        "contractaddress":"",
+        "creator": "Visionary",
+        "time": "5 months",
+        "replies": 2760,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 19,
+        "name": "CoreAI",
+        "ticker": "CRAI",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmPDJuEobBcLZihjFCvkWA8c1FiW7UzM2ctFdiffSLxf1d?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "The core of AI innovations.",
+        "marketCap": "1.1B",
+        "contractaddress":"",
+        "creator": "AIHaven",
+        "time": "7 weeks",
+        "replies": 4300,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 20,
+        "name": "BrainLink",
+        "ticker": "BLK",
+        "logo": "https://ipfs.io/ipfs/QmXQ2NFebNVS1GQGvdXpj8PLM8H1P96A7pRVXF6geMtrnJ?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "AI for smarter decision-making.",
+        "marketCap": "680M",
+        "contractaddress":"",
+        "creator": "SmartBrains",
+        "time": "3 months",
+        "replies": 1976,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 21,
+        "name": "HyperMind",
+        "ticker": "HPM",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmXRKBceEnjWV1EvDRNLAzMTBCvfzmFajopWevczU7bYY1?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "Hyper-intelligent AI for all needs.",
+        "marketCap": "1.7B",
+        "contractaddress":"",
+        "creator": "HyperAI",
+        "time": "2 months",
+        "replies": 4900,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 22,
+        "name": "NeoMesh",
+        "ticker": "NMH",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmbN2UccKMabyX4SBwebM9C3eFpM7QgEPd8muB1mDt5jRK?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "Revolutionizing AI collaboration.",
+        "marketCap": "1.4B",
+        "contractaddress":"",
+        "creator": "NeoGenius",
+        "time": "9 weeks",
+        "replies": 2900,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 23,
+        "name": "DataStream",
+        "ticker": "DST",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmXzAST4nsjNAFzmBfWNjWYnpvUu5ZXVuzCbuiDNsg7d9w?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "Streamline your data with AI.",
+        "marketCap": "900M",
+        "contractaddress":"",
+        "creator": "DataStreamers",
+        "time": "6 months",
+        "replies": 3120,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      },
+      {
+        "id": 24,
+        "name": "LogicFlow",
+        "ticker": "LFL",
+        "logo": "https://pump.mypinata.cloud/ipfs/QmapAq9WtNrtyaDtjZPAHHNYmpSZAQU6HywwvfSWq4dQVV?img-width=128&img-dpr=2&img-onerror=redirect",
+        "description": "Flow-based logic AI.",
+        "marketCap": "800M",
+        "contractaddress":"",
+        "creator": "FlowMaster",
+        "time": "10 weeks",
+        "replies": 2280,
+        "socials": {
+          "twitter": "#",
+          "instagram": "#",
+          "facebook": "#",
+          "telegram": "#"
+        }
+      }
+]

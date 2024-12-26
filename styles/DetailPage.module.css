@@ -1,0 +1,318 @@
+.container {
+    display: flex;
+    gap: 30px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 20px auto;
+    background: linear-gradient(to bottom, #0b0f19, #141a28);
+    color: #e5e5e5;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Left column styling */
+.left {
+    width: 30%;
+    padding: 20px;
+    background: #1f2838;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Right column styling */
+.right {
+    width: 70%;
+}
+
+/* Header section for logo and token name */
+.topSection {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #00ff84;
+}
+
+.tokenName {
+    font-size: 1.4rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+.rank {
+    font-size: 0.8rem;
+    background: #00ff84;
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.priceSection {
+    margin-left: auto;
+    text-align: right;
+}
+
+.price {
+    font-size: 1.8rem;
+    color: #00ff84;
+    /* Green for the price */
+    margin: 0;
+}
+
+.priceChange {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.positive {
+    color: #0f9d58;
+    /* Green for up */
+}
+
+.negative {
+    color: #f12323;
+    /* Green for up */
+}
+
+/* Upvote button styling */
+.voteSection {
+    display: flex;
+    justify-content: center;
+    /* Centers the buttons horizontally */
+    gap: 10px;
+    /* Spacing between upvote and downvote buttons */
+    margin-top: 15px;
+}
+
+
+.upvoteBtn {
+    background: #00ff84;
+    color: #000;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.downvoteBtn {
+    background: #e20808d4;
+    color: #000;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.upvoteBtn:hover {
+    background: #00e676;
+}
+
+
+.downvoteBtn:hover {
+    background: #e64900;
+}
+
+/* Section titles */
+.sectionTitle {
+    font-size: 1.2rem;
+    margin: 30px 0 0px;
+    /* border-bottom: 1px solid #444; */
+    padding-bottom: 5px;
+}
+
+.metrics {
+    display: flex;
+    flex-direction: column;
+    /* Stack rows vertically */
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.metrics p {
+    display: flex;
+    justify-content: space-between;
+    /* Align label to the left and value to the right */
+    align-items: center;
+    margin: 0;
+    padding: 8px 0;
+    /* Add vertical spacing for better readability */
+    border-bottom: 1px solid #444;
+    /* Optional: Add separator between rows */
+}
+
+.metrics .label {
+    text-align: left;
+    color: #aaa;
+    /* Softer color for labels */
+    font-weight: bold;
+}
+
+.metrics .value {
+    text-align: right;
+    color: #fff;
+    /* Brighter color for values */
+}
+
+
+/* Info section for additional details */
+.info p {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.info span {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+}
+
+.copyIcon {
+    background: none;
+    border: none;
+    color: #00ff84;
+    font-size: 1rem;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.copyIcon:hover {
+    color: #00e676;
+}
+
+.link {
+    color: #00ff84;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* Appeal section styling */
+.appeal {
+    font-size: 0.75rem;
+    margin-top: 20px;
+    color: #888;
+    text-align: center;
+}
+
+.reportLink {
+    color: #00ff84;
+    text-decoration: none;
+}
+
+.reportLink:hover {
+    text-decoration: underline;
+}
+
+/* Right column chart styling */
+.chartIframe {
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    height: 400px;
+}
+
+/* Replies section styling */
+.replies {
+    margin-top: 20px;
+    background: #1f2838;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.replyBox {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #111;
+    color: #fff;
+    margin-top: 10px;
+    font-family: 'Arial', sans-serif;
+}
+
+.submitReply {
+    margin-top: 10px;
+    background: #00ff84;
+    color: #000;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.submitReply:hover {
+    background: #00e676;
+}
+
+.replyList {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.replyList li {
+    padding: 12px;
+    background: #333;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Social icons */
+.socialIcons {
+    display: flex;
+}
+
+.socialIcons a {
+    color: #00ff84;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.socialIcons a:hover {
+    color: #00e676;
+}
+
+.socials {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 13px;
+}
+
+.socialsLabel {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #aaa;
+}
+
+.socialIcons {
+    display: flex;
+    gap: 10px;
+}

@@ -1,0 +1,327 @@
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #1a1f36;
+    color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Arial', sans-serif;
+}
+
+
+
+.walletSection {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.walletButton {
+    background: #00ff84;
+    color: #1a1f36;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.walletButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 132, 0.5);
+}
+
+.warning {
+    margin-top: 10px;
+    color: orange;
+    font-size: 0.9rem;
+}
+
+.agentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.agentForm label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.95rem;
+}
+
+.agentForm input,
+.agentForm textarea,
+.agentForm select {
+    background: #252a41;
+    color: #f5f5f5;
+    border: 1px solid #4f46e5;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.9rem;
+}
+
+.agentForm textarea {
+    resize: none;
+    height: 80px;
+}
+
+.agentForm input:disabled,
+.agentForm textarea:disabled,
+.agentForm select:disabled {
+    background: #333a57;
+    color: #777;
+    cursor: not-allowed;
+}
+
+.submitButton {
+    background: #4f46e5;
+    color: #f5f5f5;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.submitButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+}
+
+.submitButton:disabled {
+    background: #333a57;
+    color: #777;
+    cursor: not-allowed;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00ff84;
+    text-shadow: 0 0 5px #00ff84;
+}
+
+.contractSection {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.contractSection label {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.contractSection input {
+    background: #252a41;
+    color: #f5f5f5;
+    border: 1px solid #4f46e5;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.9rem;
+}
+
+.fetchButton {
+    margin-top: 10px;
+    background: #4f46e5;
+    color: #f5f5f5;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.fetchButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+}
+
+.fetchButton:disabled {
+    background: #333a57;
+    color: #777;
+    cursor: not-allowed;
+}
+
+.successMessage {
+    text-align: center;
+    margin-top: 20px;
+    color: #00ff84;
+    font-size: 1.2rem;
+}
+
+.realTimeData p {
+    margin: 10px 0;
+    font-size: 0.95rem;
+}
+
+.tokenImage {
+    width: 80px;
+    height: 80px;
+    margin: 10px auto;
+    display: block;
+    border-radius: 50%;
+    border: 1px solid #4f46e5;
+}
+
+.warning {
+    margin-top: 10px;
+    color: orange;
+    font-size: 0.9rem;
+}
+
+.wrapper {
+    display: flex;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #1a1f36;
+    padding: 20px;
+    color: #f5f5f5;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.sidebar li:hover,
+.sidebar li.activeTab {
+    background-color: #4f46e5;
+    color: #ffffff;
+}
+
+.mainContent {
+    flex: 1;
+    padding: 20px;
+}
+
+.wrapper {
+    display: flex;
+}
+
+.sidebar {
+    width: 180px;
+    background-color: #1a1f36;
+    padding: 20px;
+    color: #f5f5f5;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    border-right: 2px solid #4f46e5;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    padding: 12px 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.3s, color 0.3s;
+}
+
+.sidebar li:hover,
+.sidebar li.activeTab {
+    background-color: #4f46e5;
+    color: #ffffff;
+}
+
+.mainContent {
+    flex: 1;
+    padding: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.formContainer {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.walletSection {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.walletButton {
+    background: #00ff84;
+    color: #1a1f36;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.walletButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 132, 0.5);
+}
+
+.agentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.agentForm label {
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.agentForm input,
+.agentForm textarea {
+    background: #252a41;
+    color: #f5f5f5;
+    border: 1px solid #4f46e5;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.85rem;
+}
+
+.tokenImage {
+    width: 60px;
+    height: 60px;
+    margin: 10px auto;
+    display: block;
+    border-radius: 50%;
+    border: 1px solid #4f46e5;
+}
+
+.realTimeData p {
+    font-size: 0.85rem;
+    color: #fff;
+    margin: 5px 0;
+}
+
+.submitButton {
+    background: #4f46e5;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.submitButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+}

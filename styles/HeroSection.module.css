@@ -1,0 +1,123 @@
+.hero {
+    background: radial-gradient(circle at center, #0d1117, #000000);
+    color: #00ff84;
+    font-family: "Fira Code", "Courier New", monospace;
+    text-align: center;
+    padding: 60px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.heroAscii {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    white-space: pre;
+    color: #00ff84;
+    text-shadow: 0 0 10px #00ff84, 0 0 20px #00ff84, 0 0 30px #00ff84;
+    /* Start with reduced glow */
+    animation: glowOffOn 8s ease-in-out infinite;
+    /* Slower transitions */
+}
+
+@keyframes glowOffOn {
+    0% {
+        text-shadow: 0 0 10px #00ff84, 0 0 20px #00ff84, 0 0 30px #00ff84;
+        /* Reduced brightness */
+        color: #00ff84;
+        /* Bright green */
+    }
+
+    50% {
+        text-shadow: 0 0 2px #004f24;
+        /* Subtle dim glow */
+        color: #006f3c;
+        /* Dimmed green */
+    }
+
+    100% {
+        text-shadow: 0 0 10px #00ff84, 0 0 20px #00ff84, 0 0 30px #00ff84;
+        /* Back to reduced brightness */
+        color: #00ff84;
+        /* Bright green */
+    }
+}
+
+.heroSubtitle {
+    font-size: 1.2rem;
+    color: #d1d5db;
+    margin: 20px 0;
+}
+
+.heroSubtitle .highlight {
+    color: #00ff84;
+    font-weight: bold;
+    text-shadow: 0 0 8px #00ff84;
+}
+
+.heroButtons {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.ctaPrimary,
+.ctaSecondary {
+    background: transparent;
+    border: 2px solid #00ff84;
+    color: #00ff84;
+    font-family: "Fira Code", "Courier New", monospace;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ctaPrimary:hover {
+    background: #00ff84;
+    color: #0d1117;
+    text-shadow: none;
+}
+
+.ctaSecondary:hover {
+    background: #000000;
+    color: #00ff84;
+    text-shadow: 0 0 8px #00ff84;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 300px;
+    height: 300px;
+    background: conic-gradient(from 0deg, transparent, #00ff84, transparent);
+    animation: spin 5s linear infinite;
+    border-radius: 50%;
+    opacity: 0.2;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    bottom: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: conic-gradient(from 0deg, transparent, #00ff84, transparent);
+    animation: spin 5s linear infinite reverse;
+    border-radius: 50%;
+    opacity: 0.2;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
