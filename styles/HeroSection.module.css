@@ -1,3 +1,4 @@
+/* Base Hero Section */
 .hero {
     background: radial-gradient(circle at center, #0d1117, #000000);
     color: #00ff84;
@@ -8,42 +9,45 @@
     overflow: hidden;
 }
 
+/* ASCII Art */
 .heroAscii {
-    font-size: 1.2rem;
-    line-height: 1.5;
-    white-space: pre;
+    font-size: clamp(0.6rem, 2.5vw, 1rem);
+    /* Dynamic font size */
+    line-height: 1.2;
+    /* Tighter line spacing */
+    white-space: pre-wrap;
+    /* Wrap text if it overflows */
     color: #00ff84;
-    text-shadow: 0 0 10px #00ff84, 0 0 20px #00ff84, 0 0 30px #00ff84;
-    /* Start with reduced glow */
-    animation: glowOffOn 8s ease-in-out infinite;
-    /* Slower transitions */
+    text-shadow: 0 0 8px #00ff84, 0 0 16px #00ff84;
+    /* Slight glow */
+    overflow-x: auto;
+    /* Enable horizontal scrolling for narrow screens */
+    max-width: 100%;
+    /* Prevent overflowing container */
 }
 
+/* Glow Animation */
 @keyframes glowOffOn {
     0% {
         text-shadow: 0 0 10px #00ff84, 0 0 20px #00ff84, 0 0 30px #00ff84;
-        /* Reduced brightness */
         color: #00ff84;
-        /* Bright green */
     }
 
     50% {
         text-shadow: 0 0 2px #004f24;
-        /* Subtle dim glow */
         color: #006f3c;
-        /* Dimmed green */
     }
 
     100% {
         text-shadow: 0 0 10px #00ff84, 0 0 20px #00ff84, 0 0 30px #00ff84;
-        /* Back to reduced brightness */
         color: #00ff84;
-        /* Bright green */
     }
 }
 
+/* Hero Subtitle */
 .heroSubtitle {
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    /* Responsive font size */
     color: #d1d5db;
     margin: 20px 0;
 }
@@ -54,11 +58,18 @@
     text-shadow: 0 0 8px #00ff84;
 }
 
+/* Hero Buttons */
 .heroButtons {
     margin-top: 30px;
     display: flex;
     justify-content: center;
+    /* Center buttons horizontally */
+    flex-wrap: wrap;
+    /* Wrap buttons for small screens */
     gap: 20px;
+    /* Space between buttons */
+    align-items: center;
+    /* Vertical alignment */
 }
 
 .ctaPrimary,
@@ -67,11 +78,17 @@
     border: 2px solid #00ff84;
     color: #00ff84;
     font-family: "Fira Code", "Courier New", monospace;
-    font-size: 1rem;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    /* Responsive font size */
     padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
+    text-align: center;
+    max-width: 300px;
+    /* Prevent buttons from becoming too wide */
+    width: 100%;
+    /* Make buttons stretch full width */
 }
 
 .ctaPrimary:hover {
@@ -86,11 +103,11 @@
     text-shadow: 0 0 8px #00ff84;
 }
 
-.hero::after {
+/* Decorative Animations */
+.hero::after,
+.hero::before {
     content: "";
     position: absolute;
-    top: -100px;
-    left: -100px;
     width: 300px;
     height: 300px;
     background: conic-gradient(from 0deg, transparent, #00ff84, transparent);
@@ -99,17 +116,15 @@
     opacity: 0.2;
 }
 
+.hero::after {
+    top: -100px;
+    left: -100px;
+}
+
 .hero::before {
-    content: "";
-    position: absolute;
     bottom: -100px;
     right: -100px;
-    width: 300px;
-    height: 300px;
-    background: conic-gradient(from 0deg, transparent, #00ff84, transparent);
-    animation: spin 5s linear infinite reverse;
-    border-radius: 50%;
-    opacity: 0.2;
+    animation-direction: reverse;
 }
 
 @keyframes spin {
@@ -119,5 +134,74 @@
 
     to {
         transform: rotate(360deg);
+    }
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .hero {
+        padding: 40px 15px;
+    }
+
+    .heroAscii {
+        font-size: clamp(0.7rem, 1.5vw, 1rem);
+    }
+
+    .heroSubtitle {
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+    }
+
+    .heroButtons {
+        gap: 10px;
+        /* Smaller gap between buttons */
+    }
+
+    .ctaPrimary,
+    .ctaSecondary {
+        font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+        /* Smaller button text */
+        max-width: 300px;
+        /* Limit button width */
+    }
+}
+
+@media (max-width: 768px) {
+    .heroAscii {
+        font-size: 0.6rem;
+        line-height: 1.1;
+        text-align: center;
+    }
+
+    .heroSubtitle {
+        font-size: 1rem;
+        margin: 15px 0;
+    }
+
+    .heroButtons {
+        flex-direction: column;
+        /* Stack buttons vertically */
+        gap: 10px;
+        /* Smaller spacing between stacked buttons */
+    }
+
+    .ctaPrimary,
+    .ctaSecondary {
+        max-width: 300px;
+        /* Full-width buttons with limit */
+    }
+}
+
+@media (max-width: 420px) {
+    .heroAscii {
+        font-size: 0.4rem;
+        /* Smallest font size for extra narrow screens */
+        line-height: 1;
+        /* Compact line spacing */
+    }
+
+    .ctaPrimary,
+    .ctaSecondary {
+        padding: 8px 15px;
+        /* Smaller padding for compact buttons */
     }
 }

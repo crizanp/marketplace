@@ -15,13 +15,17 @@ const TokenDetail = () => {
   const [upvotes, setUpvotes] = useState(0);
   const [downvotes, setDownvotes] = useState(0);
 
+  const [chainId, setChainId] = useState("");
+
   useEffect(() => {
     if (contractaddress) {
       fetch(`https://api.dexscreener.com/latest/dex/tokens/${contractaddress}`)
         .then((response) => response.json())
         .then((data) => {
           if (data && data.pairs && data.pairs.length > 0) {
-            setDexData(data.pairs[0]); // Get the first pair data
+            const tokenData = data.pairs[0];
+            setDexData(tokenData);
+            setChainId(tokenData.chainId); // Set the chainId here
           }
         })
         .catch((error) =>
@@ -163,9 +167,7 @@ const TokenDetail = () => {
             <p>
               <span className={styles.label}>Listed by:</span>
               <span className={styles.value}>
-                <FaCoins />
-                CMC | <FaCoins />
-                CG
+                <FaCoins /> CMC | <FaCoins /> CG
               </span>
             </p>
           </div>
@@ -229,7 +231,7 @@ const TokenDetail = () => {
           <iframe
             className={styles.chartIframe}
             title="GeckoTerminal Embed"
-            src={`https://www.geckoterminal.com/solana/pools/${dexData.pairAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0`}
+            src={`https://www.geckoterminal.com/${chainId}/pools/${dexData.pairAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0`}
             frameBorder="0"
             allowFullScreen
           ></iframe>

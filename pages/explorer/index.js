@@ -1,10 +1,4 @@
 import React, { useState, useEffect } from "react";
-import {
-  FaTwitter,
-  FaFacebookF,
-  FaTelegramPlane,
-  FaInstagram,
-} from "react-icons/fa";
 import styles from "../../styles/Explorer.module.css";
 import agentsData from "../../data/agents.json";
 import Navbar from "@/components/Navbar";
@@ -16,6 +10,7 @@ const Explorer = () => {
   const [agents, setAgents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
+  const [showMessage, setShowMessage] = useState(false); // Floating message state
 
   useEffect(() => {
     setAgents(agentsData);
@@ -55,6 +50,24 @@ const Explorer = () => {
     setCurrentPage(pageNumber);
   };
 
+  const handleViewDetails = () => {
+    setShowMessage(true); // Show the floating message when the button is clicked
+
+    // Hide the message after 3 seconds
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 3000);
+  };
+
+  const handleTrendingCardClick = () => {
+    setShowMessage(true); // Show the floating message when a trending card is clicked
+
+    // Hide the message after 3 seconds
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 3000);
+  };
+
   const trendingAgents = [...agentsData]
     .sort((a, b) => b.replies - a.replies)
     .slice(0, 8);
@@ -63,10 +76,21 @@ const Explorer = () => {
     <>
       <Navbar />
       <div className={styles.container}>
+        {/* Floating Message */}
+        {showMessage && (
+          <div className={styles.floatingMessage}>
+            Full version will be released on Jan 1, this is just a prototype.
+          </div>
+        )}
+
         {/* Trending Agents Section */}
         <div className={styles.trendingSection}>
           {trendingAgents.map((agent, index) => (
-            <div key={agent.id} className={styles.trendingCard}>
+            <div
+              key={agent.id}
+              className={styles.trendingCard}
+              onClick={handleTrendingCardClick} // Add onClick handler to show message
+            >
               <span className={styles.rank}>#{index + 1}</span>
               <img
                 src={agent.logo}
@@ -108,80 +132,60 @@ const Explorer = () => {
         </div>
 
         {/* Agents Table */}
-        <table className={styles.agentsTable}>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th style={{ textAlign: "left" }}>Name</th>
-              <th>Chain</th>
-              <th>Market Cap</th>
-              <th>Listed Time</th>
-              <th>Price</th>
-              <th>Upvotes</th>
-              <th>Social Links</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedAgents.map((agent, index) => (
-              <tr key={agent.id}>
-                <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                <td style={{ textAlign: "left" }}>
-                  <img
-                    src={
-                      agent.logo ||
-                      "https://cryptologos.cc/logos/solana-sol-logo.png"
-                    }
-                    alt="Agent Logo"
-                    className={styles.chainLogo}
-                  />
-                  {agent.name} ({agent.ticker})
-                </td>
-                <td>
-                  <img
-                    src="https://cryptologos.cc/logos/solana-sol-logo.png"
-                    alt="Chain Logo"
-                    className={styles.chainLogo}
-                  />
-                  Solana
-                </td>
-                <td>{agent.marketCap}</td>
-                <td>{agent.time}</td>
-                <td>{agent.price || "N/A"}</td>
-                <td>{agent.replies}</td>
-                <td className={styles.socialLinks}>
-                  <a
-                    href={agent.socials.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaTwitter className={styles.socialIcon} />
-                  </a>
-                  <a
-                    href={agent.socials.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaInstagram className={styles.socialIcon} />
-                  </a>
-                  <a
-                    href={agent.socials.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaFacebookF className={styles.socialIcon} />
-                  </a>
-                  <a
-                    href={agent.socials.telegram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaTelegramPlane className={styles.socialIcon} />
-                  </a>
-                </td>
+        <div className={styles.agentsTableContainer}>
+          <table className={styles.agentsTable}>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th style={{ textAlign: "left" }}>Name</th>
+                <th>Chain</th>
+                <th>Market Cap</th>
+                <th>Listed Time</th>
+                <th>Price</th>
+                <th>Upvotes</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {paginatedAgents.map((agent, index) => (
+                <tr key={agent.id}>
+                  <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                  <td style={{ textAlign: "left" }}>
+                    <img
+                      src={
+                        agent.logo ||
+                        "https://cryptologos.cc/logos/solana-sol-logo.png"
+                      }
+                      alt="Agent Logo"
+                      className={styles.chainLogo}
+                    />
+                    {agent.name} ({agent.ticker})
+                  </td>
+                  <td>
+                    <img
+                      src="https://cryptologos.cc/logos/solana-sol-logo.png"
+                      alt="Chain Logo"
+                      className={styles.chainLogo}
+                    />
+                    Solana
+                  </td>
+                  <td>{agent.marketCap}</td>
+                  <td>{agent.time}</td>
+                  <td>{agent.price || "N/A"}</td>
+                  <td>{agent.replies}</td>
+                  <td>
+                    <button
+                      className={styles.viewButton}
+                      onClick={handleViewDetails} // Trigger message on button click
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         {/* Pagination */}
         <div className={styles.pagination}>

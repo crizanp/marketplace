@@ -1,11 +1,13 @@
+/* Scrollable Table for Small Screens */
 .tableContainer {
-    padding: 40px 40px;
-    /* Added more padding to create space from top and bottom */
-    color: #f5f5f5;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    overflow-x: auto;
+    /* Enables horizontal scrolling */
     margin: 20px auto;
-    /* Add vertical margin for extra spacing */
+    /* Center the table with margin */
+    border-radius: 12px;
+    padding: 20px;
+    background: #1a1f36;
+    color: #f5f5f5;
 }
 
 .topBar {
@@ -41,8 +43,11 @@
 
 .agentsTable {
     width: 100%;
+    /* Ensures the table takes full width */
     border-collapse: collapse;
     background: #1a1f36;
+    min-width: 800px;
+    /* Set a minimum width for the table */
 }
 
 .agentsTable th,
@@ -67,6 +72,7 @@
     background: #333a5e;
 }
 
+
 .chainLogo {
     width: 24px;
     height: 24px;
@@ -89,4 +95,20 @@
 .socialIcon:hover {
     color: #3ddc91;
     transform: scale(1.2);
+}
+
+/* Responsive: Ensure it scrolls for small screens */
+@media (max-width: 768px) {
+    .tableContainer {
+        padding: 10px;
+        /* Reduce padding on smaller screens */
+    }
+
+    .agentsTable th,
+    .agentsTable td {
+        font-size: 0.8rem;
+        /* Smaller text for smaller screens */
+        padding: 8px;
+        /* Reduce padding for table cells */
+    }
 }

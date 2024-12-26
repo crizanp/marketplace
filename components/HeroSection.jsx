@@ -18,8 +18,12 @@ const HeroSection = () => (
       ⚡ Revolutionize your workflow with cutting-edge AI Agents. Explore, integrate, and grow smarter with <span className={styles.highlight}>GEKKOAI</span>.
     </p>
     <div className={styles.heroButtons}>
-      <button className={styles.ctaPrimary}>🚀 Explore AI Agents</button>
-      <button className={styles.ctaSecondary}>📤 Read Whitepaper</button>
+      <a href="https://dexscreener.com/solana/G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump">
+        <button className={styles.ctaPrimary}>🚀 Get $GEKKO</button>
+      </a>
+      <a href="https://gekkoais-organization.gitbook.io/aigekko.fun-or-usdgekko-ai-marketplace/">
+        <button className={styles.ctaSecondary}>📤 Read Whitepaper</button>
+      </a>
     </div>
   </div>
 );

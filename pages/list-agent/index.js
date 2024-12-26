@@ -23,7 +23,7 @@ const ListAgent = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [activeTab, setActiveTab] = useState("New Submission");
+  const [showMessage, setShowMessage] = useState(false); // State to control floating message
 
   const connectWallet = () => {
     setIsWalletConnected(!isWalletConnected);
@@ -80,38 +80,39 @@ const ListAgent = () => {
     setIsLoading(false);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setAgentDetails((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleTabClick = () => {
+    // Show the floating message when any tab is clicked
+    setShowMessage(true);
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    if (isWalletConnected) {
-      alert("Submission received! Your listing will be reviewed by the team.");
-      console.log("Agent Details:", agentDetails);
-      setIsSubmitted(true);
-    }
+    // Hide the floating message after 3 seconds
+    setTimeout(() => setShowMessage(false), 3000);
   };
 
   return (
     <>
       <Navbar />
       <div className={styles.wrapper}>
-        {/* Sidebar */}
+        {/* Floating Message */}
+        {showMessage && (
+          <div className={styles.floatingMessage}>
+            Full version will be released on Jan 1, this is just a prototype.
+          </div>
+        )}
+
+        {/* Sidebar for large screens */}
         <div className={styles.sidebar}>
           <ul>
             {[
               "New Submission",
+              "AI Agent Launchpad",
+
               "View Submission",
               "Pricing Plans",
-              "Launch Token",
               "Privacy Policy",
             ].map((tab) => (
               <li
                 key={tab}
-                className={activeTab === tab ? styles.activeTab : ""}
-                onClick={() => setActiveTab(tab)}
+                onClick={handleTabClick} // Trigger floating message on click
               >
                 {tab}
               </li>
@@ -121,173 +122,188 @@ const ListAgent = () => {
 
         {/* Main Content */}
         <div className={styles.mainContent}>
-          {activeTab === "New Submission" && (
-            <div className={styles.formContainer}>
-              <h1 className={styles.title}>📤 List Your AI Agent</h1>
+          <h1 className={styles.title}>📤 List Your AI Agent</h1>
 
-              {/* Wallet Connection */}
-              <div className={styles.walletSection}>
-                <button className={styles.walletButton} onClick={connectWallet}>
-                  {isWalletConnected
-                    ? "🔌 Wallet Connected"
-                    : "💼 Connect Wallet"}
-                </button>
-                {!isWalletConnected && (
-                  <p className={styles.warning}>
-                    You must connect your wallet to list an agent.
-                  </p>
-                )}
-              </div>
+          {/* Wallet Connection */}
+          <div className={styles.walletSection}>
+            {/* <button className={styles.walletButton} onClick={connectWallet}>
+              {isWalletConnected ? "🔌 Wallet Connected" : "💼 Connect Wallet"}
+            </button> */}
+            {!isWalletConnected && (
+              <p className={styles.warning}>
+                You must connect your wallet to list an agent.
+              </p>
+            )}
+          </div>
 
-              {/* Contract Address Field */}
-              <div className={styles.contractSection}>
-                <label>
-                  Contract Address:
-                  <input
-                    type="text"
-                    placeholder="Enter contract address"
-                    value={contractAddress}
-                    onChange={(e) => setContractAddress(e.target.value)}
-                    disabled={!isWalletConnected}
+          {/* Contract Address Field */}
+          <div className={styles.contractSection}>
+            <label>
+              Contract Address:
+              <input
+                type="text"
+                placeholder="Enter contract address"
+                value={contractAddress}
+                onChange={(e) => setContractAddress(e.target.value)}
+                disabled={!isWalletConnected}
+              />
+            </label>
+            <button
+              onClick={fetchAgentData}
+              className={styles.fetchButton}
+              disabled={!isWalletConnected || !contractAddress || isLoading}
+            >
+              {isLoading ? "Fetching..." : "Fetch Data"}
+            </button>
+          </div>
+
+          {/* Agent Listing Form */}
+          {!isSubmitted ? (
+            <form onSubmit={fetchAgentData} className={styles.agentForm}>
+              {/* Non-Editable Real-Time Fields */}
+              <div className={styles.realTimeData}>
+                {agentDetails.logoUrl && (
+                  <img
+                    src={agentDetails.logoUrl}
+                    alt="Token Logo"
+                    className={styles.tokenImage}
                   />
-                </label>
-                <button
-                  onClick={fetchAgentData}
-                  className={styles.fetchButton}
-                  disabled={!isWalletConnected || !contractAddress || isLoading}
-                >
-                  {isLoading ? "Fetching..." : "Fetch Data"}
-                </button>
+                )}
+                <p>
+                  <strong>Chain:</strong> {agentDetails.chain || "N/A"}
+                </p>
+                <p>
+                  <strong>Price (USD):</strong> $
+                  {agentDetails.priceUsd || "N/A"}
+                </p>
+                <p>
+                  <strong>24h Volume:</strong> $
+                  {agentDetails.volume24h || "N/A"}
+                </p>
+                <p>
+                  <strong>Market Cap:</strong> $
+                  {agentDetails.marketCap || "N/A"}
+                </p>
+                <p>
+                  <strong>Liquidity:</strong> ${agentDetails.liquidity || "N/A"}
+                </p>
               </div>
 
-              {/* Agent Listing Form */}
-              {!isSubmitted ? (
-                <form onSubmit={handleFormSubmit} className={styles.agentForm}>
-                  {/* Non-Editable Real-Time Fields */}
-                  <div className={styles.realTimeData}>
-                    {agentDetails.logoUrl && (
-                      <img
-                        src={agentDetails.logoUrl}
-                        alt="Token Logo"
-                        className={styles.tokenImage}
-                      />
-                    )}
-                    <p>
-                      <strong>Chain:</strong> {agentDetails.chain || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Price (USD):</strong> $
-                      {agentDetails.priceUsd || "N/A"}
-                    </p>
-                    <p>
-                      <strong>24h Volume:</strong> $
-                      {agentDetails.volume24h || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Market Cap:</strong> $
-                      {agentDetails.marketCap || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Liquidity:</strong> $
-                      {agentDetails.liquidity || "N/A"}
-                    </p>
-                  </div>
+              {/* Editable Fields */}
+              <label>
+                Agent Name:
+                <input
+                  type="text"
+                  name="name"
+                  value={agentDetails.name}
+                  onChange={(e) =>
+                    setAgentDetails({ ...agentDetails, name: e.target.value })
+                  }
+                  disabled={!isWalletConnected}
+                  required
+                />
+              </label>
+              <label>
+                Ticker:
+                <input
+                  type="text"
+                  name="ticker"
+                  value={agentDetails.ticker}
+                  onChange={(e) =>
+                    setAgentDetails({ ...agentDetails, ticker: e.target.value })
+                  }
+                  disabled={!isWalletConnected}
+                  required
+                />
+              </label>
+              <label>
+                Logo URL:
+                <input
+                  type="text"
+                  name="logoUrl"
+                  value={agentDetails.logoUrl}
+                  onChange={(e) =>
+                    setAgentDetails({
+                      ...agentDetails,
+                      logoUrl: e.target.value,
+                    })
+                  }
+                  disabled={!isWalletConnected}
+                />
+              </label>
+              <label>
+                Description:
+                <textarea
+                  name="description"
+                  value={agentDetails.description}
+                  onChange={(e) =>
+                    setAgentDetails({
+                      ...agentDetails,
+                      description: e.target.value,
+                    })
+                  }
+                  disabled={!isWalletConnected}
+                  required
+                />
+              </label>
+              <label>
+                Twitter URL:
+                <input
+                  type="text"
+                  name="twitter"
+                  value={agentDetails.twitter}
+                  onChange={(e) =>
+                    setAgentDetails({
+                      ...agentDetails,
+                      twitter: e.target.value,
+                    })
+                  }
+                  disabled={!isWalletConnected}
+                />
+              </label>
+              <label>
+                Telegram URL:
+                <input
+                  type="text"
+                  name="telegram"
+                  value={agentDetails.telegram}
+                  onChange={(e) =>
+                    setAgentDetails({
+                      ...agentDetails,
+                      telegram: e.target.value,
+                    })
+                  }
+                  disabled={!isWalletConnected}
+                />
+              </label>
+              <label>
+                Website URL:
+                <input
+                  type="text"
+                  name="website"
+                  value={agentDetails.website}
+                  onChange={(e) =>
+                    setAgentDetails({
+                      ...agentDetails,
+                      website: e.target.value,
+                    })
+                  }
+                  disabled={!isWalletConnected}
+                />
+              </label>
 
-                  {/* Editable Fields */}
-                  <label>
-                    Agent Name:
-                    <input
-                      type="text"
-                      name="name"
-                      value={agentDetails.name}
-                      onChange={handleInputChange}
-                      disabled={!isWalletConnected}
-                      required
-                    />
-                  </label>
-                  <label>
-                    Ticker:
-                    <input
-                      type="text"
-                      name="ticker"
-                      value={agentDetails.ticker}
-                      onChange={handleInputChange}
-                      disabled={!isWalletConnected}
-                      required
-                    />
-                  </label>
-                  <label>
-                    Logo URL:
-                    <input
-                      type="text"
-                      name="logoUrl"
-                      value={agentDetails.logoUrl}
-                      onChange={handleInputChange}
-                      disabled={!isWalletConnected}
-                    />
-                  </label>
-                  <label>
-                    Description:
-                    <textarea
-                      name="description"
-                      value={agentDetails.description}
-                      onChange={handleInputChange}
-                      disabled={!isWalletConnected}
-                      required
-                    />
-                  </label>
-                  <label>
-                    Twitter URL:
-                    <input
-                      type="text"
-                      name="twitter"
-                      value={agentDetails.twitter}
-                      onChange={handleInputChange}
-                      disabled={!isWalletConnected}
-                    />
-                  </label>
-                  <label>
-                    Telegram URL:
-                    <input
-                      type="text"
-                      name="telegram"
-                      value={agentDetails.telegram}
-                      onChange={handleInputChange}
-                      disabled={!isWalletConnected}
-                    />
-                  </label>
-                  <label>
-                    Website URL:
-                    <input
-                      type="text"
-                      name="website"
-                      value={agentDetails.website}
-                      onChange={handleInputChange}
-                      disabled={!isWalletConnected}
-                    />
-                  </label>
-
-                  <button
-                    type="submit"
-                    disabled={!isWalletConnected}
-                    className={styles.submitButton}
-                  >
-                    Submit
-                  </button>
-                </form>
-              ) : (
-                <p className={styles.successMessage}>
-                  🎉 Your submission has been received and is under review!
-                </p>
-              )}
-            </div>
-          )}
-
-          {activeTab !== "New Submission" && (
-            <div className={styles.placeholderContent}>
-              <h2>{activeTab}</h2>
-              <p>Content for {activeTab} </p>
-            </div>
+              <button
+                type="submit"
+                disabled={!isWalletConnected}
+                className={styles.submitButton}
+              >
+                Submit
+              </button>
+            </form>
+          ) : (
+            <p className={styles.successMessage}>
+              🎉 Your submission has been received and is under review!
+            </p>
           )}
         </div>
       </div>
