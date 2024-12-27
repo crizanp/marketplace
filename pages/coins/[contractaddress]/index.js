@@ -1,3 +1,7 @@
+import AgentShowcase from "@/components/detailPage/AgentShowcase";
+import Breadcrumb from "@/components/detailPage/Breadcrumb";
+import Social from "@/components/detailPage/Social";
+import TokenInfo from "@/components/detailPage/TokenInfo";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
@@ -18,8 +22,8 @@ import {
   FaDiscord,
   FaMedium,
   FaPinterest,
-  FaTiktok,
-} from "react-icons/fa"; // Import additional icons
+  FaSnapchat,
+} from "react-icons/fa";
 const TokenDetail = () => {
   const router = useRouter();
   const { contractaddress } = router.query;
@@ -94,6 +98,50 @@ const TokenDetail = () => {
       </div>
     );
   }
+  const socialLinks = {
+    website: "https://example.com",
+    telegram: "https://t.me/example",
+    twitter: "https://twitter.com/example",
+    instagram: "https://instagram.com/example",
+    facebook: "https://facebook.com/example",
+    github: "https://github.com/example",
+    reddit: "https://reddit.com/r/example",
+    linkedin: "https://linkedin.com/company/example",
+    youtube: "https://youtube.com/c/example",
+    discord: "https://discord.gg/example",
+    medium: "https://medium.com/@example",
+    pinterest: "https://pinterest.com/example",
+    snapchat: "https://snapchat.com/add/example",
+  };
+  const agents = [
+    {
+      name: "Twitter Agent",
+      description: "Stay updated with real-time tweets and notifications.",
+      icon: <FaTwitter />,
+    },
+    {
+      name: "Telegram Agent",
+      description: "Join our community and receive instant updates.",
+      icon: <FaTelegram />,
+    },
+    {
+      name: "Facebook Agent",
+      description: "Connect with us on Facebook for regular updates.",
+      icon: <FaFacebook />,
+    },
+    {
+      name: "Discord Agent",
+      description: "Engage with us on Discord for direct support.",
+      icon: <FaDiscord />,
+    },
+    {
+      name: "Instagram Agent",
+      description: "Follow us for visually engaging updates.",
+      icon: <FaInstagram />,
+    },
+  ];
+
+
 
   return (
     <>
@@ -101,26 +149,13 @@ const TokenDetail = () => {
       <div className="min-h-screen bg-gray-900 text-white font-professional">
         {/* Desktop Layout */}
         <div className="bg-gray-800 p-2 text-white">
-          <nav className="text-sm flex justify-between lg:justify-center">
-            {/* Breadcrumb Navigation */}
-            <span className="lg:text-center">
-              <Link href="/" passHref>
-                <span className="text-gray-400 hover:text-green-400 cursor-pointer">
-                  Marketplace
-                </span>
-              </Link>
-              <span className="mx-2 text-gray-500">/</span>
-              <Link href="/explorer" passHref>
-                <span className="text-gray-400 hover:text-green-400 cursor-pointer">
-                  Explorer
-                </span>
-              </Link>
-              <span className="mx-2 text-gray-500">/</span>
-              <span className="text-green-400 font-bold">
-                {dexData?.baseToken?.name || "Token Name"}
-              </span>
-            </span>
-          </nav>
+          <Breadcrumb
+            paths={[
+              { name: "Marketplace", link: "/" },
+              { name: "Explorer", link: "/explorer" },
+              { name: dexData?.baseToken?.name || "Token Name" },
+            ]}
+          />
         </div>
 
         <div className="hidden lg:flex p-4 gap-8">
@@ -211,193 +246,17 @@ const TokenDetail = () => {
               )}
             </div>
 
-            {/* Token Info Section */}
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Token Info
-              </h2>
-              <ul className="space-y-4">
-                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                  <span className="text-gray-400">Market Cap:</span>
-                  <span className="text-gray-200">
-                    ${dexData.marketCap || "N/A"}
-                  </span>
-                </li>
-                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                  <span className="text-gray-400">Liquidity:</span>
-                  <span className="text-gray-200">
-                    ${dexData.liquidity?.usd || "N/A"}
-                  </span>
-                </li>
-                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                  <span className="text-gray-400">Chain:</span>
-                  <span className="text-gray-200">
-                    {dexData.chainId || "N/A"}
-                  </span>
-                </li>
-                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                  <span className="text-gray-400">24 Hour Volume:</span>
-                  <span className="text-gray-200">
-                    ${dexData.volume?.h24 || "N/A"}
-                  </span>
-                </li>
-                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                  <span className="text-gray-400">Contract Address:</span>
-                  <span className="flex items-center gap-2">
-                    <span className="text-gray-200">
-                      {truncateAddress(contractaddress)}
-                    </span>
-                    <button
-                      onClick={copyToClipboard}
-                      className="text-green-400 hover:text-green-300 focus:outline-none"
-                    >
-                      {copied ? <FaCheck /> : <FaRegCopy />}
-                    </button>
-                  </span>
-                </li>
-              </ul>
-            </div>
+            <TokenInfo
+              data={{ ...dexData, contractAddress: contractaddress }}
+              copied={copied}
+              copyToClipboard={copyToClipboard}
+              truncateAddress={truncateAddress}
+            />
+
 
             {/* Social Info Section */}
-
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Social Info
-              </h2>
-              <div className="flex gap-4 flex-wrap">
-                {/* Website */}
-                <a
-                  href={dexData?.info?.website || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaGlobe size={24} />
-                </a>
-
-                {/* Telegram */}
-                <a
-                  href={dexData?.info?.telegram || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaTelegram size={24} />
-                </a>
-
-                {/* Twitter */}
-                <a
-                  href={dexData?.info?.twitter || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaTwitter size={24} />
-                </a>
-
-                {/* Instagram */}
-                <a
-                  href={dexData?.info?.instagram || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaInstagram size={24} />
-                </a>
-
-                {/* Facebook */}
-                <a
-                  href={dexData?.info?.facebook || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaFacebook size={24} />
-                </a>
-
-                {/* GitHub */}
-                <a
-                  href={dexData?.info?.github || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaGithub size={24} />
-                </a>
-
-                {/* Reddit */}
-                <a
-                  href={dexData?.info?.reddit || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaReddit size={24} />
-                </a>
-
-                {/* LinkedIn */}
-                <a
-                  href={dexData?.info?.linkedin || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaLinkedin size={24} />
-                </a>
-
-                {/* YouTube */}
-                <a
-                  href={dexData?.info?.youtube || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaYoutube size={24} />
-                </a>
-
-                {/* Discord */}
-                <a
-                  href={dexData?.info?.discord || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaDiscord size={24} />
-                </a>
-
-                {/* Medium */}
-                <a
-                  href={dexData?.info?.medium || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaMedium size={24} />
-                </a>
-
-                {/* Pinterest */}
-                <a
-                  href={dexData?.info?.pinterest || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaPinterest size={24} />
-                </a>
-
-                {/* Snapchat */}
-                <a
-                  href={dexData?.info?.snapchat || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-green-400"
-                >
-                  <FaTiktok size={24} />
-                </a>
-              </div>
-            </div>
+            <Social links={socialLinks} />
           </div>
-
           {/* Right Section */}
           <div className="w-2/3">
             <iframe
@@ -407,6 +266,8 @@ const TokenDetail = () => {
               frameBorder="0"
               allowFullScreen
             ></iframe>
+            <AgentShowcase agents={agents} />
+
             <div className="mt-6 bg-gray-800 p-4 rounded-lg">
               <h2 className="text-xl">Community Replies</h2>
               <textarea
@@ -443,6 +304,8 @@ const TokenDetail = () => {
               allowFullScreen
             ></iframe>
           </div>
+          <AgentShowcase agents={agents} />
+
           <div className="flex justify-around bg-green-600 text-black py-3 text-lg font-semibold">
             <button
               onClick={() => setActiveTab("Info")}
@@ -543,188 +406,14 @@ const TokenDetail = () => {
                   </button>
                 )}
               </div>
-              <div className="mt-6">
-                <h2 className="text-xl font-semibold text-white mb-4">
-                  Token Info
-                </h2>
-                <ul className="space-y-4">
-                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                    <span className="text-gray-400">Market Cap:</span>
-                    <span className="text-gray-200">
-                      ${dexData.marketCap || "N/A"}
-                    </span>
-                  </li>
-                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                    <span className="text-gray-400">Liquidity:</span>
-                    <span className="text-gray-200">
-                      ${dexData.liquidity?.usd || "N/A"}
-                    </span>
-                  </li>
-                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                    <span className="text-gray-400">Chain:</span>
-                    <span className="text-gray-200">
-                      {dexData.chainId || "N/A"}
-                    </span>
-                  </li>
-                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                    <span className="text-gray-400">24 Hour Volume:</span>
-                    <span className="text-gray-200">
-                      ${dexData.volume?.h24 || "N/A"}
-                    </span>
-                  </li>
-                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
-                    <span className="text-gray-400">Contract Address:</span>
-                    <span className="flex items-center gap-2">
-                      <span className="text-gray-200">
-                        {truncateAddress(contractaddress)}
-                      </span>
-                      <button
-                        onClick={copyToClipboard}
-                        className="text-green-400 hover:text-green-300 focus:outline-none"
-                      >
-                        {copied ? <FaCheck /> : <FaRegCopy />}
-                      </button>
-                    </span>
-                  </li>
-                </ul>
-              </div>
+              <TokenInfo
+                data={{ ...dexData, contractAddress: contractaddress }}
+                copied={copied}
+                copyToClipboard={copyToClipboard}
+                truncateAddress={truncateAddress}
+              />
 
-              <div className="mt-6">
-                <h2 className="text-xl font-semibold text-white mb-4">
-                  Social Info
-                </h2>
-                <div className="flex gap-4 flex-wrap">
-                  {/* Website */}
-                  <a
-                    href={dexData?.info?.website || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaGlobe size={24} />
-                  </a>
-
-                  {/* Telegram */}
-                  <a
-                    href={dexData?.info?.telegram || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaTelegram size={24} />
-                  </a>
-
-                  {/* Twitter */}
-                  <a
-                    href={dexData?.info?.twitter || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaTwitter size={24} />
-                  </a>
-
-                  {/* Instagram */}
-                  <a
-                    href={dexData?.info?.instagram || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaInstagram size={24} />
-                  </a>
-
-                  {/* Facebook */}
-                  <a
-                    href={dexData?.info?.facebook || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaFacebook size={24} />
-                  </a>
-
-                  {/* GitHub */}
-                  <a
-                    href={dexData?.info?.github || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaGithub size={24} />
-                  </a>
-
-                  {/* Reddit */}
-                  <a
-                    href={dexData?.info?.reddit || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaReddit size={24} />
-                  </a>
-
-                  {/* LinkedIn */}
-                  <a
-                    href={dexData?.info?.linkedin || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaLinkedin size={24} />
-                  </a>
-
-                  {/* YouTube */}
-                  <a
-                    href={dexData?.info?.youtube || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaYoutube size={24} />
-                  </a>
-
-                  {/* Discord */}
-                  <a
-                    href={dexData?.info?.discord || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaDiscord size={24} />
-                  </a>
-
-                  {/* Medium */}
-                  <a
-                    href={dexData?.info?.medium || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaMedium size={24} />
-                  </a>
-
-                  {/* Pinterest */}
-                  <a
-                    href={dexData?.info?.pinterest || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaPinterest size={24} />
-                  </a>
-
-                  {/* Snapchat */}
-                  <a
-                    href={dexData?.info?.snapchat || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-green-400"
-                  >
-                    <FaTiktok size={24} />
-                  </a>
-                </div>
-              </div>
+              <Social links={socialLinks} />
             </div>
           )}
 
