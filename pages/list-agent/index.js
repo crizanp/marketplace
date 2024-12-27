@@ -3,8 +3,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AIAgentLaunchpad from "@/components/AIAgentLaunchpad";
 import PrivacyPolicy from "@/components/PrivacyPolicy";
+import Cookies from 'js-cookie'; // Add this import
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const ListAgent = () => {
+  const { connected } = useWallet(); // Wallet connection state from Navbar
+
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [contractAddress, setContractAddress] = useState("");
   const [agentDetails, setAgentDetails] = useState({
@@ -45,9 +49,6 @@ const ListAgent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSocialDropdownOpen, setIsSocialDropdownOpen] = useState(false);
 
-  const connectWallet = () => {
-    setIsWalletConnected(!isWalletConnected);
-  };
 
   const fetchAgentData = async () => {
     if (!contractAddress) {
@@ -167,7 +168,13 @@ const ListAgent = () => {
 
             {activeTab === "New Submission" && (
               <>
-                {!isSubmitted ? (
+                {!connected ? (
+                  <div className="flex items-center justify-center h-screen bg-gray-900">
+                    <p className="text-center text-orange-400 font-bold text-xl">
+                      ⚠️ You must connect your wallet to list an agent.
+                    </p>
+                  </div>
+                ) : !isSubmitted ? (
                   <>
                     <div className="lg:p-10">
                       <section className="relative bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-center py-10 overflow-hidden ">
@@ -187,25 +194,8 @@ const ListAgent = () => {
                       className="w-full max-w-3xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg"
                       onSubmit={handleSubmit}
                     >
-                      {/* Wallet Connection */}
-                      <div className="text-center mb-6">
-                        <button
-                          className={`px-4 py-2 rounded-lg transition-transform transform ${isWalletConnected
-                            ? "bg-green-500 text-black hover:scale-105"
-                            : "bg-red-500 text-white hover:scale-105"
-                            }`}
-                          onClick={connectWallet}
-                        >
-                          {isWalletConnected
-                            ? "🔌 Wallet Connected"
-                            : "💼 Connect Wallet"}
-                        </button>
-                        {!isWalletConnected && (
-                          <p className="mt-2 text-orange-400 text-sm">
-                            You must connect your wallet to list an agent.
-                          </p>
-                        )}
-                      </div>
+
+
 
                       {/* Fetch Data from Contract Address */}
                       <div className="mb-6">
