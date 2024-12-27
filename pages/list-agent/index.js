@@ -2,6 +2,7 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AIAgentLaunchpad from "@/components/AIAgentLaunchpad";
+import PrivacyPolicy from "@/components/PrivacyPolicy";
 
 const ListAgent = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -228,86 +229,138 @@ const ListAgent = () => {
                       </div>
 
                       {/* General Information */}
-                      <h2 className="text-xl font-bold">General Information</h2>
-                      <label>
-                        Name:
-                        <input
-                          type="text"
-                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                          value={agentDetails.name}
-                          onChange={(e) =>
-                            setAgentDetails({ ...agentDetails, name: e.target.value })
-                          }
-                          required
-                        />
-                      </label>
-                      <label>
-                        Ticker:
-                        <input
-                          type="text"
-                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                          value={agentDetails.ticker}
-                          onChange={(e) =>
-                            setAgentDetails({ ...agentDetails, ticker: e.target.value })
-                          }
-                          required
-                        />
-                      </label>
-                      <label>
-                        Description:
-                        <textarea
-                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                          value={agentDetails.description}
-                          onChange={(e) =>
-                            setAgentDetails({ ...agentDetails, description: e.target.value })
-                          }
-                          required
-                        />
-                      </label>
-                      <label>
-                        Type:
-                        <select
-                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                          value={agentDetails.type}
-                          onChange={(e) =>
-                            setAgentDetails({ ...agentDetails, type: e.target.value })
-                          }
-                        >
-                          <option value="informative">Informative</option>
-                          <option value="fun">Fun</option>
-                          <option value="meme">Meme</option>
-                          <option value="twitter">Twitter</option>
-                        </select>
-                      </label>
-                      <label>
-                        Chain:
-                        <input
-                          type="text"
-                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                          value={agentDetails.chain}
-                          onChange={(e) =>
-                            setAgentDetails({ ...agentDetails, chain: e.target.value })
-                          }
-                        />
-                      </label>
+                      <h2 className="text-2xl font-bold py-5 text-green-400">General Information</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Name Field */}
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-gray-300"
+                          >
+                            Name
+                          </label>
+                          <input
+                            id="name"
+                            type="text"
+                            className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                            value={agentDetails.name}
+                            onChange={(e) =>
+                              setAgentDetails({ ...agentDetails, name: e.target.value })
+                            }
+                            placeholder="Enter the agent's name"
+                            required
+                          />
+                        </div>
+
+                        {/* Ticker Field */}
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="ticker"
+                            className="block text-sm font-medium text-gray-300"
+                          >
+                            Ticker
+                          </label>
+                          <input
+                            id="ticker"
+                            type="text"
+                            className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                            value={agentDetails.ticker}
+                            onChange={(e) =>
+                              setAgentDetails({ ...agentDetails, ticker: e.target.value })
+                            }
+                            placeholder="Enter the ticker (e.g., BTC)"
+                            required
+                          />
+                        </div>
+
+                        {/* Description Field */}
+                        <div className="col-span-1 md:col-span-2 space-y-2">
+                          <label
+                            htmlFor="description"
+                            className="block text-sm font-medium text-gray-300"
+                          >
+                            Description
+                          </label>
+                          <textarea
+                            id="description"
+                            className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                            value={agentDetails.description}
+                            onChange={(e) =>
+                              setAgentDetails({ ...agentDetails, description: e.target.value })
+                            }
+                            placeholder="Write a brief description of the agent..."
+                            required
+                          />
+                        </div>
+
+                        {/* Type Field */}
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="type"
+                            className="block text-sm font-medium text-gray-300"
+                          >
+                            Type
+                          </label>
+                          <select
+                            id="type"
+                            className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                            value={agentDetails.type}
+                            onChange={(e) =>
+                              setAgentDetails({ ...agentDetails, type: e.target.value })
+                            }
+                          >
+                            <option value="informative">Informative</option>
+                            <option value="fun">Fun</option>
+                            <option value="meme">Meme</option>
+                            <option value="twitter">Twitter</option>
+                          </select>
+                        </div>
+
+                        {/* Chain Field */}
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="chain"
+                            className="block text-sm font-medium text-gray-300"
+                          >
+                            Chain
+                          </label>
+                          <input
+                            id="chain"
+                            type="text"
+                            className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                            value={agentDetails.chain}
+                            onChange={(e) =>
+                              setAgentDetails({ ...agentDetails, chain: e.target.value })
+                            }
+                            placeholder="Enter the blockchain (e.g., Ethereum)"
+                          />
+                        </div>
+                      </div>
+
                       {/* Social Information */}
-                      <h2 className="text-xl font-bold py-5">Social Information</h2>
+                      <h2 className="text-xl font-bold py-5 text-green-400">Social Information</h2>
                       <button
                         type="button"
                         onClick={() => setIsSocialDropdownOpen(!isSocialDropdownOpen)}
-                        className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+                        className="w-full bg-gradient-to-r from-green-600 to-green-400 text-white px-4 py-2 rounded-lg hover:opacity-90 transition duration-300 shadow-lg"
                       >
                         {isSocialDropdownOpen ? "Hide Social Information" : "Show Social Information"}
                       </button>
 
                       {isSocialDropdownOpen && (
-                        <div className="mt-4 space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                           {Object.keys(agentDetails.social).map((platform) => (
-                            <label key={platform} className="block capitalize">
-                              {platform}:
+                            <div key={platform} className="space-y-2">
+                              <label
+                                htmlFor={platform}
+                                className="block text-sm font-medium text-gray-300 capitalize"
+                              >
+                                {platform} URL:
+                              </label>
                               <input
                                 type="text"
-                                className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 mt-2"
+                                id={platform}
+                                className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
                                 placeholder={`Enter ${platform} URL`}
                                 value={agentDetails.social[platform]}
                                 onChange={(e) =>
@@ -320,40 +373,60 @@ const ListAgent = () => {
                                   }))
                                 }
                               />
-                            </label>
+                            </div>
                           ))}
                         </div>
                       )}
+
                       {/* Agent Utility */}
                       <h2 className="text-xl font-bold py-5">Agent Utility</h2>
                       {agentDetails.utility.map((utility, index) => (
-                        <div key={index} className="space-y-2 bg-gray-700 p-4 rounded-lg">
-                          <label>
-                            Utility Name:
+                        <div
+                          key={index}
+                          className="space-y-4 bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700"
+                        >
+                          <h3 className="text-lg font-bold text-green-400">
+                            Utility {index + 1}
+                          </h3>
+
+                          {/* Utility Name */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Utility Name
+                            </label>
                             <input
                               type="text"
-                              className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
+                              className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
                               value={utility.name}
                               onChange={(e) =>
                                 handleUtilityChange(index, "name", e.target.value)
                               }
                             />
-                          </label>
-                          <label>
-                            Short Description (20 words):
+                          </div>
+
+                          {/* Short Description */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Short Description (20 words)
+                            </label>
                             <textarea
-                              className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
+                              className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
                               value={utility.shortDesc}
                               onChange={(e) =>
                                 handleUtilityChange(index, "shortDesc", e.target.value)
                               }
                               maxLength="100"
+                              placeholder="Provide a concise description..."
                             />
-                          </label>
-                          <label>
-                            Social Type:
+                          </div>
+
+                          {/* Social Type */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Social Type
+                            </label>
                             <select
-                              className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
+                              className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
                               value={utility.socialType}
                               onChange={(e) =>
                                 handleUtilityChange(index, "socialType", e.target.value)
@@ -365,22 +438,29 @@ const ListAgent = () => {
                               <option value="facebook">Facebook</option>
                               <option value="other">Other</option>
                             </select>
-                          </label>
-                          <label>
-                            Link:
+                          </div>
+
+                          {/* Link */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Link
+                            </label>
                             <input
                               type="text"
-                              className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
+                              className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-green-400 focus:outline-none"
                               value={utility.link}
                               onChange={(e) =>
                                 handleUtilityChange(index, "link", e.target.value)
                               }
+                              placeholder="Enter the link for this utility..."
                             />
-                          </label>
+                          </div>
+
+                          {/* Remove Utility Button */}
                           {agentDetails.utility.length > 1 && (
                             <button
                               type="button"
-                              className="text-red-400 underline"
+                              className="block w-full text-red-500 font-medium text-sm hover:underline mt-4"
                               onClick={() => removeUtilityField(index)}
                             >
                               Remove Utility
@@ -388,6 +468,7 @@ const ListAgent = () => {
                           )}
                         </div>
                       ))}
+
                       <button
                         type="button"
                         className="text-blue-400 underline"
@@ -413,6 +494,12 @@ const ListAgent = () => {
             {activeTab === "AI Agent Launchpad" && (
               <>
                 <AIAgentLaunchpad />
+              </>
+
+            )}
+            {activeTab === "Privacy Policy" && (
+              <>
+                <PrivacyPolicy />
               </>
 
             )}
