@@ -1,9 +1,9 @@
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { FaCoins, FaTelegram, FaTwitter, FaReddit } from "react-icons/fa";
-import styles from "../../../styles/DetailPage.module.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { FaRegCopy, FaCheck } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import icons
 
 const TokenDetail = () => {
   const router = useRouter();
@@ -14,18 +14,25 @@ const TokenDetail = () => {
   const [newComment, setNewComment] = useState("");
   const [upvotes, setUpvotes] = useState(0);
   const [downvotes, setDownvotes] = useState(0);
-
+  const [activeTab, setActiveTab] = useState("Info");
   const [chainId, setChainId] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   useEffect(() => {
     if (contractaddress) {
       fetch(`https://api.dexscreener.com/latest/dex/tokens/${contractaddress}`)
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch token data.");
+          }
+          return response.json();
+        })
         .then((data) => {
           if (data && data.pairs && data.pairs.length > 0) {
             const tokenData = data.pairs[0];
             setDexData(tokenData);
-            setChainId(tokenData.chainId); // Set the chainId here
+            setChainId(tokenData.chainId);
           }
         })
         .catch((error) =>
@@ -41,6 +48,8 @@ const TokenDetail = () => {
       setDownvotes(downvotes + 1);
     }
   };
+  const dummyDescription =
+    "This token is a decentralized finance (DeFi) asset designed for innovative financial applications. With robust market dynamics and a strong community backing, it offers unique features like staking, liquidity provision, and governance participation. The project aims to bring transparency and efficiency to the blockchain space. Its use cases span across various domains such as payments, rewards, and decentralized trading. By integrating smart contract technology, this token ensures secure, trustless, and fast transactions. It represents a new era of digital assets, redefining how blockchain-based tokens operate within the ecosystem.";
 
   const addComment = () => {
     if (newComment.trim()) {
@@ -50,13 +59,22 @@ const TokenDetail = () => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(contractaddress);
+    if (contractaddress) {
+      navigator.clipboard.writeText(contractaddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Reset copied state after 2 seconds
+    }
+  };
+
+  const truncateAddress = (address) => {
+    if (!address) return "N/A";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   if (!dexData) {
     return (
-      <div className={styles.error}>
-        <h1>Loading...</h1>
+      <div className="flex flex-col items-center text-gray-200">
+        <h1 className="text-2xl">Loading...</h1>
         <p>Fetching data for contract: {contractaddress}</p>
       </div>
     );
@@ -65,194 +83,360 @@ const TokenDetail = () => {
   return (
     <>
       <Navbar />
-      <div className={styles.container}>
-        <div className={styles.left}>
-          {/* Token Information */}
-          <div className={styles.topSection}>
-            <img
-              src={dexData.info?.imageUrl || "/default-logo.png"}
-              alt={dexData.baseToken?.name || "Token Logo"}
-              className={styles.logo}
-            />
-            <div>
-              <h1 className={styles.tokenName}>
-                {dexData.baseToken?.name || "Token Name"}
-              </h1>
-              <span className={styles.rank}>{dexData.baseToken?.symbol}</span>
+      <div className="min-h-screen bg-gray-900 text-white font-professional">
+        {/* Desktop Layout */}
+        <div className="hidden lg:flex p-4 gap-8">
+          {/* Left Section */}
+
+          <div className="bg-gray-800 p-6 rounded-lg w-1/3">
+            <div className="flex items-center justify-between mt-4">
+              {/* Logo and Name */}
+              <div className="flex items-center gap-4">
+                <img
+                  src={dexData.info?.imageUrl || "/default-logo.png"}
+                  alt={dexData.baseToken?.name || "Token Logo"}
+                  className="w-16 h-16 rounded-full border-2 border-green-400"
+                />
+                <div>
+                  <h1 className="text-2xl font-bold uppercase text-white">
+                    {dexData.baseToken?.name || "Token Name"}
+                  </h1>
+                  <span className="text-sm bg-green-400 text-black px-2 py-1 rounded-md">
+                    {dexData.baseToken?.symbol}
+                  </span>
+                </div>
+              </div>
+
+              {/* Price */}
+              <div className="text-right">
+                <p className="text-2xl text-green-400">
+                  ${dexData.priceUsd || "N/A"}
+                </p>
+                <p
+                  className={
+                    dexData.priceChange?.h24 < 0
+                      ? "text-red-500"
+                      : "text-green-500"
+                  }
+                >
+                  {dexData.priceChange?.h24
+                    ? `${dexData.priceChange.h24}%`
+                    : "N/A"}
+                </p>
+              </div>
             </div>
-            <div className={styles.priceSection}>
-              <h2 className={styles.price}>${dexData.priceUsd || "N/A"}</h2>
-              <span
-                className={`${styles.priceChange} ${
-                  dexData.priceChange?.h24 < 0
-                    ? styles.negative
-                    : styles.positive
-                }`}
+
+            {/* Upvote and Downvote Section */}
+            <div className="mt-4 flex justify-center items-center gap-4">
+              <button
+                onClick={() => handleVote("upvote")}
+                className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600"
               >
-                {dexData.priceChange?.h24
-                  ? `${dexData.priceChange.h24}%`
-                  : "N/A"}
-              </span>
+                Upvote ({upvotes})
+              </button>
+              <button
+                onClick={() => handleVote("downvote")}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              >
+                Downvote ({downvotes})
+              </button>
             </div>
-          </div>
 
-          {/* Upvote/Downvote Section */}
-          <div className={styles.voteSection}>
-            <button
-              onClick={() => handleVote("upvote")}
-              className={styles.upvoteBtn}
-            >
-              👍 Upvote ({upvotes})
-            </button>
-            <button
-              onClick={() => handleVote("downvote")}
-              className={styles.downvoteBtn}
-            >
-              👎 Downvote ({downvotes})
-            </button>
-          </div>
-
-          {/* Token Data Section */}
-          <h2 className={styles.sectionTitle}>Token Data</h2>
-          <div className={styles.metrics}>
-            <p>
-              <span className={styles.label}>Market Cap:</span>
-              <span className={styles.value}>
-                ${dexData.marketCap || "N/A"}
-              </span>
-            </p>
-            <p>
-              <span className={styles.label}>Fully Diluted Valuation:</span>
-              <span className={styles.value}>${dexData.fdv || "N/A"}</span>
-            </p>
-            <p>
-              <span className={styles.label}>24 Hour Trading Vol:</span>
-              <span className={styles.value}>
-                ${dexData.volume?.h24 || "N/A"}
-              </span>
-            </p>
-            <p>
-              <span className={styles.label}>Liquidity:</span>
-              <span className={styles.value}>
-                ${dexData.liquidity?.usd || "N/A"}
-              </span>
-            </p>
-          </div>
-
-          {/* More Info Section */}
-          <h2 className={styles.sectionTitle}>More Info</h2>
-          <div className={styles.metrics}>
-            <p>
-              <span className={styles.label}>Contract Address:</span>
-              <span className={styles.value}>
-                {contractaddress.slice(0, 6)}...{contractaddress.slice(-4)}
-                <button onClick={copyToClipboard} className={styles.copyIcon}>
-                  📋
+            {/* Description Section */}
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Description
+              </h2>
+              <p className="text-gray-200">
+                {showFullDescription
+                  ? dummyDescription
+                  : dummyDescription.split(" ").slice(0, 20).join(" ")}
+                {!showFullDescription &&
+                  dummyDescription.split(" ").length > 20 &&
+                  "..."}
+              </p>
+              {dummyDescription.split(" ").length > 20 && (
+                <button
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="text-green-400 hover:text-green-300 mt-2 flex items-center gap-2"
+                >
+                  {showFullDescription ? (
+                    <>
+                      See Less <FaChevronUp />
+                    </>
+                  ) : (
+                    <>
+                      See More <FaChevronDown />
+                    </>
+                  )}
                 </button>
-              </span>
-            </p>
-            <p>
-              <span className={styles.label}>Website:</span>
-              <span className={styles.value}>
-                <a
-                  href={dexData.info?.websites?.[0] || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.link}
-                >
-                  Visit
-                </a>
-              </span>
-            </p>
-            <p>
-              <span className={styles.label}>Listed by:</span>
-              <span className={styles.value}>
-                <FaCoins /> CMC | <FaCoins /> CG
-              </span>
-            </p>
+              )}
+            </div>
+
+            {/* Token Info Section */}
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Token Info
+              </h2>
+              <ul className="space-y-4">
+                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                  <span className="text-gray-400">Market Cap:</span>
+                  <span className="text-gray-200">
+                    ${dexData.marketCap || "N/A"}
+                  </span>
+                </li>
+                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                  <span className="text-gray-400">Liquidity:</span>
+                  <span className="text-gray-200">
+                    ${dexData.liquidity?.usd || "N/A"}
+                  </span>
+                </li>
+                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                  <span className="text-gray-400">Chain:</span>
+                  <span className="text-gray-200">
+                    {dexData.chainId || "N/A"}
+                  </span>
+                </li>
+                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                  <span className="text-gray-400">24 Hour Volume:</span>
+                  <span className="text-gray-200">
+                    ${dexData.volume?.h24 || "N/A"}
+                  </span>
+                </li>
+                <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                  <span className="text-gray-400">Contract Address:</span>
+                  <span className="flex items-center gap-2">
+                    <span className="text-gray-200">
+                      {truncateAddress(contractaddress)}
+                    </span>
+                    <button
+                      onClick={copyToClipboard}
+                      className="text-green-400 hover:text-green-300 focus:outline-none"
+                    >
+                      {copied ? <FaCheck /> : <FaRegCopy />}
+                    </button>
+                  </span>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          {/* Chain Data Section */}
-          <h2 className={styles.sectionTitle}>Chain Data</h2>
-          <div className={styles.metrics}>
-            <p>
-              <span className={styles.label}>Chain:</span>
-              <span className={styles.value}>{dexData.chain || "N/A"}</span>
-            </p>
-            <p>
-              <span className={styles.label}>Explorer:</span>
-              <span className={styles.value}>
-                <a
-                  href={`https://explorer.solana.com/address/${contractaddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.link}
-                >
-                  View on Explorer
-                </a>
-              </span>
-            </p>
-          </div>
-
-          {/* Social Icons Section */}
-          <div className={styles.socials}>
-            <span className={styles.socialsLabel}>Socials:</span>
-            <div className={styles.socialIcons}>
-              <a
-                href="https://t.me/example"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Telegram"
+          {/* Right Section */}
+          <div className="w-2/3">
+            <iframe
+              className="w-full h-[400px] rounded-lg" // Increased height
+              title="GeckoTerminal Embed"
+              src={`https://www.geckoterminal.com/${chainId}/pools/${dexData.pairAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0`}
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+            <div className="mt-6 bg-gray-800 p-4 rounded-lg">
+              <h2 className="text-xl">Community Replies</h2>
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write your reply here..."
+                className="w-full h-24 p-2 bg-gray-800 text-white rounded-lg mt-2"
+              />
+              <button
+                onClick={addComment}
+                className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600 mt-2"
               >
-                <FaTelegram />
-              </a>
-              <a
-                href="https://twitter.com/example"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-              >
-                <FaTwitter />
-              </a>
-              <a
-                href="https://reddit.com/example"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Reddit"
-              >
-                <FaReddit />
-              </a>
+                Submit
+              </button>
+              <ul className="space-y-2 mt-4">
+                {comments.map((comment, index) => (
+                  <li key={index} className="p-2 bg-gray-700 rounded-md">
+                    {comment}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
 
-        {/* Chart and Replies Section */}
-        <div className={styles.right}>
-          <iframe
-            className={styles.chartIframe}
-            title="GeckoTerminal Embed"
-            src={`https://www.geckoterminal.com/${chainId}/pools/${dexData.pairAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0`}
-            frameBorder="0"
-            allowFullScreen
-          ></iframe>
-
-          <div className={styles.replies}>
-            <h2>Community Replies</h2>
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Write your reply here..."
-              className={styles.replyBox}
-            />
-            <button onClick={addComment} className={styles.submitReply}>
-              Submit
-            </button>
-            <ul className={styles.replyList}>
-              {comments.map((comment, index) => (
-                <li key={index}>{comment}</li>
-              ))}
-            </ul>
+        {/* Mobile Layout with Tabs */}
+        <div className="lg:hidden">
+          <div className="p-4">
+            <iframe
+              className="w-full h-96 rounded-lg"
+              title="GeckoTerminal Embed"
+              src={`https://www.geckoterminal.com/${chainId}/pools/${dexData.pairAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0`}
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
           </div>
+          <div className="flex justify-around bg-green-600 text-black py-3 text-lg font-semibold">
+            <button
+              onClick={() => setActiveTab("Info")}
+              className={activeTab === "Info" ? "border-b-2 border-black" : ""}
+            >
+              Info
+            </button>
+            <button
+              onClick={() => setActiveTab("Replies")}
+              className={
+                activeTab === "Replies" ? "border-b-2 border-black" : ""
+              }
+            >
+              Replies
+            </button>
+          </div>
+
+          {activeTab === "Info" && (
+            <div className="p-4">
+              <div className="flex items-center justify-between mt-4">
+                {/* Logo and Name */}
+                <div className="flex items-center gap-4">
+                  <img
+                    src={dexData.info?.imageUrl || "/default-logo.png"}
+                    alt={dexData.baseToken?.name || "Token Logo"}
+                    className="w-16 h-16 rounded-full border-2 border-green-400"
+                  />
+                  <div>
+                    <h1 className="text-2xl font-bold uppercase">
+                      {dexData.baseToken?.name || "Token Name"}
+                    </h1>
+                    <span className="text-sm bg-green-400 text-black px-2 py-1 rounded-md">
+                      {dexData.baseToken?.symbol}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Price */}
+                <div className="text-right">
+                  <p className="text-2xl text-green-400">
+                    ${dexData.priceUsd || "N/A"}
+                  </p>
+                  <p
+                    className={
+                      dexData.priceChange?.h24 < 0
+                        ? "text-red-500"
+                        : "text-green-500"
+                    }
+                  >
+                    {dexData.priceChange?.h24
+                      ? `${dexData.priceChange.h24}%`
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-center items-center gap-4">
+                <button
+                  onClick={() => handleVote("upvote")}
+                  className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600"
+                >
+                  Upvote ({upvotes})
+                </button>
+                <button
+                  onClick={() => handleVote("downvote")}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                >
+                  Downvote ({downvotes})
+                </button>
+              </div>
+              {/* Description Section */}
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold text-white mb-4">
+                  Description
+                </h2>
+                <p className="text-gray-200">
+                  {showFullDescription
+                    ? dummyDescription
+                    : dummyDescription.split(" ").slice(0, 20).join(" ")}
+                  {!showFullDescription &&
+                    dummyDescription.split(" ").length > 20 &&
+                    "..."}
+                </p>
+                {dummyDescription.split(" ").length > 20 && (
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="text-green-400 hover:text-green-300 mt-2 flex items-center gap-2"
+                  >
+                    {showFullDescription ? (
+                      <>
+                        See Less <FaChevronUp />
+                      </>
+                    ) : (
+                      <>
+                        See More <FaChevronDown />
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold text-white mb-4">
+                  Token Info
+                </h2>
+                <ul className="space-y-4">
+                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                    <span className="text-gray-400">Market Cap:</span>
+                    <span className="text-gray-200">
+                      ${dexData.marketCap || "N/A"}
+                    </span>
+                  </li>
+                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                    <span className="text-gray-400">Liquidity:</span>
+                    <span className="text-gray-200">
+                      ${dexData.liquidity?.usd || "N/A"}
+                    </span>
+                  </li>
+                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                    <span className="text-gray-400">Chain:</span>
+                    <span className="text-gray-200">
+                      {dexData.chainId || "N/A"}
+                    </span>
+                  </li>
+                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                    <span className="text-gray-400">24 Hour Volume:</span>
+                    <span className="text-gray-200">
+                      ${dexData.volume?.h24 || "N/A"}
+                    </span>
+                  </li>
+                  <li className="flex justify-between items-center border-b border-gray-600 pb-2">
+                    <span className="text-gray-400">Contract Address:</span>
+                    <span className="flex items-center gap-2">
+                      <span className="text-gray-200">
+                        {truncateAddress(contractaddress)}
+                      </span>
+                      <button
+                        onClick={copyToClipboard}
+                        className="text-green-400 hover:text-green-300 focus:outline-none"
+                      >
+                        {copied ? <FaCheck /> : <FaRegCopy />}
+                      </button>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "Replies" && (
+            <div className="p-4">
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write your reply here..."
+                className="w-full h-24 p-2 bg-gray-800 text-white rounded-lg"
+              />
+              <button
+                onClick={addComment}
+                className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600 mt-2"
+              >
+                Submit
+              </button>
+              <ul className="space-y-2 mt-4">
+                {comments.map((comment, index) => (
+                  <li key={index} className="p-2 bg-gray-700 rounded-md">
+                    {comment}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
       <Footer />
