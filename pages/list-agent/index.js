@@ -5,9 +5,10 @@ import AIAgentLaunchpad from "@/components/AIAgentLaunchpad";
 import PrivacyPolicy from "@/components/PrivacyPolicy";
 import Cookies from 'js-cookie'; // Add this import
 import { useWallet } from "@solana/wallet-adapter-react";
+import AgentEditor from "@/components/AgentEditor";
 
 const ListAgent = () => {
-  const { connected } = useWallet(); // Wallet connection state from Navbar
+  const { connected, publicKey } = useWallet();
 
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [contractAddress, setContractAddress] = useState("");
@@ -126,12 +127,56 @@ const ListAgent = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    console.log(agentDetails); // For testing, you can replace this with your form submission logic.
+
+    if (!connected) {
+      alert("You must connect your wallet before submitting.");
+      return;
+    }
+
+    try {
+      // Ensure the wallet address is available
+      if (!publicKey) {
+        alert("Wallet address is not available.");
+        return;
+      }
+
+      // Add contractAddress to agentDetails
+      const updatedAgentDetails = {
+        ...agentDetails,
+        contractAddress, // Add contract address
+      };
+
+      // Include wallet address in submission
+      const submissionData = {
+        agentDetails: updatedAgentDetails,
+        walletAddress: publicKey.toString(), // Add the wallet address
+      };
+
+      const response = await fetch("/api/submit-agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submissionData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit agent");
+      }
+
+      const result = await response.json();
+      console.log("Submission result:", result);
+
+      setIsSubmitted(true);
+      alert("🎉 Your submission has been received!");
+    } catch (error) {
+      console.error("Error submitting agent:", error);
+      alert("Failed to submit. Please try again.");
+    }
   };
+
+
+
 
   return (
     <>
@@ -475,8 +520,8 @@ const ListAgent = () => {
                     </form>
                   </>
                 ) : (
-                  <p className="text-center text-green-400 font-bold">
-                    🎉 Your submission has been received!
+                  <p className="text-center text-green-400 h-screen font-bold py-6">
+                    🎉 Your submission has been received and it will be reviewed throughly by the team before listing in GEKKO AI marketplace
                   </p>
                 )}
               </>
@@ -487,9 +532,22 @@ const ListAgent = () => {
               </>
 
             )}
+            {activeTab === "View Submission" && (
+              <>
+
+                <AgentEditor />
+              </>
+
+            )}
             {activeTab === "Privacy Policy" && (
               <>
                 <PrivacyPolicy />
+              </>
+
+            )}
+            {activeTab === "Pricing Plans" && (
+              <>
+                <div className="h-screen" />
               </>
 
             )}
