@@ -1,18 +1,55 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { useWallet, WalletAdapterNetwork } from '@solana/wallet-adapter-react';
+import {
+  Connection,
+  clusterApiUrl,
+  PublicKey,
+} from '@solana/web3.js';
+import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import Cookies from 'js-cookie'; // For cookie management
 import styles from '../styles/Home.module.css';
-import { useState } from 'react';
 
 const Navbar = () => {
-  const [showMessage, setShowMessage] = useState(false); // State to control the message visibility
+  const [showMessage, setShowMessage] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const wallet = useWallet(); // Solana wallet adapter context
 
-  const connectWallet = () => {
-    setShowMessage(true); // Show the message when the button is clicked
+  useEffect(() => {
+    // Check if the user is already signed in (cookie-based session)
+    const signedInWallet = Cookies.get('walletAddress');
+    if (signedInWallet) {
+      setIsSignedIn(true);
+    }
+  }, []);
 
-    // Hide the message after 3 seconds
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+  const connectWallet = async () => {
+    try {
+      // Ensure wallet is connected
+      if (!wallet.connected) {
+        setShowMessage(true);
+        setTimeout(() => setShowMessage(false), 3000);
+        return;
+      }
+
+      // Get the connected wallet's public address
+      const walletAddress = wallet.publicKey?.toString();
+
+      // Save wallet address in cookies (as session)
+      Cookies.set('walletAddress', walletAddress, { expires: 1 }); // Expires in 1 day
+      setIsSignedIn(true);
+
+      console.log(`Wallet Connected: ${walletAddress}`);
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+    }
+  };
+
+  const signOut = () => {
+    // Clear the session
+    Cookies.remove('walletAddress');
+    setIsSignedIn(false);
   };
 
   return (
@@ -24,14 +61,18 @@ const Navbar = () => {
           <span>&lt;GekkoAI/&gt;</span>
         </div>
         <div className={styles.walletButton}>
-          <button onClick={connectWallet}>💼 Connect Wallet</button>
+          {!isSignedIn ? (
+            <WalletMultiButton className={styles.walletButtonCustom} />
+          ) : (
+            <button onClick={signOut}>🔒 Sign Out</button>
+          )}
         </div>
       </div>
 
       {/* Floating Message */}
       {showMessage && (
         <div className={styles.floatingMessage}>
-          Full version will be released on Jan 1, this is just a prototype.
+          Please connect your Solana wallet to sign in.
         </div>
       )}
 
