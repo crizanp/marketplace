@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AIAgentLaunchpad from "@/components/AIAgentLaunchpad";
 
 const ListAgent = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -133,286 +134,289 @@ const ListAgent = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col md:flex-row">
-        {/* Sidebar for Large Screens */}
-        <div className="hidden md:block md:w-1/4 bg-gray-800 text-white p-4">
-          <ul className="space-y-4">
-            {[
-              "New Submission",
-              "AI Agent Launchpad",
-              "View Submission",
-              "Pricing Plans",
-              "Privacy Policy",
-            ].map((tab) => (
-              <li
-                key={tab}
-                className={`p-2 rounded-lg cursor-pointer ${activeTab === tab ? "bg-purple-600" : "hover:bg-gray-700"
-                  }`}
-                onClick={() => handleTabClick(tab)}
-              >
-                {tab}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Tab Menu for Small Screens */}
-        <div className="block md:hidden bg-gray-800 text-white">
-          <ul className="flex overflow-x-auto no-scrollbar space-x-4 p-4">
-            {[
-              "New Submission",
-              "AI Agent Launchpad",
-              "View Submission",
-              "Pricing Plans",
-              "Privacy Policy",
-            ].map((tab) => (
-              <li
-                key={tab}
-                className={`px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap ${activeTab === tab ? "bg-purple-600" : "hover:bg-gray-700"
-                  }`}
-                onClick={() => handleTabClick(tab)}
-              >
-                {tab}
-              </li>
-            ))}
-          </ul>
-        </div>
-        {/* Main Content */}
-        <div className="flex-1 py-6 px-2 bg-gray-900 text-white">
-          <h1 className="text-center text-3xl font-bold text-green-400 mb-6">
-            📤 List Your AI Agent
-          </h1>
-
-          {activeTab === "New Submission" && (
-            <>
-              {!isSubmitted ? (
-                <form
-                  className="w-full max-w-3xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg"
-                  onSubmit={handleSubmit}
+      <div className="flex flex-col ">
+        <div className="bg-gray-800 text-white">
+          {/* Tab Menu */}
+          <div className="bg-gray-800 text-white sticky top-0 z-50 border-b-2 border-green-600">
+            <ul className="w-full flex justify-start md:justify-center overflow-x-auto no-scrollbar space-x-4 p-2">
+              {[
+                "New Submission",
+                "AI Agent Launchpad",
+                "View Submission",
+                "Pricing Plans",
+                "Privacy Policy",
+              ].map((tab) => (
+                <li
+                  key={tab}
+                  className={`px-4 py-1 rounded-lg cursor-pointer whitespace-nowrap ${activeTab === tab ? "bg-green-600" : "hover:bg-gray-700"
+                    }`}
+                  onClick={() => handleTabClick(tab)}
                 >
-                  {/* Wallet Connection */}
-                  <div className="text-center mb-6">
-                    <button
-                      className={`px-4 py-2 rounded-lg transition-transform transform ${isWalletConnected
-                        ? "bg-green-500 text-black hover:scale-105"
-                        : "bg-red-500 text-white hover:scale-105"
-                        }`}
-                      onClick={connectWallet}
-                    >
-                      {isWalletConnected
-                        ? "🔌 Wallet Connected"
-                        : "💼 Connect Wallet"}
-                    </button>
-                    {!isWalletConnected && (
-                      <p className="mt-2 text-orange-400 text-sm">
-                        You must connect your wallet to list an agent.
-                      </p>
-                    )}
-                  </div>
+                  {tab}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-                  {/* Fetch Data from Contract Address */}
-                  <div className="mb-6">
-                    <label className="block mb-2">Contract Address:</label>
-                    <input
-                      type="text"
-                      className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                      placeholder="Enter contract address"
-                      value={contractAddress}
-                      onChange={(e) => setContractAddress(e.target.value)}
-                      disabled={!isWalletConnected}
-                    />
-                    <button
-                      type="button"
-                      className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500 disabled:bg-gray-700 transition-transform transform disabled:scale-100 hover:scale-105"
-                      onClick={fetchAgentData}
-                      disabled={!isWalletConnected || isLoading || !contractAddress}
-                    >
-                      {isLoading ? "Fetching..." : "Fetch Data"}
-                    </button>
-                  </div>
 
-                  {/* General Information */}
-                  <h2 className="text-xl font-bold">General Information</h2>
-                  <label>
-                    Name:
-                    <input
-                      type="text"
-                      className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                      value={agentDetails.name}
-                      onChange={(e) =>
-                        setAgentDetails({ ...agentDetails, name: e.target.value })
-                      }
-                      required
-                    />
-                  </label>
-                  <label>
-                    Ticker:
-                    <input
-                      type="text"
-                      className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                      value={agentDetails.ticker}
-                      onChange={(e) =>
-                        setAgentDetails({ ...agentDetails, ticker: e.target.value })
-                      }
-                      required
-                    />
-                  </label>
-                  <label>
-                    Description:
-                    <textarea
-                      className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                      value={agentDetails.description}
-                      onChange={(e) =>
-                        setAgentDetails({ ...agentDetails, description: e.target.value })
-                      }
-                      required
-                    />
-                  </label>
-                  <label>
-                    Type:
-                    <select
-                      className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                      value={agentDetails.type}
-                      onChange={(e) =>
-                        setAgentDetails({ ...agentDetails, type: e.target.value })
-                      }
-                    >
-                      <option value="informative">Informative</option>
-                      <option value="fun">Fun</option>
-                      <option value="meme">Meme</option>
-                      <option value="twitter">Twitter</option>
-                    </select>
-                  </label>
-                  <label>
-                    Chain:
-                    <input
-                      type="text"
-                      className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
-                      value={agentDetails.chain}
-                      onChange={(e) =>
-                        setAgentDetails({ ...agentDetails, chain: e.target.value })
-                      }
-                    />
-                  </label>
-                  {/* Social Information */}
-                  <h2 className="text-xl font-bold py-5">Social Information</h2>
-                  <button
-                    type="button"
-                    onClick={() => setIsSocialDropdownOpen(!isSocialDropdownOpen)}
-                    className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
-                  >
-                    {isSocialDropdownOpen ? "Hide Social Information" : "Show Social Information"}
-                  </button>
 
-                  {isSocialDropdownOpen && (
-                    <div className="mt-4 space-y-4">
-                      {Object.keys(agentDetails.social).map((platform) => (
-                        <label key={platform} className="block capitalize">
-                          {platform}:
-                          <input
-                            type="text"
-                            className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 mt-2"
-                            placeholder={`Enter ${platform} URL`}
-                            value={agentDetails.social[platform]}
-                            onChange={(e) =>
-                              setAgentDetails((prev) => ({
-                                ...prev,
-                                social: {
-                                  ...prev.social,
-                                  [platform]: e.target.value,
-                                },
-                              }))
-                            }
-                          />
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                  {/* Agent Utility */}
-                  <h2 className="text-xl font-bold py-5">Agent Utility</h2>
-                  {agentDetails.utility.map((utility, index) => (
-                    <div key={index} className="space-y-2 bg-gray-700 p-4 rounded-lg">
-                      <label>
-                        Utility Name:
+          {/* Main Content */}
+          <div className="flex-1 py-6 px-2 bg-gray-900 text-white">
+
+
+            {activeTab === "New Submission" && (
+              <>
+                {!isSubmitted ? (
+                  <>
+                    <div className="lg:p-10">
+                      <section className="relative bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-center py-10 overflow-hidden ">
+                        <div className="absolute inset-0 animate-pulse opacity-40">
+                          <div className="w-[800px] h-[800px] bg-green-700 blur-[150px] rounded-full absolute -top-40 -left-40"></div>
+                          <div className="w-[500px] h-[500px] bg-green-600 blur-[100px] rounded-full absolute top-10 right-10"></div>
+                        </div>
+                        <h1 className="relative text-4xl md:text-6xl font-extrabold text-white z-10">
+                          🚀 List Your AI Agent
+                        </h1>
+                        <p className="relative mt-4 text-lg md:text-xl text-gray-200 z-10">
+                          Empowering the future of AI innovation. Showcase your innovative project to the whole world
+                        </p>
+
+                      </section></div>
+                    <form
+                      className="w-full max-w-3xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg"
+                      onSubmit={handleSubmit}
+                    >
+                      {/* Wallet Connection */}
+                      <div className="text-center mb-6">
+                        <button
+                          className={`px-4 py-2 rounded-lg transition-transform transform ${isWalletConnected
+                            ? "bg-green-500 text-black hover:scale-105"
+                            : "bg-red-500 text-white hover:scale-105"
+                            }`}
+                          onClick={connectWallet}
+                        >
+                          {isWalletConnected
+                            ? "🔌 Wallet Connected"
+                            : "💼 Connect Wallet"}
+                        </button>
+                        {!isWalletConnected && (
+                          <p className="mt-2 text-orange-400 text-sm">
+                            You must connect your wallet to list an agent.
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Fetch Data from Contract Address */}
+                      <div className="mb-6">
+                        <label className="block mb-2">Contract Address:</label>
                         <input
                           type="text"
-                          className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
-                          value={utility.name}
+                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
+                          placeholder="Enter contract address"
+                          value={contractAddress}
+                          onChange={(e) => setContractAddress(e.target.value)}
+                          disabled={!isWalletConnected}
+                        />
+                        <button
+                          type="button"
+                          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500 disabled:bg-gray-700 transition-transform transform disabled:scale-100 hover:scale-105"
+                          onClick={fetchAgentData}
+                          disabled={!isWalletConnected || isLoading || !contractAddress}
+                        >
+                          {isLoading ? "Fetching..." : "Fetch Data"}
+                        </button>
+                      </div>
+
+                      {/* General Information */}
+                      <h2 className="text-xl font-bold">General Information</h2>
+                      <label>
+                        Name:
+                        <input
+                          type="text"
+                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
+                          value={agentDetails.name}
                           onChange={(e) =>
-                            handleUtilityChange(index, "name", e.target.value)
+                            setAgentDetails({ ...agentDetails, name: e.target.value })
                           }
+                          required
                         />
                       </label>
                       <label>
-                        Short Description (20 words):
+                        Ticker:
+                        <input
+                          type="text"
+                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
+                          value={agentDetails.ticker}
+                          onChange={(e) =>
+                            setAgentDetails({ ...agentDetails, ticker: e.target.value })
+                          }
+                          required
+                        />
+                      </label>
+                      <label>
+                        Description:
                         <textarea
-                          className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
-                          value={utility.shortDesc}
+                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
+                          value={agentDetails.description}
                           onChange={(e) =>
-                            handleUtilityChange(index, "shortDesc", e.target.value)
+                            setAgentDetails({ ...agentDetails, description: e.target.value })
                           }
-                          maxLength="100"
+                          required
                         />
                       </label>
                       <label>
-                        Social Type:
+                        Type:
                         <select
-                          className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
-                          value={utility.socialType}
+                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
+                          value={agentDetails.type}
                           onChange={(e) =>
-                            handleUtilityChange(index, "socialType", e.target.value)
+                            setAgentDetails({ ...agentDetails, type: e.target.value })
                           }
                         >
+                          <option value="informative">Informative</option>
+                          <option value="fun">Fun</option>
+                          <option value="meme">Meme</option>
                           <option value="twitter">Twitter</option>
-                          <option value="discord">Discord</option>
-                          <option value="telegram">Telegram</option>
-                          <option value="facebook">Facebook</option>
-                          <option value="other">Other</option>
                         </select>
                       </label>
                       <label>
-                        Link:
+                        Chain:
                         <input
                           type="text"
-                          className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
-                          value={utility.link}
+                          className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600"
+                          value={agentDetails.chain}
                           onChange={(e) =>
-                            handleUtilityChange(index, "link", e.target.value)
+                            setAgentDetails({ ...agentDetails, chain: e.target.value })
                           }
                         />
                       </label>
-                      {agentDetails.utility.length > 1 && (
-                        <button
-                          type="button"
-                          className="text-red-400 underline"
-                          onClick={() => removeUtilityField(index)}
-                        >
-                          Remove Utility
-                        </button>
+                      {/* Social Information */}
+                      <h2 className="text-xl font-bold py-5">Social Information</h2>
+                      <button
+                        type="button"
+                        onClick={() => setIsSocialDropdownOpen(!isSocialDropdownOpen)}
+                        className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+                      >
+                        {isSocialDropdownOpen ? "Hide Social Information" : "Show Social Information"}
+                      </button>
+
+                      {isSocialDropdownOpen && (
+                        <div className="mt-4 space-y-4">
+                          {Object.keys(agentDetails.social).map((platform) => (
+                            <label key={platform} className="block capitalize">
+                              {platform}:
+                              <input
+                                type="text"
+                                className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 mt-2"
+                                placeholder={`Enter ${platform} URL`}
+                                value={agentDetails.social[platform]}
+                                onChange={(e) =>
+                                  setAgentDetails((prev) => ({
+                                    ...prev,
+                                    social: {
+                                      ...prev.social,
+                                      [platform]: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                            </label>
+                          ))}
+                        </div>
                       )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    className="text-blue-400 underline"
-                    onClick={addUtilityField}
-                  >
-                    Add Another Utility
-                  </button>
-                  <button
-                    type="submit"
-                    className="w-full mt-6 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-500 transition-transform transform hover:scale-105"
-                  >
-                    Submit
-                  </button>
-                </form>
-              ) : (
-                <p className="text-center text-green-400 font-bold">
-                  🎉 Your submission has been received!
-                </p>
-              )}
-            </>
-          )}
+                      {/* Agent Utility */}
+                      <h2 className="text-xl font-bold py-5">Agent Utility</h2>
+                      {agentDetails.utility.map((utility, index) => (
+                        <div key={index} className="space-y-2 bg-gray-700 p-4 rounded-lg">
+                          <label>
+                            Utility Name:
+                            <input
+                              type="text"
+                              className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
+                              value={utility.name}
+                              onChange={(e) =>
+                                handleUtilityChange(index, "name", e.target.value)
+                              }
+                            />
+                          </label>
+                          <label>
+                            Short Description (20 words):
+                            <textarea
+                              className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
+                              value={utility.shortDesc}
+                              onChange={(e) =>
+                                handleUtilityChange(index, "shortDesc", e.target.value)
+                              }
+                              maxLength="100"
+                            />
+                          </label>
+                          <label>
+                            Social Type:
+                            <select
+                              className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
+                              value={utility.socialType}
+                              onChange={(e) =>
+                                handleUtilityChange(index, "socialType", e.target.value)
+                              }
+                            >
+                              <option value="twitter">Twitter</option>
+                              <option value="discord">Discord</option>
+                              <option value="telegram">Telegram</option>
+                              <option value="facebook">Facebook</option>
+                              <option value="other">Other</option>
+                            </select>
+                          </label>
+                          <label>
+                            Link:
+                            <input
+                              type="text"
+                              className="w-full bg-gray-600 text-white rounded-lg p-3 border border-gray-500"
+                              value={utility.link}
+                              onChange={(e) =>
+                                handleUtilityChange(index, "link", e.target.value)
+                              }
+                            />
+                          </label>
+                          {agentDetails.utility.length > 1 && (
+                            <button
+                              type="button"
+                              className="text-red-400 underline"
+                              onClick={() => removeUtilityField(index)}
+                            >
+                              Remove Utility
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="text-blue-400 underline"
+                        onClick={addUtilityField}
+                      >
+                        Add Another Utility
+                      </button>
+                      <button
+                        type="submit"
+                        className="w-full mt-6 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-500 transition-transform transform hover:scale-105"
+                      >
+                        Submit
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  <p className="text-center text-green-400 font-bold">
+                    🎉 Your submission has been received!
+                  </p>
+                )}
+              </>
+            )}
+            {activeTab === "AI Agent Launchpad" && (
+              <>
+                <AIAgentLaunchpad />
+              </>
+
+            )}
+          </div>
         </div>
       </div>
       <Footer />

@@ -78,7 +78,7 @@ const Explorer = () => {
     <>
       <Navbar />
       {showMessage && (
-        <div className="fixed top-0 left-0 w-full bg-purple-700 text-white py-3 text-center shadow-lg z-50 animate-slideIn">
+        <div className="fixed top-0 left-0 w-full bg-green-700 text-white py-3 text-center shadow-lg z-50 animate-slideIn">
           Full version will be released on Jan 1, this is just a prototype.
         </div>
       )}
@@ -91,30 +91,65 @@ const Explorer = () => {
               className="relative flex flex-col items-center bg-gray-800 rounded-lg w-20 h-20 text-center gap-2 p-2 shadow-lg shrink-0"
               onClick={() => handleTrendingCardClick(agent.contractaddress)}
             >
-              <span className="absolute top-1 left-1 bg-orange-500 text-black text-xs font-bold px-1 rounded">
+              <span className="absolute top-1 left-1 bg-yellow-400 text-black text-[10px] font-bold px-1 rounded">
                 #{index + 1}
               </span>
               <img
                 src={agent.logo}
                 alt={agent.name}
-                className="w-12 h-12 rounded-full"
+                className="w-10 h-12 rounded-full"
               />
-              <span className="text-xs text-green-400">{agent.ticker}</span>
+              <span className="text-xs text-green-400 ">{agent.ticker}</span>
             </div>
           ))}
         </div>
 
 
         {/* Search Bar */}
-        <div className="flex justify-center mb-6 px-4">
-          <input
-            type="text"
-            placeholder="Search AI Agent..."
-            className="w-full max-w-md  px-4  py-2 border border-indigo-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex justify-center items-center mb-6 px-4 gap-2">
+          {/* Input Container */}
+          <div className="relative w-full max-w-md">
+            <input
+              type="text"
+              placeholder="Search AI Agent..."
+              className="w-full px-4 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {/* Clear Button */}
+            {searchTerm && (
+              <button
+                className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                onClick={() => setSearchTerm("")}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-gray-400 hover:text-gray-100"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+          {/* Search Button */}
+          <button
+            className="px-4 py-2 bg-green-500 text-gray-100 rounded hover:bg-green-700 focus:outline-none"
+            onClick={() => {
+              console.log("Search initiated:", searchTerm); // Replace with actual search logic
+            }}
+          >
+            Search
+          </button>
         </div>
+
 
         {/* Sorting Options */}
         {/* Sorting Options */}
@@ -126,7 +161,7 @@ const Explorer = () => {
             </label>
             <select
               id="sort"
-              className="w-32 px-3 py-2 border border-indigo-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+              className="w-32 px-3 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
@@ -145,7 +180,7 @@ const Explorer = () => {
             </label> */}
             <select
               id="chain"
-              className="w-32 px-3 py-2 border border-indigo-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+              className="w-32 px-3 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
               onChange={(e) => {
                 const selectedChain = e.target.value;
                 if (selectedChain) {
@@ -234,7 +269,7 @@ const Explorer = () => {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`px-3 py-1 border border-indigo-600 rounded hover:bg-indigo-600 ${currentPage === i + 1 ? "bg-green-400 text-gray-900" : ""
+              className={`px-3 py-1 border border-green-600 rounded hover:bg-green-00 ${currentPage === i + 1 ? "bg-green-400 text-gray-900" : ""
                 }`}
               onClick={() => handlePageChange(i + 1)}
             >
