@@ -177,7 +177,6 @@ const ListAgent = () => {
             ))}
           </ul>
         </div>
-
         {/* Main Content */}
         <div className="flex-1 py-6 px-2 bg-gray-900 text-white">
           <h1 className="text-center text-3xl font-bold text-green-400 mb-6">
