@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // Import useRouter for navigation
-import styles from "../../styles/Explorer.module.css";
 import agentsData from "../../data/agents.json";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,7 +12,7 @@ const Explorer = () => {
   const itemsPerPage = 15;
   const [showMessage, setShowMessage] = useState(false); // Floating message state
 
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   useEffect(() => {
     setAgents(agentsData);
@@ -55,19 +54,17 @@ const Explorer = () => {
 
   const handleViewDetails = (contractaddress) => {
     if (contractaddress) {
-      router.push(`/coins/${contractaddress}`); // Navigate to dynamic route
+      router.push(`/coins/${contractaddress}`);
     } else {
-      // Fallback if no contract address is available
-      setShowMessage(true); // Show the floating message
-      setTimeout(() => setShowMessage(false), 3000); // Hide after 3 seconds
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
     }
   };
 
   const handleTrendingCardClick = (contractaddress) => {
     if (contractaddress) {
-      router.push(`/coins/${contractaddress}`); // Navigate to dynamic route
+      router.push(`/coins/${contractaddress}`);
     } else {
-      // Fallback if no contract address is available
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 3000);
     }
@@ -80,50 +77,56 @@ const Explorer = () => {
   return (
     <>
       <Navbar />
-      <div className={styles.container}>
-        {/* Floating Message */}
-        {showMessage && (
-          <div className={styles.floatingMessage}>
-            Full version will be released on Jan 1, this is just a prototype.
-          </div>
-        )}
-
-        {/* Trending Agents Section */}
-        <div className={styles.trendingSection}>
+      {showMessage && (
+        <div className="fixed top-0 left-0 w-full bg-purple-700 text-white py-3 text-center shadow-lg z-50 animate-slideIn">
+          Full version will be released on Jan 1, this is just a prototype.
+        </div>
+      )}
+      <div className="lg:px-10 p-0 bg-gray-900 text-gray-100 overflow-x-hidden">
+        {/* Trending Agents */}
+        <div className="flex gap-4 my-5 py-2 mx-4 overflow-x-auto scrollbar-hide sm:justify-center">
           {trendingAgents.map((agent, index) => (
             <div
               key={agent.id}
-              className={styles.trendingCard}
-              onClick={() => handleTrendingCardClick(agent.contractaddress)} // Dynamic route for trending cards
+              className="relative flex flex-col items-center bg-gray-800 rounded-lg w-20 h-20 text-center gap-2 p-2 shadow-lg shrink-0"
+              onClick={() => handleTrendingCardClick(agent.contractaddress)}
             >
-              <span className={styles.rank}>#{index + 1}</span>
+              <span className="absolute top-1 left-1 bg-orange-500 text-black text-xs font-bold px-1 rounded">
+                #{index + 1}
+              </span>
               <img
                 src={agent.logo}
                 alt={agent.name}
-                className={styles.trendingLogo}
+                className="w-12 h-12 rounded-full"
               />
-              <span className={styles.ticker}>{agent.ticker}</span>
+              <span className="text-xs text-green-400">{agent.ticker}</span>
             </div>
           ))}
         </div>
 
-        {/* Search AI Agent */}
-        <div className={styles.searchContainer}>
+
+        {/* Search Bar */}
+        <div className="flex justify-center mb-6 px-4">
           <input
             type="text"
             placeholder="Search AI Agent..."
-            className={styles.searchField}
+            className="w-full max-w-md  px-4  py-2 border border-indigo-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         {/* Sorting Options */}
-        <div className={styles.topBar}>
-          <div className={styles.sortDropdown}>
-            <label htmlFor="sort">Sort By:</label>
+        {/* Sorting Options */}
+        <div className="flex flex-row items-center gap-4 mb-6 px-4">
+          {/* Sort By Dropdown */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="sort" className="text-gray-300 whitespace-nowrap">
+              Sort By:
+            </label>
             <select
               id="sort"
+              className="w-32 px-3 py-2 border border-indigo-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
@@ -134,54 +137,88 @@ const Explorer = () => {
               <option value="upvotes">Upvotes</option>
             </select>
           </div>
+
+          {/* Chain Dropdown */}
+          <div className="flex items-center gap-2">
+            {/* <label htmlFor="chain" className="text-gray-300 whitespace-nowrap">
+              Chain:
+            </label> */}
+            <select
+              id="chain"
+              className="w-32 px-3 py-2 border border-indigo-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+              onChange={(e) => {
+                const selectedChain = e.target.value;
+                if (selectedChain) {
+                  setAgents(
+                    agentsData.filter((agent) =>
+                      agent.chain?.toLowerCase().includes(selectedChain.toLowerCase())
+                    )
+                  );
+                } else {
+                  setAgents(agentsData); // Reset to all agents if no chain is selected
+                }
+              }}
+
+            >
+              <option value="">All</option>
+              <option value="solana">Solana</option>
+              <option value="bsc">BSC</option>
+              <option value="base">BASE</option>
+              <option value="eth">Ethereum</option>
+            </select>
+          </div>
         </div>
 
+
+
         {/* Agents Table */}
-        <div className={styles.agentsTableContainer}>
-          <table className={styles.agentsTable}>
+        <div className="overflow-x-auto rounded-lg">
+          <table className="w-full min-w-[900px] border-collapse bg-gray-800 text-gray-300 text-sm">
             <thead>
-              <tr>
-                <th>#</th>
-                <th style={{ textAlign: "left" }}>Name</th>
-                <th>Chain</th>
-                <th>Market Cap</th>
-                <th>Listed Time</th>
-                <th>Price</th>
-                <th>Upvotes</th>
-                <th>Action</th>
+              <tr className="bg-gray-700 text-green-400 text-left">
+                <th className="px-4 py-3 uppercase font-medium">#</th>
+                <th className="px-4 py-3 uppercase font-medium">Name</th>
+                <th className="px-4 py-3 uppercase font-medium">Chain</th>
+                <th className="px-4 py-3 uppercase font-medium">Market Cap</th>
+                <th className="px-4 py-3 uppercase font-medium">Listed Time</th>
+                <th className="px-4 py-3 uppercase font-medium">Price</th>
+                <th className="px-4 py-3 uppercase font-medium">Upvotes</th>
+                <th className="px-4 py-3 uppercase font-medium">Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedAgents.map((agent, index) => (
-                <tr key={agent.id}>
-                  <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                  <td style={{ textAlign: "left" }}>
+                <tr
+                  key={agent.id}
+                  className="border-b border-gray-700 hover:bg-gray-700"
+                >
+                  <td className="px-4 py-3">
+                    {(currentPage - 1) * itemsPerPage + index + 1}
+                  </td>
+                  <td className="px-4 py-3 truncate max-w-xs">
                     <img
-                      src={
-                        agent.logo ||
-                        "https://cryptologos.cc/logos/solana-sol-logo.png"
-                      }
+                      src={agent.logo || "https://cryptologos.cc/logos/solana-sol-logo.png"}
                       alt="Agent Logo"
-                      className={styles.chainLogo}
+                      className="inline-block h-6 w-6 rounded-full mr-2"
                     />
                     {agent.name} ({agent.ticker})
                   </td>
-                  <td>
+                  <td className="px-4 py-3">
                     <img
                       src="https://cryptologos.cc/logos/solana-sol-logo.png"
                       alt="Chain Logo"
-                      className={styles.chainLogo}
+                      className="inline-block h-6 w-6 rounded-full mr-2"
                     />
                     Solana
                   </td>
-                  <td>{agent.marketCap}</td>
-                  <td>{agent.time}</td>
-                  <td>{agent.price || "N/A"}</td>
-                  <td>{agent.replies}</td>
-                  <td>
+                  <td className="px-4 py-3">{agent.marketCap}</td>
+                  <td className="px-4 py-3">{agent.time}</td>
+                  <td className="px-4 py-3">{agent.price || "N/A"}</td>
+                  <td className="px-4 py-3">{agent.replies}</td>
+                  <td className="px-4 py-3">
                     <button
-                      className={styles.viewButton}
-                      onClick={() => handleViewDetails(agent.contractaddress)} // Dynamic route for table rows
+                      className="px-3 py-1 border border-green-400 rounded text-green-400 hover:bg-green-400 hover:text-gray-900"
+                      onClick={() => handleViewDetails(agent.contractaddress)}
                     >
                       View Details
                     </button>
@@ -193,11 +230,11 @@ const Explorer = () => {
         </div>
 
         {/* Pagination */}
-        <div className={styles.pagination}>
+        <div className="flex justify-center my-6 gap-2 flex-wrap">
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`${styles.pageButton} ${currentPage === i + 1 ? styles.activePage : ""
+              className={`px-3 py-1 border border-indigo-600 rounded hover:bg-indigo-600 ${currentPage === i + 1 ? "bg-green-400 text-gray-900" : ""
                 }`}
               onClick={() => handlePageChange(i + 1)}
             >

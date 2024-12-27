@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 const CustomWalletModal = ({ isOpen, onClose }) => {
   const wallet = useWallet();
@@ -12,7 +11,7 @@ const CustomWalletModal = ({ isOpen, onClose }) => {
       console.log(`Wallet connected: ${phantomWallet.publicKey}`);
       onClose(); // Close modal after connecting
     } catch (error) {
-      console.error("Error connecting Phantom wallet:", error);
+      console.error('Error connecting Phantom wallet:', error);
     }
   };
 
