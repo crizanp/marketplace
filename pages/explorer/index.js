@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router"; // Import useRouter for navigation
 import styles from "../../styles/Explorer.module.css";
 import agentsData from "../../data/agents.json";
 import Navbar from "@/components/Navbar";
@@ -11,6 +12,8 @@ const Explorer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
   const [showMessage, setShowMessage] = useState(false); // Floating message state
+
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     setAgents(agentsData);
@@ -50,22 +53,24 @@ const Explorer = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleViewDetails = () => {
-    setShowMessage(true); // Show the floating message when the button is clicked
-
-    // Hide the message after 3 seconds
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+  const handleViewDetails = (contractaddress) => {
+    if (contractaddress) {
+      router.push(`/coins/${contractaddress}`); // Navigate to dynamic route
+    } else {
+      // Fallback if no contract address is available
+      setShowMessage(true); // Show the floating message
+      setTimeout(() => setShowMessage(false), 3000); // Hide after 3 seconds
+    }
   };
 
-  const handleTrendingCardClick = () => {
-    setShowMessage(true); // Show the floating message when a trending card is clicked
-
-    // Hide the message after 3 seconds
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+  const handleTrendingCardClick = (contractaddress) => {
+    if (contractaddress) {
+      router.push(`/coins/${contractaddress}`); // Navigate to dynamic route
+    } else {
+      // Fallback if no contract address is available
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
+    }
   };
 
   const trendingAgents = [...agentsData]
@@ -89,7 +94,7 @@ const Explorer = () => {
             <div
               key={agent.id}
               className={styles.trendingCard}
-              onClick={handleTrendingCardClick} // Add onClick handler to show message
+              onClick={() => handleTrendingCardClick(agent.contractaddress)} // Dynamic route for trending cards
             >
               <span className={styles.rank}>#{index + 1}</span>
               <img
@@ -176,7 +181,7 @@ const Explorer = () => {
                   <td>
                     <button
                       className={styles.viewButton}
-                      onClick={handleViewDetails} // Trigger message on button click
+                      onClick={() => handleViewDetails(agent.contractaddress)} // Dynamic route for table rows
                     >
                       View Details
                     </button>
@@ -192,9 +197,8 @@ const Explorer = () => {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`${styles.pageButton} ${
-                currentPage === i + 1 ? styles.activePage : ""
-              }`}
+              className={`${styles.pageButton} ${currentPage === i + 1 ? styles.activePage : ""
+                }`}
               onClick={() => handlePageChange(i + 1)}
             >
               {i + 1}
