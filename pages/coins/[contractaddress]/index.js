@@ -1,10 +1,25 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaRegCopy, FaCheck } from "react-icons/fa";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import icons
-
+import {
+  FaTelegram,
+  FaTwitter,
+  FaInstagram,
+  FaFacebook,
+  FaGithub,
+  FaReddit,
+  FaGlobe,
+  FaLinkedin,
+  FaYoutube,
+  FaDiscord,
+  FaMedium,
+  FaPinterest,
+  FaTiktok,
+} from "react-icons/fa"; // Import additional icons
 const TokenDetail = () => {
   const router = useRouter();
   const { contractaddress } = router.query;
@@ -85,6 +100,29 @@ const TokenDetail = () => {
       <Navbar />
       <div className="min-h-screen bg-gray-900 text-white font-professional">
         {/* Desktop Layout */}
+        <div className="bg-gray-800 p-2 text-white">
+          <nav className="text-sm flex justify-between lg:justify-center">
+            {/* Breadcrumb Navigation */}
+            <span className="lg:text-center">
+              <Link href="/" passHref>
+                <span className="text-gray-400 hover:text-green-400 cursor-pointer">
+                  Marketplace
+                </span>
+              </Link>
+              <span className="mx-2 text-gray-500">/</span>
+              <Link href="/explorer" passHref>
+                <span className="text-gray-400 hover:text-green-400 cursor-pointer">
+                  Explorer
+                </span>
+              </Link>
+              <span className="mx-2 text-gray-500">/</span>
+              <span className="text-green-400 font-bold">
+                {dexData?.baseToken?.name || "Token Name"}
+              </span>
+            </span>
+          </nav>
+        </div>
+
         <div className="hidden lg:flex p-4 gap-8">
           {/* Left Section */}
 
@@ -218,6 +256,145 @@ const TokenDetail = () => {
                   </span>
                 </li>
               </ul>
+            </div>
+
+            {/* Social Info Section */}
+
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Social Info
+              </h2>
+              <div className="flex gap-4 flex-wrap">
+                {/* Website */}
+                <a
+                  href={dexData?.info?.website || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaGlobe size={24} />
+                </a>
+
+                {/* Telegram */}
+                <a
+                  href={dexData?.info?.telegram || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaTelegram size={24} />
+                </a>
+
+                {/* Twitter */}
+                <a
+                  href={dexData?.info?.twitter || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaTwitter size={24} />
+                </a>
+
+                {/* Instagram */}
+                <a
+                  href={dexData?.info?.instagram || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaInstagram size={24} />
+                </a>
+
+                {/* Facebook */}
+                <a
+                  href={dexData?.info?.facebook || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaFacebook size={24} />
+                </a>
+
+                {/* GitHub */}
+                <a
+                  href={dexData?.info?.github || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaGithub size={24} />
+                </a>
+
+                {/* Reddit */}
+                <a
+                  href={dexData?.info?.reddit || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaReddit size={24} />
+                </a>
+
+                {/* LinkedIn */}
+                <a
+                  href={dexData?.info?.linkedin || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaLinkedin size={24} />
+                </a>
+
+                {/* YouTube */}
+                <a
+                  href={dexData?.info?.youtube || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaYoutube size={24} />
+                </a>
+
+                {/* Discord */}
+                <a
+                  href={dexData?.info?.discord || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaDiscord size={24} />
+                </a>
+
+                {/* Medium */}
+                <a
+                  href={dexData?.info?.medium || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaMedium size={24} />
+                </a>
+
+                {/* Pinterest */}
+                <a
+                  href={dexData?.info?.pinterest || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaPinterest size={24} />
+                </a>
+
+                {/* Snapchat */}
+                <a
+                  href={dexData?.info?.snapchat || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-green-400"
+                >
+                  <FaTiktok size={24} />
+                </a>
+              </div>
             </div>
           </div>
 
@@ -410,6 +587,143 @@ const TokenDetail = () => {
                     </span>
                   </li>
                 </ul>
+              </div>
+
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold text-white mb-4">
+                  Social Info
+                </h2>
+                <div className="flex gap-4 flex-wrap">
+                  {/* Website */}
+                  <a
+                    href={dexData?.info?.website || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaGlobe size={24} />
+                  </a>
+
+                  {/* Telegram */}
+                  <a
+                    href={dexData?.info?.telegram || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaTelegram size={24} />
+                  </a>
+
+                  {/* Twitter */}
+                  <a
+                    href={dexData?.info?.twitter || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaTwitter size={24} />
+                  </a>
+
+                  {/* Instagram */}
+                  <a
+                    href={dexData?.info?.instagram || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaInstagram size={24} />
+                  </a>
+
+                  {/* Facebook */}
+                  <a
+                    href={dexData?.info?.facebook || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaFacebook size={24} />
+                  </a>
+
+                  {/* GitHub */}
+                  <a
+                    href={dexData?.info?.github || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaGithub size={24} />
+                  </a>
+
+                  {/* Reddit */}
+                  <a
+                    href={dexData?.info?.reddit || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaReddit size={24} />
+                  </a>
+
+                  {/* LinkedIn */}
+                  <a
+                    href={dexData?.info?.linkedin || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaLinkedin size={24} />
+                  </a>
+
+                  {/* YouTube */}
+                  <a
+                    href={dexData?.info?.youtube || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaYoutube size={24} />
+                  </a>
+
+                  {/* Discord */}
+                  <a
+                    href={dexData?.info?.discord || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaDiscord size={24} />
+                  </a>
+
+                  {/* Medium */}
+                  <a
+                    href={dexData?.info?.medium || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaMedium size={24} />
+                  </a>
+
+                  {/* Pinterest */}
+                  <a
+                    href={dexData?.info?.pinterest || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaPinterest size={24} />
+                  </a>
+
+                  {/* Snapchat */}
+                  <a
+                    href={dexData?.info?.snapchat || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-green-400"
+                  >
+                    <FaTiktok size={24} />
+                  </a>
+                </div>
               </div>
             </div>
           )}
