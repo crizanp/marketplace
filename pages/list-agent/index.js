@@ -206,13 +206,13 @@ const ListAgent = () => {
                           placeholder="Enter contract address"
                           value={contractAddress}
                           onChange={(e) => setContractAddress(e.target.value)}
-                          disabled={!isWalletConnected}
+                          disabled={!connected}
                         />
                         <button
                           type="button"
                           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500 disabled:bg-gray-700 transition-transform transform disabled:scale-100 hover:scale-105"
                           onClick={fetchAgentData}
-                          disabled={!isWalletConnected || isLoading || !contractAddress}
+                          disabled={!connected || isLoading || !contractAddress}
                         >
                           {isLoading ? "Fetching..." : "Fetch Data"}
                         </button>
