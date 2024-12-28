@@ -535,7 +535,7 @@ const ListAgent = () => {
             {activeTab === "View Submission" && (
               <>
 
-                <AgentEditor />
+                <AgentEditor walletAddress={publicKey} />
               </>
 
             )}

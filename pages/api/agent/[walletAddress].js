@@ -17,7 +17,6 @@ async function connectToDatabase() {
 }
 
 export default async function handler(req, res) {
-    const { contractAddress } = req.query;
 
     try {
         const client = await connectToDatabase();
@@ -31,16 +30,20 @@ export default async function handler(req, res) {
                 return res.status(400).json({ message: 'Missing wallet address' });
             }
 
-            // Fetch agent based on walletAddress and contractAddress
-            const agent = await db.collection('agents').findOne({
-                walletAddress,
-            });
+            try {
+                // Fetch all documents matching the walletAddress
+                const agents = await db.collection('agents').find({ walletAddress }).toArray();
 
-            if (!agent) {
-                return res.status(404).json({ message: 'Agent not found' });
+                if (agents.length === 0) {
+                    return res.status(404).json({ message: 'No agents found for this wallet address' });
+                }
+
+                // Return all matching agents
+                return res.status(200).json(agents);
+            } catch (error) {
+                console.error('Error fetching agents:', error);
+                return res.status(500).json({ message: 'Error fetching agents.', error });
             }
-
-            return res.status(200).json(agent);
         }
 
         if (req.method === 'PUT') {
