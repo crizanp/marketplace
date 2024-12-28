@@ -89,8 +89,26 @@ const AgentEditor = ({ walletAddress }) => {
     };
 
     if (!publicKey) {
-        return <p className="text-red-500">Please connect your wallet to view agents.</p>;
+        return (
+            <div className="flex items-center justify-center h-screen bg-gray-900">
+                <div className="text-center">
+                    <img
+                        src="https://icons.veryicon.com/png/o/emoticon/emoticon-1/sad-44.png"
+                        alt="Sad Face"
+                        className="w-40 h-40 mx-auto mb-4"
+                    />
+                    <p className="text-2xl text-red-500 font-bold mb-4">
+                        Wallet Not Connected
+                    </p>
+                    <p className="text-white text-lg">
+                        Please connect your wallet to view your submission agents.
+                    </p>
+                </div>
+            </div>
+        );
     }
+
+
 
     if (isLoading) {
         return <p>Loading...</p>;
