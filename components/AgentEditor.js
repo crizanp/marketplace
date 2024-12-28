@@ -72,7 +72,7 @@ const AgentEditor = ({ walletAddress }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     walletAddress: publicKey.toString(),
-                    updatedDetails: formData,
+                    updatedDetails: { ...formData, _id: formData._id },
                 }),
             });
             if (!response.ok) {
@@ -149,11 +149,9 @@ const AgentEditor = ({ walletAddress }) => {
                 ))}
             </div>
 
-            {/* Modal for Editing */}
             {selectedAgent && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75" style={{ zIndex: 9999 }}>
                     <div className="relative p-6 bg-gray-900 text-white rounded-lg w-2/4 overflow-auto max-h-screen">
-                        {/* Close Button */}
                         <button
                             onClick={closeEditModal}
                             className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2"
