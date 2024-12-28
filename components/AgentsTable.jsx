@@ -1,26 +1,76 @@
 import React, { useState, useEffect } from "react";
-import {
-  FaTwitter,
-  FaFacebookF,
-  FaTelegramPlane,
-  FaInstagram,
-} from "react-icons/fa";
-import agentsData from "../data/agents.json";
+import HomepageTableSkeleton from "./Skeleton/HomepageTable"; // Import Skeleton Component
+
+// Mapping of chain names to their respective logo URLs
+const chainLogos = {
+  polygon: "https://dd.dexscreener.com/ds-data/chains/polygon.png",
+  arbitrum: "https://dd.dexscreener.com/ds-data/chains/arbitrum.png",
+  hyperliquid: "https://dd.dexscreener.com/ds-data/chains/hyperliquid.png",
+  ton: "https://dd.dexscreener.com/ds-data/chains/ton.png",
+  pulsechain: "https://dd.dexscreener.com/ds-data/chains/pulsechain.png",
+  sui: "https://dd.dexscreener.com/ds-data/chains/sui.png",
+  bsc: "https://dd.dexscreener.com/ds-data/chains/bsc.png",
+  base: "https://dd.dexscreener.com/ds-data/chains/base.png",
+  ethereum: "https://dd.dexscreener.com/ds-data/chains/ethereum.png",
+  solana: "https://dd.dexscreener.com/ds-data/chains/solana.png",
+};
 
 const AgentsTable = () => {
   const [agents, setAgents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Sort agents by market cap in descending order and select the top 10
-    const sortedAgents = agentsData
-      .sort(
-        (a, b) =>
-          parseFloat(b.marketCap.replace("$", "").replace("B", "")) -
-          parseFloat(a.marketCap.replace("$", "").replace("B", ""))
-      )
-      .slice(0, 10);
-    setAgents(sortedAgents);
+    // Fetch data from API
+    const fetchAgents = async () => {
+      try {
+        const response = await fetch("/api/getdata?query=approved");
+        if (!response.ok) {
+          throw new Error("Failed to fetch agents");
+        }
+        const data = await response.json();
+
+        // Sort by market cap in descending order and select the top 10
+        const sortedAgents = data
+          .sort((a, b) => b.marketCap - a.marketCap)
+          .slice(0, 10);
+
+        setAgents(sortedAgents);
+      } catch (error) {
+        console.error("Error fetching agents:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAgents();
   }, []);
+
+  // Function to calculate relative time
+  const getRelativeTime = (date) => {
+    const now = new Date();
+    const submitted = new Date(date);
+    const diff = now - submitted; // Difference in milliseconds
+
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (seconds < 60) return "just now";
+    if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (weeks < 4) return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
+    if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
+    return `${years} year${years > 1 ? "s" : ""} ago`;
+  };
+
+  if (isLoading) {
+    return <HomepageTableSkeleton />;
+  }
 
   return (
     <div className="lg:px-10 lg:p-5 pb-5 bg-gray-900 text-gray-100">
@@ -46,13 +96,12 @@ const AgentsTable = () => {
               <th className="px-4 py-3 uppercase font-medium text-center">
                 Upvotes
               </th>
-              
             </tr>
           </thead>
           <tbody>
             {agents.map((agent, index) => (
               <tr
-                key={agent.id}
+                key={agent._id}
                 className="border-b border-gray-700 hover:bg-gray-700"
               >
                 {/* Index */}
@@ -75,28 +124,43 @@ const AgentsTable = () => {
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-center gap-2">
                     <img
-                      src="https://cryptologos.cc/logos/solana-sol-logo.png"
+                      src={
+                        chainLogos[agent.chain.toLowerCase()] ||
+                        "https://cryptologos.cc/logos/solana-sol-logo.png"
+                      }
                       alt="Chain Logo"
                       className="h-6 w-6 rounded-full"
                     />
-                    <span className="whitespace-nowrap">Solana</span>
+                    <span className="whitespace-nowrap">{agent.chain}</span>
                   </div>
                 </td>
 
                 {/* Market Cap */}
-                <td className="px-4 py-3 text-center">{agent.marketCap}</td>
+                <td className="px-4 py-3 text-center">
+                  {agent.marketCap.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })}
+                </td>
 
                 {/* Listed Time */}
-                <td className="px-4 py-3 text-center">{agent.time}</td>
+                <td className="px-4 py-3 text-center">
+                  {getRelativeTime(agent.submittedAt)}
+                </td>
 
                 {/* Price */}
-                <td className="px-4 py-3 text-center">{agent.price || "N/A"}</td>
+                <td className="px-4 py-3 text-center">
+                  {parseFloat(agent.price).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })}
+                </td>
 
                 {/* Upvotes */}
-                <td className="px-4 py-3 text-center">{agent.replies}</td>
-
-                {/* Social Links */}
-                
+                <td className="px-4 py-3 text-center">
+                  {/* Dummy Upvotes */}
+                  {Math.floor(Math.random() * 1000)}
+                </td>
               </tr>
             ))}
           </tbody>
