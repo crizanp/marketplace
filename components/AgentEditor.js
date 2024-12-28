@@ -115,11 +115,11 @@ const AgentEditor = ({ walletAddress }) => {
     }
 
     if (!agents.length) {
-        return <p>No agents found for the provided wallet address.</p>;
+        return <p className='h-screen'>No agents found for the current signed wallet</p>;
     }
 
     return (
-        <div className="p-4 bg-gray-800 text-white rounded-lg h-screen">
+        <div className="p-4 bg-gray-800 text-white rounded-lg ">
             <h2 className="text-2xl font-bold py-4">Your Submission Agents</h2>
             <div className="grid gap-4">
                 {agents.map((agent) => (

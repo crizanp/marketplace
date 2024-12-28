@@ -23,7 +23,7 @@ const AgentsTable = () => {
     // Fetch data from API
     const fetchAgents = async () => {
       try {
-        const response = await fetch("/api/getdata?query=approved");
+        const response = await fetch("/api/getdata?query=top10");
         if (!response.ok) {
           throw new Error("Failed to fetch agents");
         }

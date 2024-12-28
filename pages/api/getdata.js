@@ -56,11 +56,27 @@ export default async function handler(req, res) {
         const client = await connectToDatabase();
         const db = client.db(DATABASE_NAME);
 
-        const filter = query ? { status: query } : {};
+        let filter = {};
+        let sort = {};
+
+        if (query === 'top10') {
+            // Fetch only approved agents sorted by marketCap in descending order
+            filter = { status: 'approved' };
+            sort = { marketCap: -1 };
+        } else if (query) {
+            // Apply filter based on query
+            filter = { status: query };
+        }
 
         console.log('Filter applied to query:', filter);
 
-        const agents = await db.collection('agents').find(filter).toArray();
+        // Fetch agents with optional sorting and limit for top10
+        const agents = await db.collection('agents')
+            .find(filter)
+            .sort(sort)
+            .limit(query === 'top10' ? 10 : 0)
+            .toArray();
+
         console.log(`Fetched ${agents.length} agents matching the filter.`);
 
         if (agents.length === 0) {

@@ -1,13 +1,54 @@
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router"; // Import useRouter for navigation
-import agentsData from "../../data/agents.json";
+import { useRouter } from "next/router";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import HomepageTableSkeleton from "../../components/Skeleton/HomepageTable"; // Import Skeleton Component
+import ExplorerSkeleton from "@/components/Skeleton/ExplorerSkeleton";
+
+// Chain Logos Mapping
+const chainLogos = {
+  polygon: "https://dd.dexscreener.com/ds-data/chains/polygon.png",
+  arbitrum: "https://dd.dexscreener.com/ds-data/chains/arbitrum.png",
+  hyperliquid: "https://dd.dexscreener.com/ds-data/chains/hyperliquid.png",
+  ton: "https://dd.dexscreener.com/ds-data/chains/ton.png",
+  pulsechain: "https://dd.dexscreener.com/ds-data/chains/pulsechain.png",
+  sui: "https://dd.dexscreener.com/ds-data/chains/sui.png",
+  bsc: "https://dd.dexscreener.com/ds-data/chains/bsc.png",
+  base: "https://dd.dexscreener.com/ds-data/chains/base.png",
+  ethereum: "https://dd.dexscreener.com/ds-data/chains/ethereum.png",
+  solana: "https://dd.dexscreener.com/ds-data/chains/solana.png",
+};
+
+// Relative Time Calculation
+const getRelativeTime = (date) => {
+  const now = new Date();
+  const submitted = new Date(date);
+  const diff = now - submitted;
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (seconds < 60) return "just now";
+  if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+  if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+  if (weeks < 4) return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
+  if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
+  return `${years} year${years > 1 ? "s" : ""} ago`;
+};
 
 const Explorer = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [agents, setAgents] = useState([]);
+  const [sortBy, setSortBy] = useState("listedTime"); // Default sort by listedTime
+  const [agents, setAgents] = useState([]); // Original data
+  const [filteredAgents, setFilteredAgents] = useState([]); // Filtered data for display
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
   const [showMessage, setShowMessage] = useState(false); // Floating message state
@@ -15,7 +56,24 @@ const Explorer = () => {
   const router = useRouter();
 
   useEffect(() => {
-    setAgents(agentsData);
+    // Fetch agents data from the API
+    const fetchAgents = async () => {
+      try {
+        const response = await fetch("/api/getdata?query=approved");
+        if (!response.ok) {
+          throw new Error("Failed to fetch agents");
+        }
+        const data = await response.json();
+        setAgents(data);
+        setFilteredAgents(data);
+      } catch (error) {
+        console.error("Error fetching agents:", error);
+      } finally {
+        setIsLoading(false); // Set loading to false after fetching
+      }
+    };
+
+    fetchAgents();
   }, []);
 
   const sortAgents = (a, b) => {
@@ -23,27 +81,24 @@ const Explorer = () => {
       case "name":
         return a.name.localeCompare(b.name);
       case "marketCap":
-        return (
-          parseFloat(b.marketCap.replace("$", "").replace("B", "")) -
-          parseFloat(a.marketCap.replace("$", "").replace("B", ""))
-        );
+        return b.marketCap - a.marketCap;
       case "listedTime":
-        return new Date(b.listedTime) - new Date(a.listedTime);
+        return new Date(b.submittedAt) - new Date(a.submittedAt); // Sort by most recently listed
       case "upvotes":
-        return b.replies - a.replies;
+        return b.upvotes - a.upvotes;
       default:
         return 0;
     }
   };
 
-  const filteredAgents = agents
+  const displayedAgents = filteredAgents
     .filter((agent) =>
       agent.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort(sortAgents);
 
-  const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
-  const paginatedAgents = filteredAgents.slice(
+  const totalPages = Math.ceil(displayedAgents.length / itemsPerPage);
+  const paginatedAgents = displayedAgents.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -52,27 +107,36 @@ const Explorer = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleViewDetails = (contractaddress) => {
-    if (contractaddress) {
-      router.push(`/coins/${contractaddress}`);
+  const handleViewDetails = (contractAddress) => {
+    if (contractAddress) {
+      router.push(`/coins/${contractAddress}`);
     } else {
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 3000);
     }
   };
 
-  const handleTrendingCardClick = (contractaddress) => {
-    if (contractaddress) {
-      router.push(`/coins/${contractaddress}`);
+  const handleChainFilter = (selectedChain) => {
+    if (selectedChain) {
+      setFilteredAgents(
+        agents.filter((agent) =>
+          agent.chain?.toLowerCase().includes(selectedChain.toLowerCase())
+        )
+      );
     } else {
-      setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 3000);
+      setFilteredAgents(agents); // Reset to all agents if "All" is selected
     }
   };
 
-  const trendingAgents = [...agentsData]
-    .sort((a, b) => b.replies - a.replies)
+  const trendingAgents = [...agents]
+    .sort((a, b) => b.upvotes - a.upvotes)
     .slice(0, 8);
+  if (isLoading) {
+    // Render the skeleton loader when loading
+    return (
+      <ExplorerSkeleton />
+    );
+  }
 
   return (
     <>
@@ -87,9 +151,9 @@ const Explorer = () => {
         <div className="flex gap-4 my-5 py-2 mx-4 overflow-x-auto scrollbar-hide sm:justify-center">
           {trendingAgents.map((agent, index) => (
             <div
-              key={agent.id}
-              className="relative flex flex-col items-center bg-gray-800 rounded-lg w-20 h-20 text-center gap-2 p-2 shadow-lg shrink-0"
-              onClick={() => handleTrendingCardClick(agent.contractaddress)}
+              key={agent._id}
+              className="relative flex flex-col items-center bg-gray-800 rounded-lg w-20 h-20 text-center gap-2 p-2 shadow-lg shrink-0 cursor-pointer hover:bg-gray-700"
+              onClick={() => handleViewDetails(agent.contractAddress)}
             >
               <span className="absolute top-1 left-1 bg-yellow-400 text-black text-[10px] font-bold px-1 rounded">
                 #{index + 1}
@@ -99,64 +163,26 @@ const Explorer = () => {
                 alt={agent.name}
                 className="w-10 h-12 rounded-full"
               />
-              <span className="text-xs text-green-400 ">{agent.ticker}</span>
+              <span className="text-xs text-green-400">{agent.ticker}</span>
             </div>
           ))}
         </div>
 
-
         {/* Search Bar */}
         <div className="flex justify-center items-center mb-6 px-4 gap-2">
-          {/* Input Container */}
-          <div className="relative w-full max-w-md">
-            <input
-              type="text"
-              placeholder="Search AI Agent..."
-              className="w-full px-4 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {/* Clear Button */}
-            {searchTerm && (
-              <button
-                className="absolute top-1/2 right-3 transform -translate-y-1/2"
-                onClick={() => setSearchTerm("")}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-400 hover:text-gray-100"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-          {/* Search Button */}
-          <button
-            className="px-4 py-2 bg-green-500 text-gray-100 rounded hover:bg-green-700 focus:outline-none"
-            onClick={() => {
-              console.log("Search initiated:", searchTerm); // Replace with actual search logic
-            }}
-          >
-            Search
-          </button>
+          <input
+            type="text"
+            placeholder="Search AI Agent..."
+            className="w-full max-w-md px-4 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
-
-        {/* Sorting Options */}
-        {/* Sorting Options */}
+        {/* Sorting and Chain Filtering */}
         <div className="flex flex-row items-center gap-4 mb-6 px-4">
-          {/* Sort By Dropdown */}
           <div className="flex items-center gap-2">
-            <label htmlFor="sort" className="text-gray-300 whitespace-nowrap">
+            <label htmlFor="sort" className="text-gray-300">
               Sort By:
             </label>
             <select
@@ -165,46 +191,30 @@ const Explorer = () => {
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
-              <option value="">Default</option>
+              <option value="listedTime">Listed Time</option>
               <option value="name">Name</option>
               <option value="marketCap">Market Cap</option>
-              <option value="listedTime">Listed Time</option>
               <option value="upvotes">Upvotes</option>
             </select>
           </div>
-
-          {/* Chain Dropdown */}
           <div className="flex items-center gap-2">
-            {/* <label htmlFor="chain" className="text-gray-300 whitespace-nowrap">
+            {/* <label htmlFor="chain" className="text-gray-300">
               Chain:
             </label> */}
             <select
               id="chain"
               className="w-32 px-3 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
-              onChange={(e) => {
-                const selectedChain = e.target.value;
-                if (selectedChain) {
-                  setAgents(
-                    agentsData.filter((agent) =>
-                      agent.chain?.toLowerCase().includes(selectedChain.toLowerCase())
-                    )
-                  );
-                } else {
-                  setAgents(agentsData); // Reset to all agents if no chain is selected
-                }
-              }}
-
+              onChange={(e) => handleChainFilter(e.target.value)}
             >
               <option value="">All</option>
-              <option value="solana">Solana</option>
+              <option value="polygon">Polygon</option>
+              <option value="arbitrum">Arbitrum</option>
               <option value="bsc">BSC</option>
-              <option value="base">BASE</option>
-              <option value="eth">Ethereum</option>
+              <option value="ethereum">Ethereum</option>
+              <option value="solana">Solana</option>
             </select>
           </div>
         </div>
-
-
 
         {/* Agents Table */}
         <div className="overflow-x-auto rounded-lg">
@@ -215,7 +225,7 @@ const Explorer = () => {
                 <th className="px-4 py-3 uppercase font-medium">Name</th>
                 <th className="px-4 py-3 uppercase font-medium">Chain</th>
                 <th className="px-4 py-3 uppercase font-medium">Market Cap</th>
-                <th className="px-4 py-3 uppercase font-medium">Listed Time</th>
+                <th className="px-4 py-3 uppercase font-medium">Listed On</th>
                 <th className="px-4 py-3 uppercase font-medium">Price</th>
                 <th className="px-4 py-3 uppercase font-medium">Upvotes</th>
                 <th className="px-4 py-3 uppercase font-medium">Action</th>
@@ -224,7 +234,7 @@ const Explorer = () => {
             <tbody>
               {paginatedAgents.map((agent, index) => (
                 <tr
-                  key={agent.id}
+                  key={agent._id}
                   className="border-b border-gray-700 hover:bg-gray-700"
                 >
                   <td className="px-4 py-3">
@@ -232,7 +242,10 @@ const Explorer = () => {
                   </td>
                   <td className="px-4 py-3 truncate max-w-xs">
                     <img
-                      src={agent.logo || "https://cryptologos.cc/logos/solana-sol-logo.png"}
+                      src={
+                        agent.logo ||
+                        "https://cryptologos.cc/logos/solana-sol-logo.png"
+                      }
                       alt="Agent Logo"
                       className="inline-block h-6 w-6 rounded-full mr-2"
                     />
@@ -240,20 +253,35 @@ const Explorer = () => {
                   </td>
                   <td className="px-4 py-3">
                     <img
-                      src="https://cryptologos.cc/logos/solana-sol-logo.png"
+                      src={
+                        chainLogos[agent.chain?.toLowerCase()] ||
+                        "https://cryptologos.cc/logos/solana-sol-logo.png"
+                      }
                       alt="Chain Logo"
                       className="inline-block h-6 w-6 rounded-full mr-2"
                     />
-                    Solana
+                    {agent.chain}
                   </td>
-                  <td className="px-4 py-3">{agent.marketCap}</td>
-                  <td className="px-4 py-3">{agent.time}</td>
-                  <td className="px-4 py-3">{agent.price || "N/A"}</td>
-                  <td className="px-4 py-3">{agent.replies}</td>
+                  <td className="px-4 py-3">
+                    {agent.marketCap.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </td>
+                  <td className="px-4 py-3">{getRelativeTime(agent.submittedAt)}</td>
+                  <td className="px-4 py-3">
+                    {agent.price
+                      ? parseFloat(agent.price).toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })
+                      : "N/A"}
+                  </td>
+                  <td className="px-4 py-3">{agent.upvotes}</td>
                   <td className="px-4 py-3">
                     <button
                       className="px-3 py-1 border border-green-400 rounded text-green-400 hover:bg-green-400 hover:text-gray-900"
-                      onClick={() => handleViewDetails(agent.contractaddress)}
+                      onClick={() => handleViewDetails(agent.contractAddress)}
                     >
                       View Details
                     </button>
@@ -269,7 +297,9 @@ const Explorer = () => {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`px-3 py-1 border border-green-600 rounded hover:bg-green-00 ${currentPage === i + 1 ? "bg-green-400 text-gray-900" : ""
+              className={`px-3 py-1 border border-green-600 rounded hover:bg-green-600 ${currentPage === i + 1
+                ? "bg-green-400 text-gray-900"
+                : "text-gray-300"
                 }`}
               onClick={() => handlePageChange(i + 1)}
             >
