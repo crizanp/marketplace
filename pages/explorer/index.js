@@ -54,9 +54,7 @@ const Explorer = () => {
   const [showMessage, setShowMessage] = useState(false); // Floating message state
 
   const router = useRouter();
-
   useEffect(() => {
-    // Fetch agents data from the API
     const fetchAgents = async () => {
       try {
         const response = await fetch("/api/getdata?query=approved");
@@ -64,17 +62,25 @@ const Explorer = () => {
           throw new Error("Failed to fetch agents");
         }
         const data = await response.json();
-        setAgents(data);
-        setFilteredAgents(data);
+
+        // Assign random upvotes if not present
+        const enrichedData = data.map(agent => ({
+          ...agent,
+          upvotes: agent.upvotes || Math.floor(Math.random() * 1000),
+        }));
+
+        setAgents(enrichedData);
+        setFilteredAgents(enrichedData);
       } catch (error) {
         console.error("Error fetching agents:", error);
       } finally {
-        setIsLoading(false); // Set loading to false after fetching
+        setIsLoading(false);
       }
     };
 
     fetchAgents();
   }, []);
+
 
   const sortAgents = (a, b) => {
     switch (sortBy) {
