@@ -20,8 +20,22 @@ async function connectToDatabase() {
     return client;
 }
 
+// Chain logo mapping
+const chainLogos = {
+    polygon: "https://dd.dexscreener.com/ds-data/chains/polygon.png",
+    arbitrum: "https://dd.dexscreener.com/ds-data/chains/arbitrum.png",
+    hyperliquid: "https://dd.dexscreener.com/ds-data/chains/hyperliquid.png",
+    ton: "https://dd.dexscreener.com/ds-data/chains/ton.png",
+    pulsechain: "https://dd.dexscreener.com/ds-data/chains/pulsechain.png",
+    sui: "https://dd.dexscreener.com/ds-data/chains/sui.png",
+    bsc: "https://dd.dexscreener.com/ds-data/chains/bsc.png",
+    base: "https://dd.dexscreener.com/ds-data/chains/base.png",
+    ethereum: "https://dd.dexscreener.com/ds-data/chains/ethereum.png",
+    solana: "https://dd.dexscreener.com/ds-data/chains/solana.png",
+};
+
 // Fetch DexScreener data for additional fields
-async function fetchDexData(contractAddress) {
+async function fetchDexData(contractAddress, chain) {
     try {
         const response = await fetch(
             `https://api.dexscreener.com/latest/dex/tokens/${contractAddress}`
@@ -35,7 +49,7 @@ async function fetchDexData(contractAddress) {
                 volume24h: pair.volume?.h24 || 0,
                 liquidity: pair.liquidity?.usd || 0,
                 price: pair.priceUsd || null,
-                logo: pair.info?.imageUrl || "https://via.placeholder.com/50",
+                logo: pair.info?.imageUrl || chainLogos[chain.toLowerCase()] || "https://via.placeholder.com/50",
             };
         }
 
@@ -45,7 +59,7 @@ async function fetchDexData(contractAddress) {
             volume24h: 0,
             liquidity: 0,
             price: null,
-            logo: "https://via.placeholder.com/50",
+            logo: chainLogos[chain.toLowerCase()] || "https://via.placeholder.com/50",
         };
     } catch (error) {
         console.error(`Error fetching Dex data for ${contractAddress}:`, error);
@@ -54,7 +68,7 @@ async function fetchDexData(contractAddress) {
             volume24h: 0,
             liquidity: 0,
             price: null,
-            logo: "https://via.placeholder.com/50",
+            logo: chainLogos[chain.toLowerCase()] || "https://via.placeholder.com/50",
         };
     }
 }
@@ -96,7 +110,7 @@ export default async function handler(req, res) {
         // Enrich agents with DexScreener data
         const enrichedAgents = await Promise.all(
             agents.map(async (agent) => {
-                const dexData = await fetchDexData(agent.contractAddress);
+                const dexData = await fetchDexData(agent.contractAddress, agent.chain);
                 return {
                     ...agent,
                     marketCap: dexData.marketCap || agent.marketCap || 0,
@@ -108,7 +122,10 @@ export default async function handler(req, res) {
             })
         );
 
-        // Sort the enriched agents
+        // Remove walletAddress from response
+        const sanitizedAgents = enrichedAgents.map(({ walletAddress, ...agent }) => agent);
+
+        // Sort the sanitized agents
         const sortOptions = {
             listedTime: (a, b) => new Date(b.submittedAt) - new Date(a.submittedAt),
             name: (a, b) => a.name.localeCompare(b.name),
@@ -117,7 +134,7 @@ export default async function handler(req, res) {
         };
         const sortFunction = sortOptions[sortBy] || sortOptions.listedTime;
 
-        const sortedAgents = enrichedAgents.sort(sortFunction);
+        const sortedAgents = sanitizedAgents.sort(sortFunction);
 
         // Paginate the sorted results
         const paginatedAgents = sortedAgents.slice(skip, skip + pageSize);
