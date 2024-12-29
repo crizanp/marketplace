@@ -72,13 +72,39 @@ const Explorer = () => {
 
       const data = await response.json();
 
+      // Fetch Gekko AI data from DexScreener
+      const gekkoResponse = await fetch(
+        "https://api.dexscreener.io/latest/dex/tokens/G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
+      );
+      if (!gekkoResponse.ok) throw new Error("Failed to fetch Gekko AI data.");
+      const gekkoData = await gekkoResponse.json();
+
+      const gekkoMarketData = gekkoData.pairs[0] || {}; // Use the first pair's data
+      const pinnedToken = {
+        contractAddress: "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump",
+        name: "Gekko AI",
+        ticker: "GEK",
+        chain: "solana",
+        logo: "https://aigekko.vercel.app/D.png", // Replace with actual logo URL
+        marketCap: gekkoMarketData.fdv || 1000000, // Use FDV from DexScreener or fallback
+        price: gekkoMarketData.priceUsd || "0.12345", // Use price from DexScreener or fallback
+        upvotes: 9999,
+        submittedAt: "3000-01-01", // Custom listed time
+      };
+
       // Assign random upvotes (2-4 digit numbers) to each agent
       const agentsWithRandomUpvotes = data.data.map((agent) => ({
         ...agent,
-        upvotes: Math.floor(Math.random() * (9999 - 100) + 100), // Random number between 100 and 9999
+        upvotes: Math.floor(Math.random() * (9999 - 100) + 100),
       }));
 
-      setAgents(agentsWithRandomUpvotes);
+      // Ensure pinned token is not duplicated
+      const filteredAgents = agentsWithRandomUpvotes.filter(
+        (agent) => agent.contractAddress !== pinnedToken.contractAddress
+      );
+
+      // Add the pinned token to the top of the list
+      setAgents([pinnedToken, ...filteredAgents]);
       setTotalPages(data.pagination.totalPages);
     } catch (error) {
       console.error("Error fetching agents:", error);
@@ -86,6 +112,8 @@ const Explorer = () => {
       setIsLoading(false);
     }
   };
+
+
   const formatPrice = (price) => {
     if (!price) return "N/A";
 
@@ -260,9 +288,14 @@ const Explorer = () => {
               {agents.map((agent, index) => (
                 <tr
                   key={agent.contractAddress}
-                  className="border-b border-gray-700 hover:bg-gray-700"
+                  className={`border-b border-gray-700 hover:bg-gray-700 ${agent.contractAddress === "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
+                    ? "bg-yellow-500 text-black  hover:bg-yellow-600" // Unique background for pinned token
+                    : ""
+                    }`}
                 >
-                  <td className="px-4 py-3">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                  <td className="px-4 py-3">
+                    {(currentPage - 1) * itemsPerPage + index + 1}
+                  </td>
                   <td className="px-4 py-3 truncate max-w-xs">
                     <img
                       src={agent.logo || "https://via.placeholder.com/50"}
@@ -272,7 +305,9 @@ const Explorer = () => {
                     <span>{agent.name}</span>
                   </td>
                   <td className="px-4 py-3">
-                    {agent.chain ? agent.chain.charAt(0).toUpperCase() + agent.chain.slice(1) : "N/A"}
+                    {agent.chain
+                      ? agent.chain.charAt(0).toUpperCase() + agent.chain.slice(1)
+                      : "N/A"}
                   </td>
                   <td className="px-4 py-3">
                     {agent.marketCap
@@ -282,23 +317,30 @@ const Explorer = () => {
                       })
                       : "N/A"}
                   </td>
-                  <td className="px-4 py-3">{getRelativeTime(agent.submittedAt)}</td>
                   <td className="px-4 py-3">
-                    {agent.price ? formatPrice(agent.price) : "N/A"}
+                    {agent.contractAddress === "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
+                      ? "3000 BCE" // Exceptional case for Gekko AI
+                      : getRelativeTime(agent.submittedAt)}
                   </td>
 
+                  <td className="px-4 py-3">{agent.price || "N/A"}</td>
                   <td className="px-4 py-3">{agent.upvotes}</td>
                   <td className="px-4 py-3">
                     <button
-                      className="px-3 py-1 border border-green-400 rounded text-green-400 hover:bg-green-400 hover:text-gray-900"
+                      className={`px-3 py-1 rounded ${agent.contractAddress === "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
+                          ? "bg-green-400 text-gray-900 hover:bg-green-500" // Green background for Gekko AI
+                          : "border border-green-400 text-green-400 hover:bg-green-400 hover:text-gray-900"
+                        }`}
                       onClick={() => handleViewDetails(agent.contractAddress)}
                     >
                       View Details
                     </button>
                   </td>
+
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
 
