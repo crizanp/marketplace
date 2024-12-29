@@ -93,7 +93,7 @@ const Navbar = () => {
         <div className={styles.walletButton}>
           {connected ? (
             <button onClick={handleSignOut} className={styles.walletButtonCustom}>
-              🔒 Sign Out
+              🔒 Disconnect
             </button>
           ) : (
             <WalletMultiButton className={styles.walletButtonCustom} />

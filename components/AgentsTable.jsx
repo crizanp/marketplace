@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import HomepageTableSkeleton from "./Skeleton/HomepageTable"; // Import Skeleton Component
+import Link from "next/link"; // Import Next.js Link for navigation
 
 // Mapping of chain names to their respective logo URLs
 const chainLogos = {
@@ -74,6 +75,11 @@ const AgentsTable = () => {
 
   return (
     <div className="lg:px-10 lg:p-5 pb-5 bg-gray-900 text-gray-100">
+      {/* Centered Heading */}
+      <div className="text-center mb-5">
+        <h2 className="text-2xl font-bold text-green-400">TOP 10 AGENTS</h2>
+      </div>
+
       {/* Agents Table */}
       <div className="overflow-x-auto rounded-lg scrollbar-hide">
         <table className="w-full min-w-[900px] border-collapse bg-gray-800 text-gray-300 text-sm">
@@ -122,7 +128,7 @@ const AgentsTable = () => {
 
                 {/* Chain */}
                 <td className="px-4 py-3">
-                  <div className="flex items-center  gap-2">
+                  <div className="flex items-center gap-2">
                     <img
                       src={
                         chainLogos[agent.chain.toLowerCase()] ||
@@ -165,6 +171,13 @@ const AgentsTable = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* See More Link */}
+      <div className="text-center mt-5">
+        <Link href="/explorer"className="text-green-500 hover:underline font-medium">
+            See More
+        </Link>
       </div>
     </div>
   );
