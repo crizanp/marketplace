@@ -75,13 +75,13 @@ const AgentsTable = () => {
   return (
     <div className="lg:px-10 lg:p-5 pb-5 bg-gray-900 text-gray-100">
       {/* Agents Table */}
-      <div className="overflow-x-auto rounded-lg">
+      <div className="overflow-x-auto rounded-lg scrollbar-hide">
         <table className="w-full min-w-[900px] border-collapse bg-gray-800 text-gray-300 text-sm">
           <thead>
             <tr className="bg-gray-700 text-green-400 text-left">
               <th className="px-4 py-3 uppercase font-medium text-center">#</th>
-              <th className="px-4 py-3 uppercase font-medium">Name</th>
-              <th className="px-4 py-3 uppercase font-medium text-center">
+              <th className="px-4 py-3 uppercase font-medium ">Name</th>
+              <th className="px-4 py-3 uppercase font-medium text-left">
                 Chain
               </th>
               <th className="px-4 py-3 uppercase font-medium text-center">
@@ -122,7 +122,7 @@ const AgentsTable = () => {
 
                 {/* Chain */}
                 <td className="px-4 py-3">
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center  gap-2">
                     <img
                       src={
                         chainLogos[agent.chain.toLowerCase()] ||

@@ -156,14 +156,12 @@ export default async function handler(req, res) {
                     contractAddress: token.contractAddress,
                     price: token.price,
                     score: normalizedScore,
-                    logo: token.logo || "https://via.placeholder.com/50", // Correctly use token.logo
                 };
             });
 
             // Sort by normalized score in descending order
             const sortedTrendingTokens = trendingTokens
                 .sort((a, b) => b.score - a.score)
-                .slice(0, 8) // Limit to the top 8 tokens
                 .map((token, index) => ({
                     ...token,
                     rank: index + 1,
@@ -171,7 +169,6 @@ export default async function handler(req, res) {
 
             return res.status(200).json(sortedTrendingTokens);
         }
-
 
         return res.status(200).json(agentsWithDexData);
     } catch (error) {

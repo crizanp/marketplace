@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import HomepageTableSkeleton from "../../components/Skeleton/HomepageTable"; // Import Skeleton Component
 import ExplorerSkeleton from "@/components/Skeleton/ExplorerSkeleton";
 
 // Chain Logos Mapping
@@ -44,27 +43,27 @@ const getRelativeTime = (date) => {
 
 const Explorer = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("listedTime"); // Default sort by listedTime
-  const [agents, setAgents] = useState([]); // Original data
-  const [filteredAgents, setFilteredAgents] = useState([]); // Filtered data for display
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
-
+  const [sortBy, setSortBy] = useState("listedTime");
+  const [agents, setAgents] = useState([]);
+  const [filteredAgents, setFilteredAgents] = useState([]);
+  const [trendingAgents, setTrendingAgents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
-  const [showMessage, setShowMessage] = useState(false); // Floating message state
 
   const router = useRouter();
+
+  // Fetch Approved Agents
   useEffect(() => {
-    const fetchAgents = async () => {
+    const fetchApprovedAgents = async () => {
       try {
         const response = await fetch("/api/getdata?query=approved");
         if (!response.ok) {
-          throw new Error("Failed to fetch agents");
+          throw new Error("Failed to fetch approved agents");
         }
         const data = await response.json();
 
-        // Assign random upvotes if not present
-        const enrichedData = data.map(agent => ({
+        const enrichedData = data.map((agent) => ({
           ...agent,
           upvotes: agent.upvotes || Math.floor(Math.random() * 1000),
         }));
@@ -72,15 +71,32 @@ const Explorer = () => {
         setAgents(enrichedData);
         setFilteredAgents(enrichedData);
       } catch (error) {
-        console.error("Error fetching agents:", error);
+        console.error("Error fetching approved agents:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchAgents();
+    fetchApprovedAgents();
   }, []);
 
+  // Fetch Trending Tokens
+  useEffect(() => {
+    const fetchTrendingTokens = async () => {
+      try {
+        const response = await fetch("/api/getdata?query=trending");
+        if (!response.ok) {
+          throw new Error("Failed to fetch trending tokens");
+        }
+        const data = await response.json();
+        setTrendingAgents(data);
+      } catch (error) {
+        console.error("Error fetching trending tokens:", error);
+      }
+    };
+
+    fetchTrendingTokens();
+  }, []);
 
   const sortAgents = (a, b) => {
     switch (sortBy) {
@@ -89,7 +105,7 @@ const Explorer = () => {
       case "marketCap":
         return b.marketCap - a.marketCap;
       case "listedTime":
-        return new Date(b.submittedAt) - new Date(a.submittedAt); // Sort by most recently listed
+        return new Date(b.submittedAt) - new Date(a.submittedAt);
       case "upvotes":
         return b.upvotes - a.upvotes;
       default:
@@ -116,9 +132,6 @@ const Explorer = () => {
   const handleViewDetails = (contractAddress) => {
     if (contractAddress) {
       router.push(`/coins/${contractAddress}`);
-    } else {
-      setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 3000);
     }
   };
 
@@ -130,34 +143,23 @@ const Explorer = () => {
         )
       );
     } else {
-      setFilteredAgents(agents); // Reset to all agents if "All" is selected
+      setFilteredAgents(agents);
     }
   };
 
-  const trendingAgents = [...agents]
-    .sort((a, b) => b.upvotes - a.upvotes)
-    .slice(0, 8);
   if (isLoading) {
-    // Render the skeleton loader when loading
-    return (
-      <ExplorerSkeleton />
-    );
+    return <ExplorerSkeleton />;
   }
 
   return (
     <>
       <Navbar />
-      {showMessage && (
-        <div className="fixed top-0 left-0 w-full bg-green-700 text-white py-3 text-center shadow-lg z-50 animate-slideIn">
-          Full version will be released on Jan 1, this is just a prototype.
-        </div>
-      )}
       <div className="lg:px-10 p-0 bg-gray-900 text-gray-100 overflow-x-hidden">
         {/* Trending Agents */}
         <div className="flex gap-4 my-5 py-2 mx-4 overflow-x-auto scrollbar-hide sm:justify-center">
           {trendingAgents.map((agent, index) => (
             <div
-              key={agent._id}
+              key={agent.contractAddress}
               className="relative flex flex-col items-center bg-gray-800 rounded-lg w-20 h-20 text-center gap-2 p-2 shadow-lg shrink-0 cursor-pointer hover:bg-gray-700"
               onClick={() => handleViewDetails(agent.contractAddress)}
             >
@@ -165,7 +167,7 @@ const Explorer = () => {
                 #{index + 1}
               </span>
               <img
-                src={agent.logo}
+                src={agent.logo || "https://via.placeholder.com/50"}
                 alt={agent.name}
                 className="w-10 h-12 rounded-full"
               />
@@ -204,9 +206,6 @@ const Explorer = () => {
             </select>
           </div>
           <div className="flex items-center gap-2">
-            {/* <label htmlFor="chain" className="text-gray-300">
-              Chain:
-            </label> */}
             <select
               id="chain"
               className="w-32 px-3 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
@@ -223,7 +222,7 @@ const Explorer = () => {
         </div>
 
         {/* Agents Table */}
-        <div className="overflow-x-auto rounded-lg">
+        <div className="overflow-x-auto rounded-lg scrollbar-hide">
           <table className="w-full min-w-[900px] border-collapse bg-gray-800 text-gray-300 text-sm">
             <thead>
               <tr className="bg-gray-700 text-green-400 text-left">
@@ -240,7 +239,7 @@ const Explorer = () => {
             <tbody>
               {paginatedAgents.map((agent, index) => (
                 <tr
-                  key={agent._id}
+                  key={agent.contractAddress}
                   className="border-b border-gray-700 hover:bg-gray-700"
                 >
                   <td className="px-4 py-3">
@@ -248,28 +247,17 @@ const Explorer = () => {
                   </td>
                   <td className="px-4 py-3 truncate max-w-xs">
                     <img
-                      src={
-                        agent.logo ||
-                        "https://cryptologos.cc/logos/solana-sol-logo.png"
-                      }
+                      src={agent.logo || "https://via.placeholder.com/50"}
                       alt="Agent Logo"
                       className="inline-block h-6 w-6 rounded-full mr-2"
                     />
-                    <span> ({agent.ticker}) {agent.name} </span>
+                    <span>{agent.name}</span>
                   </td>
-                  <td className="px-4 py-3 flex whitespace-nowrap  transform translate-y-1">
-                    {/* <img
-                      src={
-                        chainLogos[agent.chain?.toLowerCase()] ||
-                        "https://cryptologos.cc/logos/solana-sol-logo.png"
-                      }
-                      alt="Chain Logo"
-                      className="inline-block h-5 w-5 rounded-full mr-2"
-                    /> */}
+                  <td className="px-4 py-3">
                     {agent.chain
-                      ? agent.chain.charAt(0).toUpperCase() + agent.chain.slice(1)
+                      ? agent.chain.charAt(0).toUpperCase() +
+                      agent.chain.slice(1)
                       : "N/A"}
-
                   </td>
                   <td className="px-4 py-3">
                     {agent.marketCap
@@ -278,13 +266,10 @@ const Explorer = () => {
                         currency: "USD",
                       })
                       : "N/A"}
-
                   </td>
-
-                  <td className="px-4 py-3 flex items-center gap-2 whitespace-nowrap transform translate-y-1">
+                  <td className="px-4 py-3">
                     {getRelativeTime(agent.submittedAt)}
                   </td>
-
                   <td className="px-4 py-3">
                     {agent.price
                       ? parseFloat(agent.price).toLocaleString("en-US", {
@@ -296,7 +281,7 @@ const Explorer = () => {
                   <td className="px-4 py-3">{agent.upvotes}</td>
                   <td className="px-4 py-3">
                     <button
-                      className="px-3 py-1 border border-green-400 flex whitespace-nowrap rounded text-green-400 hover:bg-green-400 hover:text-gray-900"
+                      className="px-3 py-1 border border-green-400 rounded text-green-400 hover:bg-green-400 hover:text-gray-900"
                       onClick={() => handleViewDetails(agent.contractAddress)}
                     >
                       View Details
