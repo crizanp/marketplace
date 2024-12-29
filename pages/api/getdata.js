@@ -56,30 +56,82 @@ export default async function handler(req, res) {
             return res.status(405).json({ message: "Method not allowed" });
         }
 
-        const { query } = req.query;
-        console.log("GET Request - Query Parameter:", query);
+        const { query, contractAddress } = req.query;
+        console.log("GET Request - Query Parameters:", { query, contractAddress });
 
         const client = await connectToDatabase();
         const db = client.db(DATABASE_NAME);
 
+        // If contractAddress is provided, fetch a single agent
+        if (contractAddress) {
+            console.log(`Fetching data for contractAddress: ${contractAddress}`);
+
+            const agent = await db.collection("agents").findOne(
+                {
+                    contractAddress: contractAddress,
+                    status: "approved" // Ensure the agent is approved
+                },
+                {
+                    projection: {
+                        name: 1,
+                        ticker: 1,
+                        description: 1,
+                        type: 1,
+                        chain: 1,
+                        marketCap: 1, // Include marketCap for fallback
+                        contractAddress: 1,
+                        social: 1,
+                        utility: 1,
+                        status: 1,
+                        submittedAt: 1,
+                    },
+                }
+            );
+
+            if (!agent) {
+                return res
+                    .status(404)
+                    .json({ message: "No agent found for the given contractAddress." });
+            }
+
+            const dexData = await fetchDexData(agent.contractAddress);
+
+            const enrichedAgent = {
+                name: agent.name,
+                ticker: agent.ticker,
+                description: agent.description,
+                type: agent.type,
+                chain: agent.chain,
+                social: agent.social,
+                utility: agent.utility,
+                contractAddress: agent.contractAddress,
+                marketCap: dexData.marketCap || agent.marketCap || 0, // Prioritize Dex data
+                volume24h: dexData.volume24h || 0,
+                liquidity: dexData.liquidity || 0,
+                price: dexData.price || "N/A",
+                logo: dexData.logo || "https://via.placeholder.com/50",
+                status: agent.status,
+                submittedAt: agent.submittedAt,
+            };
+
+            return res.status(200).json(enrichedAgent);
+        }
+
+        // Handle other queries (e.g., top10, trending)
         let filter = {};
         let sort = {};
 
         if (query === "top10") {
-            // Fetch only approved agents sorted by marketCap in descending order
             filter = { status: "approved" };
             sort = { marketCap: -1 };
         } else if (query === "trending") {
-            // Fetch only approved agents for trending calculation
             filter = { status: "approved" };
         } else if (query) {
-            // Apply filter based on query
             filter = { status: query };
         }
 
         console.log("Filter applied to query:", filter);
 
-        // Fetch agents based on filter
         const agents = await db
             .collection("agents")
             .find(filter)
@@ -89,7 +141,7 @@ export default async function handler(req, res) {
                 description: 1,
                 type: 1,
                 chain: 1,
-                marketCap: 1, // Include marketCap for fallback
+                marketCap: 1,
                 contractAddress: 1,
                 social: 1,
                 utility: 1,
@@ -120,7 +172,7 @@ export default async function handler(req, res) {
                     social: agent.social,
                     utility: agent.utility,
                     contractAddress: agent.contractAddress,
-                    marketCap: dexData.marketCap || agent.marketCap || 0, // Prioritize Dex data
+                    marketCap: dexData.marketCap || agent.marketCap || 0,
                     volume24h: dexData.volume24h || 0,
                     liquidity: dexData.liquidity || 0,
                     price: dexData.price || "N/A",
@@ -132,38 +184,34 @@ export default async function handler(req, res) {
         );
 
         if (query === "trending") {
-            // Calculate trending score and return only trending tokens
             const agentsWithScores = agentsWithDexData.map((agent) => {
                 const rawScore =
-                    (agent.volume24h || 0) * 2 + (agent.liquidity || 0) * 1; // Weighted scoring
+                    (agent.volume24h || 0) * 2 + (agent.liquidity || 0) * 1;
                 return { ...agent, rawScore };
             });
 
-            // Find the maximum raw score for normalization
             const maxRawScore = Math.max(
                 ...agentsWithScores.map((token) => token.rawScore)
             );
 
-            // Normalize scores to a scale of 1–10
             const trendingTokens = agentsWithScores.map((token) => {
                 const normalizedScore =
                     maxRawScore > 0
-                        ? Math.ceil((token.rawScore / maxRawScore) * 10) // Scale to 10
-                        : 0; // Default to 0 if maxRawScore is 0
+                        ? Math.ceil((token.rawScore / maxRawScore) * 10)
+                        : 0;
                 return {
                     name: token.name,
                     ticker: token.ticker,
                     contractAddress: token.contractAddress,
                     price: token.price,
                     score: normalizedScore,
-                    logo: token.logo || "https://via.placeholder.com/50", // Correctly use token.logo
+                    logo: token.logo || "https://via.placeholder.com/50",
                 };
             });
 
-            // Sort by normalized score in descending order
             const sortedTrendingTokens = trendingTokens
                 .sort((a, b) => b.score - a.score)
-                .slice(0, 8) // Limit to the top 8 tokens
+                .slice(0, 8)
                 .map((token, index) => ({
                     ...token,
                     rank: index + 1,
@@ -172,12 +220,10 @@ export default async function handler(req, res) {
             return res.status(200).json(sortedTrendingTokens);
         }
 
-
         return res.status(200).json(agentsWithDexData);
     } catch (error) {
         console.error("Error fetching data:", error);
 
-        // Return detailed error response for debugging
         return res.status(500).json({
             message: "Error fetching data.",
             error: error.message,

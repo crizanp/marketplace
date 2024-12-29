@@ -1,9 +1,11 @@
 import AgentShowcase from "@/components/detailPage/AgentShowcase";
 import Breadcrumb from "@/components/detailPage/Breadcrumb";
+import IframeSection from "@/components/detailPage/IframeSection";
 import Social from "@/components/detailPage/Social";
 import TokenInfo from "@/components/detailPage/TokenInfo";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import DetailPageSkeleton from "@/components/Skeleton/DetailPageSkeleton";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -38,27 +40,55 @@ const TokenDetail = () => {
   const [copied, setCopied] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
+
   useEffect(() => {
     if (contractaddress) {
-      fetch(`https://api.dexscreener.com/latest/dex/tokens/${contractaddress}`)
+      // Fetch data from your own API
+      fetch(`/api/getdata?contractAddress=${contractaddress}`)
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Failed to fetch token data.");
+            throw new Error("Failed to fetch token data from your API.");
           }
           return response.json();
         })
         .then((data) => {
-          if (data && data.pairs && data.pairs.length > 0) {
-            const tokenData = data.pairs[0];
-            setDexData(tokenData);
-            setChainId(tokenData.chainId);
-          }
+          setDexData((prev) => ({
+            ...prev,
+            ...data, // Merge data from your API
+          }));
+
+          // Fetch additional data from DexScreener API
+          return fetch(`https://api.dexscreener.io/latest/dex/tokens/${contractaddress}`);
         })
-        .catch((error) =>
-          console.error("Error fetching DexScreener data:", error)
-        );
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch token data from DexScreener.");
+          }
+          return response.json();
+        })
+        .then((dexData) => {
+          const tokenData = dexData.pairs[0];
+
+          const priceChange24h = tokenData.priceChange?.h24
+            ? parseFloat(tokenData.priceChange.h24)
+            : null;
+
+          const chainId = tokenData.chainId || null;
+          const website = tokenData.info.websites?.[0]?.url || "N/A"; // Extract the primary website URL
+
+          setDexData((prev) => ({
+            ...prev,
+            priceChange24h,
+            chainId,
+            website, // Add the website
+          }));
+          setChainId(chainId); // Also update the local state
+        })
+        .catch((error) => console.error("Error fetching token data:", error));
     }
   }, [contractaddress]);
+  const transformedChainId =
+    chainId?.toLowerCase() === "sui" ? "sui-network" : chainId;
 
   const handleVote = (type) => {
     if (type === "upvote") {
@@ -92,57 +122,52 @@ const TokenDetail = () => {
 
   if (!dexData) {
     return (
-      <div className="flex flex-col items-center text-gray-200">
-        <h1 className="text-2xl">Loading...</h1>
-        <p>Fetching data for contract: {contractaddress}</p>
-      </div>
+      <DetailPageSkeleton />
     );
   }
   const socialLinks = {
-    website: "https://example.com",
-    telegram: "https://t.me/example",
-    twitter: "https://twitter.com/example",
-    instagram: "https://instagram.com/example",
-    facebook: "https://facebook.com/example",
-    github: "https://github.com/example",
-    reddit: "https://reddit.com/r/example",
-    linkedin: "https://linkedin.com/company/example",
-    youtube: "https://youtube.com/c/example",
-    discord: "https://discord.gg/example",
-    medium: "https://medium.com/@example",
-    pinterest: "https://pinterest.com/example",
-    snapchat: "https://snapchat.com/add/example",
+    twitter: dexData.social?.twitter || "",
+    telegram: dexData.social?.telegram || "",
+    instagram: dexData.social?.instagram || "",
+    facebook: dexData.social?.facebook || "",
+    github: dexData.social?.github || "",
+    reddit: dexData.social?.reddit || "",
+    linkedin: dexData.social?.linkedin || "",
+    youtube: dexData.social?.youtube || "",
+    discord: dexData.social?.discord || "",
+    medium: dexData.social?.medium || "",
+    pinterest: dexData.social?.pinterest || "",
+    snapchat: dexData.social?.snapchat || "",
+    website: dexData.website || ""
   };
-  const agents = [
-    {
-      name: "Twitter Agent",
-      description: "Stay updated with real-time tweets and notifications.",
-      icon: <FaTwitter />,
-    },
-    {
-      name: "Telegram Agent",
-      description: "Join our community and receive instant updates.",
-      icon: <FaTelegram />,
-    },
-    {
-      name: "Facebook Agent",
-      description: "Connect with us on Facebook for regular updates.",
-      icon: <FaFacebook />,
-    },
-    {
-      name: "Discord Agent",
-      description: "Engage with us on Discord for direct support.",
-      icon: <FaDiscord />,
-    },
-    {
-      name: "Instagram Agent",
-      description: "Follow us for visually engaging updates.",
-      icon: <FaInstagram />,
-    },
-  ];
 
+  const agents = dexData.utility?.map((utility) => {
+    // Map social types to icons
+    const socialIcons = {
+      twitter: <FaTwitter />,
+      facebook: <FaFacebook />,
+      instagram: <FaInstagram />,
+      github: <FaGithub />,
+      linkedin: <FaLinkedin />,
+      youtube: <FaYoutube />,
+      reddit: <FaReddit />,
+      discord: <FaDiscord />,
+      medium: <FaMedium />,
+      pinterest: <FaPinterest />,
+      snapchat: <FaSnapchat />,
+      telegram: <FaTelegram />,
+    };
 
+    // Default to globe icon if type is not matched
+    const icon = socialIcons[utility.socialType?.toLowerCase()] || <FaGlobe />;
 
+    return {
+      name: utility.name,
+      description: utility.shortDesc,
+      icon,
+      link: utility.link?.startsWith("http") ? utility.link : `https://${utility.link}`, // Sanitize link
+    };
+  });
   return (
     <>
       <Navbar />
@@ -166,16 +191,16 @@ const TokenDetail = () => {
               {/* Logo and Name */}
               <div className="flex items-center gap-4">
                 <img
-                  src={dexData.info?.imageUrl || "/default-logo.png"}
+                  src={dexData.logo || "/default-logo.png"}
                   alt={dexData.baseToken?.name || "Token Logo"}
                   className="w-16 h-16 rounded-full border-2 border-green-400"
                 />
                 <div>
                   <h1 className="text-2xl font-bold uppercase text-white">
-                    {dexData.baseToken?.name || "Token Name"}
+                    {dexData.name || "Token Name"}
                   </h1>
                   <span className="text-sm bg-green-400 text-black px-2 py-1 rounded-md">
-                    {dexData.baseToken?.symbol}
+                    {dexData.ticker || "Token Symbol"}
                   </span>
                 </div>
               </div>
@@ -183,18 +208,10 @@ const TokenDetail = () => {
               {/* Price */}
               <div className="text-right">
                 <p className="text-2xl text-green-400">
-                  ${dexData.priceUsd || "N/A"}
+                  ${dexData.price || "N/A"}
                 </p>
-                <p
-                  className={
-                    dexData.priceChange?.h24 < 0
-                      ? "text-red-500"
-                      : "text-green-500"
-                  }
-                >
-                  {dexData.priceChange?.h24
-                    ? `${dexData.priceChange.h24}%`
-                    : "N/A"}
+                <p className={dexData.priceChange24h < 0 ? "text-red-500" : "text-green-500"}>
+                  {dexData.priceChange24h !== null ? `${dexData.priceChange24h}%` : "N/A"}
                 </p>
               </div>
             </div>
@@ -217,18 +234,20 @@ const TokenDetail = () => {
 
             {/* Description Section */}
             <div className="mt-6">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Description
-              </h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Description</h2>
               <p className="text-gray-200">
                 {showFullDescription
-                  ? dummyDescription
-                  : dummyDescription.split(" ").slice(0, 20).join(" ")}
+                  ? dexData.description || "No description provided."
+                  : (dexData.description || "No description provided.")
+                    .split(" ")
+                    .slice(0, 20)
+                    .join(" ")}
                 {!showFullDescription &&
-                  dummyDescription.split(" ").length > 20 &&
+                  dexData.description &&
+                  dexData.description.split(" ").length > 20 &&
                   "..."}
               </p>
-              {dummyDescription.split(" ").length > 20 && (
+              {dexData.description && dexData.description.split(" ").length > 20 && (
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   className="text-green-400 hover:text-green-300 mt-2 flex items-center gap-2"
@@ -246,64 +265,71 @@ const TokenDetail = () => {
               )}
             </div>
 
+
             <TokenInfo
-              data={{ ...dexData, contractAddress: contractaddress }}
+              data={{
+                marketCap: dexData.marketCap,
+                liquidity: dexData.liquidity,
+                volume24h: dexData.volume24h,
+                contractAddress: dexData.contractAddress,
+                chain: dexData.chain, // Add chain field here
+              }}
               copied={copied}
               copyToClipboard={copyToClipboard}
               truncateAddress={truncateAddress}
             />
-
 
             {/* Social Info Section */}
             <Social links={socialLinks} />
           </div>
           {/* Right Section */}
           <div className="w-2/3">
-            <iframe
-              className="w-full h-[400px] rounded-lg" // Increased height
-              title="GeckoTerminal Embed"
-              src={`https://www.geckoterminal.com/${chainId}/pools/${dexData.pairAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0`}
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
+            <IframeSection chainId={transformedChainId} contractAddress={dexData.contractAddress} />
+
+
             <AgentShowcase agents={agents} />
 
-            <div className="mt-6 bg-gray-800 p-4 rounded-lg">
-              <h2 className="text-xl">Community Replies</h2>
+            <div className="mt-6 bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h2 className="text-2xl font-bold text-white border-b border-gray-700 pb-2 mb-4">
+                Community Replies
+              </h2>
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Write your reply here..."
-                className="w-full h-24 p-2 bg-gray-800 text-white rounded-lg mt-2"
+                className="w-full h-24 p-3 bg-gray-900 text-gray-200 rounded-lg mt-2 border border-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none resize-none"
               />
               <button
                 onClick={addComment}
-                className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600 mt-2"
+                className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-all duration-300 mt-4 shadow-md hover:shadow-lg"
               >
-                Submit
+                Submit Reply
               </button>
-              <ul className="space-y-2 mt-4">
-                {comments.map((comment, index) => (
-                  <li key={index} className="p-2 bg-gray-700 rounded-md">
-                    {comment}
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-6">
+                {comments.length > 0 ? (
+                  <ul className="space-y-4">
+                    {comments.map((comment, index) => (
+                      <li
+                        key={index}
+                        className="p-4 bg-gray-900 rounded-md border border-gray-700 hover:border-green-500 transition-all duration-300"
+                      >
+                        <p className="text-gray-200">{comment}</p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400">No replies yet. Be the first to comment!</p>
+                )}
+              </div>
             </div>
+
           </div>
         </div>
 
         {/* Mobile Layout with Tabs */}
         <div className="lg:hidden">
-          <div className="p-4">
-            <iframe
-              className="w-full h-96 rounded-lg"
-              title="GeckoTerminal Embed"
-              src={`https://www.geckoterminal.com/${chainId}/pools/${dexData.pairAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0`}
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-          </div>
+          <IframeSection chainId={transformedChainId} contractAddress={dexData.contractAddress} />
+
           <AgentShowcase agents={agents} />
 
           <div className="flex justify-around bg-green-600 text-black py-3 text-lg font-semibold">
@@ -329,16 +355,16 @@ const TokenDetail = () => {
                 {/* Logo and Name */}
                 <div className="flex items-center gap-4">
                   <img
-                    src={dexData.info?.imageUrl || "/default-logo.png"}
+                    src={dexData.logo || "/default-logo.png"}
                     alt={dexData.baseToken?.name || "Token Logo"}
                     className="w-16 h-16 rounded-full border-2 border-green-400"
                   />
                   <div>
                     <h1 className="text-2xl font-bold uppercase">
-                      {dexData.baseToken?.name || "Token Name"}
+                      {dexData.name || "Token Name"}
                     </h1>
                     <span className="text-sm bg-green-400 text-black px-2 py-1 rounded-md">
-                      {dexData.baseToken?.symbol}
+                      {dexData.ticker}
                     </span>
                   </div>
                 </div>
@@ -346,18 +372,10 @@ const TokenDetail = () => {
                 {/* Price */}
                 <div className="text-right">
                   <p className="text-2xl text-green-400">
-                    ${dexData.priceUsd || "N/A"}
+                    ${dexData.price || "N/A"}
                   </p>
-                  <p
-                    className={
-                      dexData.priceChange?.h24 < 0
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }
-                  >
-                    {dexData.priceChange?.h24
-                      ? `${dexData.priceChange.h24}%`
-                      : "N/A"}
+                  <p className={dexData.priceChange24h < 0 ? "text-red-500" : "text-green-500"}>
+                    {dexData.priceChange24h !== null ? `${dexData.priceChange24h}%` : "N/A"}
                   </p>
                 </div>
               </div>
@@ -378,18 +396,20 @@ const TokenDetail = () => {
               </div>
               {/* Description Section */}
               <div className="mt-6">
-                <h2 className="text-xl font-semibold text-white mb-4">
-                  Description
-                </h2>
+                <h2 className="text-xl font-semibold text-white mb-4">Description</h2>
                 <p className="text-gray-200">
                   {showFullDescription
-                    ? dummyDescription
-                    : dummyDescription.split(" ").slice(0, 20).join(" ")}
+                    ? dexData.description || "No description provided."
+                    : (dexData.description || "No description provided.")
+                      .split(" ")
+                      .slice(0, 20)
+                      .join(" ")}
                   {!showFullDescription &&
-                    dummyDescription.split(" ").length > 20 &&
+                    dexData.description &&
+                    dexData.description.split(" ").length > 20 &&
                     "..."}
                 </p>
-                {dummyDescription.split(" ").length > 20 && (
+                {dexData.description && dexData.description.split(" ").length > 20 && (
                   <button
                     onClick={() => setShowFullDescription(!showFullDescription)}
                     className="text-green-400 hover:text-green-300 mt-2 flex items-center gap-2"
@@ -407,7 +427,13 @@ const TokenDetail = () => {
                 )}
               </div>
               <TokenInfo
-                data={{ ...dexData, contractAddress: contractaddress }}
+                data={{
+                  marketCap: dexData.marketCap,
+                  liquidity: dexData.liquidity,
+                  volume24h: dexData.volume24h,
+                  contractAddress: dexData.contractAddress,
+                  chain: dexData.chain, // Add chain field here
+                }}
                 copied={copied}
                 copyToClipboard={copyToClipboard}
                 truncateAddress={truncateAddress}

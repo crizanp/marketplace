@@ -55,7 +55,7 @@ const Explorer = () => {
   const [searchTrigger, setSearchTrigger] = useState(false);
 
   const router = useRouter();
-  const itemsPerPage = 15;
+  const itemsPerPage = 10;
 
   const fetchAgents = async () => {
     setIsLoading(true);
