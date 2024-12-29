@@ -255,26 +255,36 @@ const Explorer = () => {
                       alt="Agent Logo"
                       className="inline-block h-6 w-6 rounded-full mr-2"
                     />
-                    {agent.name} ({agent.ticker})
+                    <span> ({agent.ticker}) {agent.name} </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <img
+                  <td className="px-4 py-3 flex whitespace-nowrap  transform translate-y-1">
+                    {/* <img
                       src={
                         chainLogos[agent.chain?.toLowerCase()] ||
                         "https://cryptologos.cc/logos/solana-sol-logo.png"
                       }
                       alt="Chain Logo"
-                      className="inline-block h-6 w-6 rounded-full mr-2"
-                    />
-                    {agent.chain}
+                      className="inline-block h-5 w-5 rounded-full mr-2"
+                    /> */}
+                    {agent.chain
+                      ? agent.chain.charAt(0).toUpperCase() + agent.chain.slice(1)
+                      : "N/A"}
+
                   </td>
                   <td className="px-4 py-3">
-                    {agent.marketCap.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    })}
+                    {agent.marketCap
+                      ? agent.marketCap.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })
+                      : "N/A"}
+
                   </td>
-                  <td className="px-4 py-3">{getRelativeTime(agent.submittedAt)}</td>
+
+                  <td className="px-4 py-3 flex items-center gap-2 whitespace-nowrap transform translate-y-1">
+                    {getRelativeTime(agent.submittedAt)}
+                  </td>
+
                   <td className="px-4 py-3">
                     {agent.price
                       ? parseFloat(agent.price).toLocaleString("en-US", {
@@ -286,7 +296,7 @@ const Explorer = () => {
                   <td className="px-4 py-3">{agent.upvotes}</td>
                   <td className="px-4 py-3">
                     <button
-                      className="px-3 py-1 border border-green-400 rounded text-green-400 hover:bg-green-400 hover:text-gray-900"
+                      className="px-3 py-1 border border-green-400 flex whitespace-nowrap rounded text-green-400 hover:bg-green-400 hover:text-gray-900"
                       onClick={() => handleViewDetails(agent.contractAddress)}
                     >
                       View Details
