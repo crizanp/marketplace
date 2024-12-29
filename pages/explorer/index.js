@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExplorerSkeleton from "@/components/Skeleton/ExplorerSkeleton";
+import { FaSearch } from "react-icons/fa";
 
 // Chain Logos Mapping
 const chainLogos = {
@@ -45,41 +46,64 @@ const Explorer = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("listedTime");
   const [agents, setAgents] = useState([]);
-  const [filteredAgents, setFilteredAgents] = useState([]);
-  const [trendingAgents, setTrendingAgents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [trendingAgents, setTrendingAgents] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedChain, setSelectedChain] = useState("");
+  const [searchTrigger, setSearchTrigger] = useState(false);
 
   const router = useRouter();
+  const itemsPerPage = 15;
 
-  // Fetch Approved Agents
+  const fetchAgents = async () => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: currentPage,
+        search: searchTerm,
+        sortBy,
+        chain: selectedChain,
+      });
+
+      const response = await fetch(`/api/filter?${params.toString()}`);
+      if (!response.ok) throw new Error("Failed to fetch agents.");
+
+      const data = await response.json();
+
+      // Assign random upvotes (2-4 digit numbers) to each agent
+      const agentsWithRandomUpvotes = data.data.map((agent) => ({
+        ...agent,
+        upvotes: Math.floor(Math.random() * (9999 - 100) + 100), // Random number between 100 and 9999
+      }));
+
+      setAgents(agentsWithRandomUpvotes);
+      setTotalPages(data.pagination.totalPages);
+    } catch (error) {
+      console.error("Error fetching agents:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchApprovedAgents = async () => {
-      try {
-        const response = await fetch("/api/getdata?query=approved");
-        if (!response.ok) {
-          throw new Error("Failed to fetch approved agents");
-        }
-        const data = await response.json();
+    if (searchTrigger || currentPage || sortBy || selectedChain) {
+      fetchAgents();
+      setSearchTrigger(false); // Reset the trigger after fetching
+    }
+  }, [searchTrigger, currentPage, sortBy, selectedChain]);
 
-        const enrichedData = data.map((agent) => ({
-          ...agent,
-          upvotes: agent.upvotes || Math.floor(Math.random() * 1000),
-        }));
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-        setAgents(enrichedData);
-        setFilteredAgents(enrichedData);
-      } catch (error) {
-        console.error("Error fetching approved agents:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const handleViewDetails = (contractAddress) => {
+    if (contractAddress) router.push(`/coins/${contractAddress}`);
+  };
 
-    fetchApprovedAgents();
-  }, []);
-
+  const handleChainFilter = (chain) => {
+    setSelectedChain(chain);
+    setCurrentPage(1); // Reset to the first page on filter change
+  };
   // Fetch Trending Tokens
   useEffect(() => {
     const fetchTrendingTokens = async () => {
@@ -97,65 +121,12 @@ const Explorer = () => {
 
     fetchTrendingTokens();
   }, []);
-
-  const sortAgents = (a, b) => {
-    switch (sortBy) {
-      case "name":
-        return a.name.localeCompare(b.name);
-      case "marketCap":
-        return b.marketCap - a.marketCap;
-      case "listedTime":
-        return new Date(b.submittedAt) - new Date(a.submittedAt);
-      case "upvotes":
-        return b.upvotes - a.upvotes;
-      default:
-        return 0;
-    }
-  };
-
-  const displayedAgents = filteredAgents
-    .filter((agent) =>
-      agent.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort(sortAgents);
-
-  const totalPages = Math.ceil(displayedAgents.length / itemsPerPage);
-  const paginatedAgents = displayedAgents.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const handleViewDetails = (contractAddress) => {
-    if (contractAddress) {
-      router.push(`/coins/${contractAddress}`);
-    }
-  };
-
-  const handleChainFilter = (selectedChain) => {
-    if (selectedChain) {
-      setFilteredAgents(
-        agents.filter((agent) =>
-          agent.chain?.toLowerCase().includes(selectedChain.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredAgents(agents);
-    }
-  };
-
-  if (isLoading) {
-    return <ExplorerSkeleton />;
-  }
+  if (isLoading) return <ExplorerSkeleton />;
 
   return (
     <>
       <Navbar />
       <div className="lg:px-10 p-0 bg-gray-900 text-gray-100 overflow-x-hidden">
-        {/* Trending Agents */}
         <div className="flex gap-4 my-5 py-2 mx-4 overflow-x-auto scrollbar-hide sm:justify-center">
           {trendingAgents.map((agent, index) => (
             <div
@@ -175,9 +146,8 @@ const Explorer = () => {
             </div>
           ))}
         </div>
-
         {/* Search Bar */}
-        <div className="flex justify-center items-center mb-6 px-4 gap-2">
+        <div className="flex justify-center items-center my-6 px-4 gap-2">
           <input
             type="text"
             placeholder="Search AI Agent..."
@@ -185,17 +155,32 @@ const Explorer = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          <button
+            className="p-2 bg-green-600 text-white rounded hover:bg-green-700"
+            onClick={() => {
+              setCurrentPage(1); // Reset to the first page
+              fetchAgents(); // Trigger the search function
+            }}
+          >
+            🔍 {/* Search Icon */}
+          </button>
         </div>
+
 
         {/* Sorting and Chain Filtering */}
         <div className="flex flex-row items-center gap-4 mb-6 px-4">
+          {/* Sort By Filter */}
           <div className="flex items-center gap-2">
-            <label htmlFor="sort" className="text-gray-300">
+            <label
+              htmlFor="sort"
+              className="text-gray-300 hidden sm:inline-block"
+            >
               Sort By:
             </label>
+
             <select
               id="sort"
-              className="w-32 px-3 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+              className="w-22 sm:w-32 px-3 py-2  rounded bg-gray-800 text-gray-300 focus:outline-none"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
@@ -205,21 +190,39 @@ const Explorer = () => {
               <option value="upvotes">Upvotes</option>
             </select>
           </div>
+
+          {/* Chain Filter */}
           <div className="flex items-center gap-2">
             <select
               id="chain"
-              className="w-32 px-3 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+              className="w-22 sm:w-32 px-3 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+              value={selectedChain}
               onChange={(e) => handleChainFilter(e.target.value)}
             >
               <option value="">All</option>
+              <option value="base">Base</option>
               <option value="polygon">Polygon</option>
-              <option value="arbitrum">Arbitrum</option>
               <option value="bsc">BSC</option>
               <option value="ethereum">Ethereum</option>
               <option value="solana">Solana</option>
             </select>
           </div>
+
+          {/* Clear Filters Button */}
+          {(selectedChain || sortBy !== "listedTime") && (
+            <button
+              className="text-red-500 hover:text-red-800 hover:text-white"
+              onClick={() => {
+                setSortBy("listedTime"); // Reset Sort By to default
+                handleChainFilter(""); // Reset Chain to default
+                setCurrentPage(1); // Reset pagination
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
         </div>
+
 
         {/* Agents Table */}
         <div className="overflow-x-auto rounded-lg scrollbar-hide">
@@ -237,14 +240,12 @@ const Explorer = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedAgents.map((agent, index) => (
+              {agents.map((agent, index) => (
                 <tr
                   key={agent.contractAddress}
                   className="border-b border-gray-700 hover:bg-gray-700"
                 >
-                  <td className="px-4 py-3">
-                    {(currentPage - 1) * itemsPerPage + index + 1}
-                  </td>
+                  <td className="px-4 py-3">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                   <td className="px-4 py-3 truncate max-w-xs">
                     <img
                       src={agent.logo || "https://via.placeholder.com/50"}
@@ -254,10 +255,7 @@ const Explorer = () => {
                     <span>{agent.name}</span>
                   </td>
                   <td className="px-4 py-3">
-                    {agent.chain
-                      ? agent.chain.charAt(0).toUpperCase() +
-                      agent.chain.slice(1)
-                      : "N/A"}
+                    {agent.chain ? agent.chain.charAt(0).toUpperCase() + agent.chain.slice(1) : "N/A"}
                   </td>
                   <td className="px-4 py-3">
                     {agent.marketCap
@@ -267,9 +265,7 @@ const Explorer = () => {
                       })
                       : "N/A"}
                   </td>
-                  <td className="px-4 py-3">
-                    {getRelativeTime(agent.submittedAt)}
-                  </td>
+                  <td className="px-4 py-3">{getRelativeTime(agent.submittedAt)}</td>
                   <td className="px-4 py-3">
                     {agent.price
                       ? parseFloat(agent.price).toLocaleString("en-US", {
@@ -298,9 +294,7 @@ const Explorer = () => {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`px-3 py-1 border border-green-600 rounded hover:bg-green-600 ${currentPage === i + 1
-                ? "bg-green-400 text-gray-900"
-                : "text-gray-300"
+              className={`px-3 py-1 border border-green-600 rounded hover:bg-green-600 ${currentPage === i + 1 ? "bg-green-400 text-gray-900" : "text-gray-300"
                 }`}
               onClick={() => handlePageChange(i + 1)}
             >
