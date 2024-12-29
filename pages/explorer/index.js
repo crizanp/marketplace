@@ -86,6 +86,23 @@ const Explorer = () => {
       setIsLoading(false);
     }
   };
+  const formatPrice = (price) => {
+    if (!price) return "N/A";
+
+    const formattedPrice = parseFloat(price).toFixed(5); // Ensures 5 decimal places
+    const decimalPart = formattedPrice.split(".")[1]; // Gets the decimal part
+
+    if (decimalPart === "00000") {
+      // If all zeroes, show 0.0
+      return "$0.0";
+    } else {
+      // Count leading zeroes in the decimal part
+      const leadingZeroCount = decimalPart.match(/^0+/)?.[0]?.length || 0;
+      return leadingZeroCount > 0
+        ? `$0.${"0".repeat(leadingZeroCount)}${decimalPart.slice(leadingZeroCount)}`
+        : `$${formattedPrice}`; // No leading zeroes, display the full formatted price
+    }
+  };
 
   useEffect(() => {
     if (searchTrigger || currentPage || sortBy || selectedChain) {
@@ -162,7 +179,7 @@ const Explorer = () => {
               fetchAgents(); // Trigger the search function
             }}
           >
-            🔍 {/* Search Icon */}
+            <FaSearch /> {/* Search Icon from react-icons */}
           </button>
         </div>
 
@@ -267,13 +284,9 @@ const Explorer = () => {
                   </td>
                   <td className="px-4 py-3">{getRelativeTime(agent.submittedAt)}</td>
                   <td className="px-4 py-3">
-                    {agent.price
-                      ? parseFloat(agent.price).toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      })
-                      : "N/A"}
+                    {agent.price ? formatPrice(agent.price) : "N/A"}
                   </td>
+
                   <td className="px-4 py-3">{agent.upvotes}</td>
                   <td className="px-4 py-3">
                     <button
