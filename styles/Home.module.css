@@ -45,7 +45,8 @@
 }
 
 .walletButton button:hover {
-    background: #6c63ff;
+    background: #0db42e;
+    color: white;
     box-shadow: 0 0 10px #6c63ff;
 }
 

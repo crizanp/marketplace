@@ -178,7 +178,7 @@ const TokenDetail = () => {
             paths={[
               { name: "Marketplace", link: "/" },
               { name: "Explorer", link: "/explorer" },
-              { name: dexData?.baseToken?.name || "Token Name" },
+              { name: dexData.name, ticker: dexData.ticker },
             ]}
           />
         </div>

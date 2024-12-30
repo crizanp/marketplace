@@ -11,7 +11,7 @@ const HeroSection = () => (
   ╚██████╔╝███████╗██║  ██╗██║  ██╗╚██████╔╝    ██║  ██║██║
    ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝     ╚═╝  ╚═╝╚═╝
 
-> Welcome to AIGEKKO.fun - Your goto AI agent marketplace and launchpad <
+> Welcome to AIGEKKO.fun - The first AI agent marketplace and launchpad <
 `}
     </div>
     <p className={styles.heroSubtitle}>

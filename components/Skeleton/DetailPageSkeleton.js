@@ -1,12 +1,11 @@
 import React from "react";
+import Navbar from "../Navbar";
 
 const DetailPageSkeleton = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white font-professional animate-pulse">
       {/* Navbar Skeleton */}
-      <div className="bg-gray-800 p-4">
-        <div className="h-10 w-1/4 bg-gray-700 rounded"></div>
-      </div>
+      <Navbar />
 
       {/* Breadcrumb Skeleton */}
       <div className="bg-gray-800 p-2">

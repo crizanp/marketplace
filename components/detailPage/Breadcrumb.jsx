@@ -7,11 +7,13 @@ const Breadcrumb = ({ paths }) => (
         {path.link ? (
           <Link href={path.link}>
             <span className="text-gray-400 hover:text-green-400 cursor-pointer">
-              {path.name}
+              {path.name} {path.ticker && `(${path.ticker})`}
             </span>
           </Link>
         ) : (
-          <span className="text-green-400 font-bold">{path.name}</span>
+          <span className="text-green-400 font-bold">
+            {path.name} {path.ticker && `(${path.ticker})`}
+          </span>
         )}
         {index < paths.length - 1 && (
           <span className="mx-2 text-gray-500">/</span>
