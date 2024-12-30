@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaRegCopy, FaCheck } from "react-icons/fa";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import icons
+import { useWallet } from "@solana/wallet-adapter-react";
+
 import {
   FaTelegram,
   FaTwitter,
@@ -26,6 +28,7 @@ import {
   FaPinterest,
   FaSnapchat,
 } from "react-icons/fa";
+import CommentsSection from "@/components/CommentsSection";
 const TokenDetail = () => {
   const router = useRouter();
   const { contractaddress } = router.query;
@@ -39,54 +42,68 @@ const TokenDetail = () => {
   const [chainId, setChainId] = useState("");
   const [copied, setCopied] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [replyToComment, setReplyToComment] = useState(null);
+  const [replyContent, setReplyContent] = useState(""); // For storing the reply content
 
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { connected, publicKey } = useWallet(); // Wallet hooks
+  const contractAddress = { contractaddress }; // Replace with dynamic contract address
   useEffect(() => {
-    if (contractaddress) {
-      // Fetch data from your own API
-      fetch(`/api/getdata?contractAddress=${contractaddress}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch token data from your API.");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setDexData((prev) => ({
-            ...prev,
-            ...data, // Merge data from your API
-          }));
+    const fetchData = async () => {
+      try {
+        if (!contractaddress) return;
 
-          // Fetch additional data from DexScreener API
-          return fetch(`https://api.dexscreener.io/latest/dex/tokens/${contractaddress}`);
-        })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch token data from DexScreener.");
-          }
-          return response.json();
-        })
-        .then((dexData) => {
-          const tokenData = dexData.pairs[0];
+        // Fetch data from your API
+        const apiResponse = await fetch(`/api/getdata?contractAddress=${contractaddress}`);
+        if (!apiResponse.ok) {
+          throw new Error("Failed to fetch token data from your API.");
+        }
+        const apiData = await apiResponse.json();
 
-          const priceChange24h = tokenData.priceChange?.h24
-            ? parseFloat(tokenData.priceChange.h24)
-            : null;
+        // Update state with API data
+        setDexData((prev) => ({
+          ...prev,
+          ...apiData,
+        }));
 
-          const chainId = tokenData.chainId || null;
-          const website = tokenData.info.websites?.[0]?.url || "N/A"; // Extract the primary website URL
+        // Fetch data from DexScreener API
+        const dexResponse = await fetch(`https://api.dexscreener.io/latest/dex/tokens/${contractaddress}`);
+        if (!dexResponse.ok) {
+          throw new Error("Failed to fetch token data from DexScreener.");
+        }
+        const dexData = await dexResponse.json();
+        const tokenData = dexData.pairs[0];
 
-          setDexData((prev) => ({
-            ...prev,
-            priceChange24h,
-            chainId,
-            website, // Add the website
-          }));
-          setChainId(chainId); // Also update the local state
-        })
-        .catch((error) => console.error("Error fetching token data:", error));
-    }
+        const priceChange24h = tokenData.priceChange?.h24 ? parseFloat(tokenData.priceChange.h24) : null;
+        const chainId = tokenData.chainId || null;
+        const website = tokenData.info.websites?.[0]?.url || "N/A";
+
+        // Update state with DexScreener data
+        setDexData((prev) => ({
+          ...prev,
+          priceChange24h,
+          chainId,
+          website,
+        }));
+        setChainId(chainId);
+
+        // Fetch comments
+        const commentsResponse = await fetch(`/api/comments?contractAddress=${contractaddress}`);
+        if (!commentsResponse.ok) {
+          throw new Error("Failed to fetch comments.");
+        }
+        const commentsData = await commentsResponse.json();
+
+        // Update state with comments
+        setComments(commentsData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, [contractaddress]);
+
   const transformedChainId =
     chainId?.toLowerCase() === "sui" ? "sui-network" : chainId;
 
@@ -100,12 +117,6 @@ const TokenDetail = () => {
   const dummyDescription =
     "This token is a decentralized finance (DeFi) asset designed for innovative financial applications. With robust market dynamics and a strong community backing, it offers unique features like staking, liquidity provision, and governance participation. The project aims to bring transparency and efficiency to the blockchain space. Its use cases span across various domains such as payments, rewards, and decentralized trading. By integrating smart contract technology, this token ensures secure, trustless, and fast transactions. It represents a new era of digital assets, redefining how blockchain-based tokens operate within the ecosystem.";
 
-  const addComment = () => {
-    if (newComment.trim()) {
-      setComments([...comments, newComment]);
-      setNewComment("");
-    }
-  };
 
   const copyToClipboard = () => {
     if (contractaddress) {
@@ -289,39 +300,13 @@ const TokenDetail = () => {
 
             <AgentShowcase agents={agents} />
 
-            <div className="mt-6 bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h2 className="text-2xl font-bold text-white border-b border-gray-700 pb-2 mb-4">
-                Community Replies
-              </h2>
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write your reply here..."
-                className="w-full h-24 p-3 bg-gray-900 text-gray-200 rounded-lg mt-2 border border-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none resize-none"
-              />
-              <button
-                onClick={addComment}
-                className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-all duration-300 mt-4 shadow-md hover:shadow-lg"
-              >
-                Submit Reply
-              </button>
-              <div className="mt-6">
-                {comments.length > 0 ? (
-                  <ul className="space-y-4">
-                    {comments.map((comment, index) => (
-                      <li
-                        key={index}
-                        className="p-4 bg-gray-900 rounded-md border border-gray-700 hover:border-green-500 transition-all duration-300"
-                      >
-                        <p className="text-gray-200">{comment}</p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-400">No replies yet. Be the first to comment!</p>
-                )}
-              </div>
-            </div>
+            <CommentsSection
+              contractAddress={contractaddress}
+              truncateAddress={truncateAddress}
+              publicKey={publicKey}
+              connected={connected}
+            />
+
 
           </div>
         </div>
@@ -444,27 +429,12 @@ const TokenDetail = () => {
           )}
 
           {activeTab === "Replies" && (
-            <div className="p-4">
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write your reply here..."
-                className="w-full h-24 p-2 bg-gray-800 text-white rounded-lg"
-              />
-              <button
-                onClick={addComment}
-                className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600 mt-2"
-              >
-                Submit
-              </button>
-              <ul className="space-y-2 mt-4">
-                {comments.map((comment, index) => (
-                  <li key={index} className="p-2 bg-gray-700 rounded-md">
-                    {comment}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <CommentsSection
+              contractAddress={contractaddress}
+              truncateAddress={truncateAddress}
+              publicKey={publicKey}
+              connected={connected}
+            />
           )}
         </div>
       </div>
