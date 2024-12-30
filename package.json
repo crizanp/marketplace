@@ -12,7 +12,6 @@
   "dependencies": {
     "@fontsource/inter": "^5.1.0",
     "@fortawesome/fontawesome-free": "^6.7.2",
-    "@hcaptcha/react-hcaptcha": "^1.11.0",
     "@project-serum/anchor": "^0.26.0",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",

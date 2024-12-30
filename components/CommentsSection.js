@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 
 const truncateCommentAddress = (address) => {
-    if (!address) return "Unknown"; // Handle missing address
+    if (!address) return "Unknown";
     return address.slice(0, 5); // Take the first 5 characters
 };
 
 const CommentsSection = ({ contractAddress, publicKey, connected }) => {
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [captchaToken, setCaptchaToken] = useState(null);
-    const HCaptcha = dynamic(() => import("@hcaptcha/react-hcaptcha"), { ssr: false });
+    const [comments, setComments] = useState([]); // Store comments
+    const [newComment, setNewComment] = useState(""); // New comment input
+    const [isSubmitting, setIsSubmitting] = useState(false); // Submission state
+    const [captchaToken, setCaptchaToken] = useState(null); // hCaptcha token
 
     const siteKey = "6c4cfef2-0abc-483a-a4b4-5f1897a2f2dc"; // Replace with your hCaptcha site key
 
+    // Fetch comments from the server
     useEffect(() => {
         const fetchComments = async () => {
             try {
@@ -32,12 +31,22 @@ const CommentsSection = ({ contractAddress, publicKey, connected }) => {
         if (contractAddress) {
             fetchComments();
         }
+
+        // Render hCaptcha manually
+        if (window.hcaptcha) {
+            window.hcaptcha.render("hcaptcha-container", {
+                sitekey: siteKey,
+                callback: handleCaptchaResponse,
+            });
+        }
     }, [contractAddress]);
 
-    const handleCaptchaChange = (token) => {
+    // Handle hCaptcha response
+    const handleCaptchaResponse = (token) => {
         setCaptchaToken(token); // Save the hCaptcha token
     };
 
+    // Add a new comment
     const addComment = async () => {
         if (!connected || !publicKey) {
             alert("Please connect your wallet to add a comment.");
@@ -89,6 +98,7 @@ const CommentsSection = ({ contractAddress, publicKey, connected }) => {
         }
     };
 
+    // Handle comment likes
     const handleLike = async (commentId) => {
         if (!connected || !publicKey) {
             alert("Please connect your wallet to like a comment.");
@@ -134,11 +144,7 @@ const CommentsSection = ({ contractAddress, publicKey, connected }) => {
                 placeholder="Write your comment here..."
                 className="w-full h-20 p-2 bg-gray-900 text-gray-200 rounded-md border border-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none resize-none text-sm"
             />
-            <HCaptcha
-                sitekey={siteKey}
-                onVerify={handleCaptchaChange} // Triggered when hCaptcha is verified
-                className="mt-2"
-            />
+            <div id="hcaptcha-container" className="mt-2"></div>
             <button
                 onClick={addComment}
                 disabled={isSubmitting || !captchaToken}
