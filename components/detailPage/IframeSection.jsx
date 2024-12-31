@@ -7,7 +7,9 @@ const IframeSection = ({ chainId, contractAddress }) => {
   if (!chainId || !contractAddress) {
     return (
       <div className="flex justify-center items-center h-96 bg-gray-800 rounded-lg">
-        <p className="text-gray-400 text-lg">Unable to load chart: Missing data.</p>
+        <p className="text-gray-400 text-lg">
+          Unable to load chart: Missing data.
+        </p>
       </div>
     );
   }
@@ -25,7 +27,9 @@ const IframeSection = ({ chainId, contractAddress }) => {
 
       {/* Iframe */}
       <iframe
-        className={`w-full h-96 rounded-lg ${iframeLoaded ? "block" : "hidden"}`}
+        className={`w-full h-96 rounded-lg ${
+          iframeLoaded ? "block" : "hidden"
+        }`}
         title="GeckoTerminal Embed"
         src={iframeURL}
         frameBorder="0"

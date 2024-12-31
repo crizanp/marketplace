@@ -29,6 +29,7 @@ import {
   FaSnapchat,
 } from "react-icons/fa";
 import CommentsSection from "@/components/CommentsSection";
+import VoteButtons from "@/components/VoteButtons";
 const TokenDetail = () => {
   const router = useRouter();
   const { contractaddress } = router.query;
@@ -228,20 +229,8 @@ const TokenDetail = () => {
             </div>
 
             {/* Upvote and Downvote Section */}
-            <div className="mt-4 flex justify-center items-center gap-4">
-              <button
-                onClick={() => handleVote("upvote")}
-                className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600"
-              >
-                Upvote ({upvotes})
-              </button>
-              <button
-                onClick={() => handleVote("downvote")}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-              >
-                Downvote ({downvotes})
-              </button>
-            </div>
+            <VoteButtons contractAddress={contractaddress} walletAddress={publicKey?.toString()} />
+
 
             {/* Description Section */}
             <div className="mt-6">
@@ -365,20 +354,8 @@ const TokenDetail = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-center items-center gap-4">
-                <button
-                  onClick={() => handleVote("upvote")}
-                  className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600"
-                >
-                  Upvote ({upvotes})
-                </button>
-                <button
-                  onClick={() => handleVote("downvote")}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                >
-                  Downvote ({downvotes})
-                </button>
-              </div>
+              <VoteButtons contractAddress={contractaddress} walletAddress={publicKey?.toString()} />
+
               {/* Description Section */}
               <div className="mt-6">
                 <h2 className="text-xl font-semibold text-white mb-4">Description</h2>
