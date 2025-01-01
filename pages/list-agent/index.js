@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Include useEffect here
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AIAgentLaunchpad from "@/components/AIAgentLaunchpad";
 import PrivacyPolicy from "@/components/PrivacyPolicy";
-import Cookies from 'js-cookie'; // Add this import
+import Cookies from 'js-cookie';
 import { useWallet } from "@solana/wallet-adapter-react";
 import AgentEditor from "@/components/AgentEditor";
+import { useRouter } from "next/router";
+
 
 const ListAgent = () => {
   const { connected, publicKey } = useWallet();
@@ -124,9 +126,28 @@ const ListAgent = () => {
     }));
   };
 
+  const router = useRouter(); // Initialize useRouter
+  useEffect(() => {
+    const tab = router.query.tab;
+
+    if (tab === "launch-agent") {
+      setActiveTab("AI Agent Launchpad");
+    } else if (tab === "new-submission") {
+      setActiveTab("New Submission");
+    }
+  }, [router.query]); // Observe query changes
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+
+    // Navigate to appropriate route when a tab is clicked
+    if (tab === "New Submission") {
+      router.push("/list-agent");
+    } else if (tab === "AI Agent Launchpad") {
+      router.push("/launch-agent");
+    }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -177,7 +198,6 @@ const ListAgent = () => {
 
 
 
-
   return (
     <>
       <Navbar />
@@ -190,8 +210,8 @@ const ListAgent = () => {
                 "New Submission",
                 "AI Agent Launchpad",
                 "View Submission",
-                "Pricing Plans",
-                "Privacy Policy",
+                // "Pricing Plans",
+                // "Privacy Policy",
               ].map((tab) => (
                 <li
                   key={tab}

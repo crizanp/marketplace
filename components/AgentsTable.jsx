@@ -77,7 +77,9 @@ const AgentsTable = () => {
     <div className="lg:px-10 lg:p-5 pb-5 bg-gray-900 text-gray-100">
       {/* Centered Heading */}
       <div className="text-center mb-5">
-        <h2 className="text-2xl font-bold text-green-400">TOP 10 AGENTS</h2>
+        <h2 className="text-2xl font-bold text-green-400 pt-4">
+          TOP 10 AGENTS
+        </h2>
       </div>
 
       {/* Agents Table */}
@@ -175,8 +177,11 @@ const AgentsTable = () => {
 
       {/* See More Link */}
       <div className="text-center mt-5">
-        <Link href="/explorer"className="text-green-500 hover:underline font-medium">
-            See More
+        <Link
+          href="/explorer"
+          className="text-green-500 hover:underline font-medium"
+        >
+          See More
         </Link>
       </div>
     </div>
