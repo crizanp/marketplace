@@ -67,22 +67,28 @@ const Navbar = () => {
       const encodedMessage = new TextEncoder().encode(message);
 
       if (!signMessage) {
-        alert("Your wallet does not support message signing.");
-        return;
+        throw new Error("Your wallet does not support message signing.");
       }
 
       const signature = await signMessage(encodedMessage);
 
-      Cookies.set("walletAddress", publicKey.toString());
+      // Log for debugging
+      console.log("Signature:", signature);
+      console.log("Public Key:", publicKey.toString());
+
+      Cookies.set("walletAddress", publicKey.toString(), { path: "/" });
       setIsSignedIn(true);
+      alert("Successfully signed in!");
     } catch (error) {
       console.error("Error signing message:", error);
-      alert("Failed to sign in. Please try again.");
+      alert(
+        `Failed to sign in: ${error.message || "An unexpected error occurred."}`
+      );
     }
   };
 
   const connectMobileWallet = () => {
-    const phantomDeepLink = "https://phantom.app/ul/connect";
+    const phantomDeepLink = "https://phantom.app/ul/connect?network=devnet";
     const iosStoreLink =
       "https://apps.apple.com/app/phantom-crypto-wallet/id1567713696";
     const androidStoreLink =
@@ -92,7 +98,6 @@ const Navbar = () => {
       // Open Phantom app
       window.location.href = phantomDeepLink;
     } else {
-      // Prompt to install Phantom
       const storeLink = /iPhone|iPad|iPod/i.test(navigator.userAgent)
         ? iosStoreLink
         : androidStoreLink;
