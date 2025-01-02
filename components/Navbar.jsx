@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Cookies from "js-cookie";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Modal, Box, Typography, IconButton } from "@mui/material";
-import { FaRocket, FaDollarSign } from "react-icons/fa"; // Updated icons
+import { FaRocket, FaDollarSign } from "react-icons/fa";
 import { Close as CloseIcon } from "@mui/icons-material";
 import styles from "../styles/Home.module.css";
 
@@ -17,8 +17,17 @@ const WalletMultiButton = dynamic(
 
       return function CustomWalletMultiButton(props) {
         return (
-          <OriginalButton {...props}>
-            Connect Wallet {/* Custom button text */}
+          <OriginalButton
+            {...props}
+            onClick={(e) => {
+              // Prevent default for mobile
+              if (isMobileDevice()) {
+                e.preventDefault();
+                connectMobileWallet();
+              }
+            }}
+          >
+            Connect Wallet
           </OriginalButton>
         );
       };
@@ -26,10 +35,21 @@ const WalletMultiButton = dynamic(
   { ssr: false }
 );
 
+// Detect if running on a mobile device
+const isMobileDevice = () => {
+  if (typeof window === "undefined" || typeof navigator === "undefined") {
+    return false;
+  }
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+};
+
+// Navbar Component
 const Navbar = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const { connected, publicKey, signMessage, disconnect } = useWallet(); // Wallet hooks
-  const [modalOpen, setModalOpen] = useState(false); // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const { connected, publicKey, signMessage, disconnect } = useWallet();
 
   useEffect(() => {
     const walletAddress = Cookies.get("walletAddress");
@@ -48,7 +68,11 @@ const Navbar = () => {
   const handleSignIn = async () => {
     try {
       if (!connected) {
-        alert("Please connect your wallet first.");
+        if (isMobileDevice()) {
+          connectMobileWallet();
+        } else {
+          alert("Please connect your wallet first.");
+        }
         return;
       }
 
@@ -70,6 +94,72 @@ const Navbar = () => {
     }
   };
 
+  const connectMobileWallet = () => {
+    // Phantom deep links
+    const phantomDeepLinks = {
+      // Use the specific Phantom deep link for connection
+      connect: "phantom://v2/connect",
+
+      // Fallback store links
+      iosStore: "https://apps.apple.com/app/phantom-crypto-wallet/id1567713696",
+      androidStore:
+        "https://play.google.com/store/apps/details?id=io.phantom.android",
+    };
+
+    // Check if running on mobile
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
+    // Detect mobile OS
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isAndroid = /Android/i.test(navigator.userAgent);
+
+    if (!isMobile) {
+      alert("This method is only for mobile devices");
+      return;
+    }
+
+    // For local development, use a more explicit approach
+    const tryConnectPhantom = () => {
+      // First, try the deep link
+      window.location.href = phantomDeepLinks.connect;
+
+      // Create a fallback iframe method
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = phantomDeepLinks.connect;
+      document.body.appendChild(iframe);
+
+      // Timeout to handle different scenarios
+      setTimeout(() => {
+        // Remove iframe
+        if (iframe && iframe.parentNode) {
+          iframe.parentNode.removeChild(iframe);
+        }
+
+        // Prompt for app store if Phantom doesn't open
+        const shouldInstall = confirm(
+          "Phantom Wallet not found. Would you like to install it?"
+        );
+
+        if (shouldInstall) {
+          window.location.href = isIOS
+            ? phantomDeepLinks.iosStore
+            : phantomDeepLinks.androidStore;
+        }
+      }, 1500); // Give some time for app to open
+    };
+
+    // Additional logging for debugging
+    console.log("Attempting to connect Phantom Wallet");
+    console.log("Current URL:", window.location.href);
+    console.log("Connecting from local IP:", window.location.hostname);
+
+    // Execute connection attempt
+    tryConnectPhantom();
+  };
   const handleSignOut = () => {
     disconnect();
     clearCookies();
@@ -94,7 +184,7 @@ const Navbar = () => {
     <nav className={styles.navbar}>
       <div className={styles.topRow}>
         <div className={styles.logo}>
-          <img
+          <Image
             src="https://aigekko.vercel.app/D.png"
             alt="Gekko AI Logo"
             width={50}
@@ -108,7 +198,10 @@ const Navbar = () => {
               Disconnect Wallet
             </button>
           ) : (
-            <WalletMultiButton className={styles.walletButton} />
+            <WalletMultiButton
+              className={styles.walletButton}
+              onClick={isMobileDevice() ? connectMobileWallet : undefined}
+            />
           )}
         </div>
       </div>
@@ -125,7 +218,6 @@ const Navbar = () => {
           </a>
         </li>
       </ul>
-      {/* Modal */}
       <Modal open={modalOpen} onClose={closeModal}>
         <Box
           sx={{
@@ -134,15 +226,14 @@ const Navbar = () => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: 400,
-            bgcolor: "#f5f5f5", // Silverish background
+            bgcolor: "#f5f5f5",
             borderRadius: "12px",
             boxShadow: 24,
             p: 4,
-            color: "#333", // Dark text for contrast
-            border: "2px solid #27ae60", // Green border
+            color: "#333",
+            border: "2px solid #27ae60",
           }}
         >
-          {/* Modal Header */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
             <Typography
               variant="h6"
@@ -154,8 +245,6 @@ const Navbar = () => {
               <CloseIcon />
             </IconButton>
           </Box>
-
-          {/* Options */}
           <Box
             sx={{
               display: "flex",
@@ -164,28 +253,27 @@ const Navbar = () => {
               mt: 2,
             }}
           >
-            {/* Launch a New Token */}
             <Link href="/list-agent?tab=launch-agent" passHref>
               <Box
                 sx={{
                   flex: 1,
                   textAlign: "center",
-                  border: "2px solid #27ae60", // Green border for option box
+                  border: "2px solid #27ae60",
                   borderRadius: "12px",
                   padding: "20px",
                   cursor: "pointer",
-                  backgroundColor: "#e8e8e8", // Light silver background
+                  backgroundColor: "#e8e8e8",
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center", // Center the icon
-                  justifyContent: "center", // Center vertically
+                  alignItems: "center",
+                  justifyContent: "center",
                   "&:hover": {
-                    backgroundColor: "#d9d9d9", // Slightly darker silver on hover
+                    backgroundColor: "#d9d9d9",
                   },
                 }}
                 onClick={closeModal}
               >
-                <FaRocket size={40} color="#27ae60" /> {/* Green icon */}
+                <FaRocket size={40} color="#27ae60" />
                 <Typography
                   variant="body1"
                   sx={{ mt: 1, fontWeight: "bold", color: "#333" }}
@@ -194,29 +282,27 @@ const Navbar = () => {
                 </Typography>
               </Box>
             </Link>
-
-            {/* I Have My Own Token */}
             <Link href="/list-agent?tab=new-submission" passHref>
               <Box
                 sx={{
                   flex: 1,
                   textAlign: "center",
-                  border: "2px solid #27ae60", // Green border for option box
+                  border: "2px solid #27ae60",
                   borderRadius: "12px",
                   padding: "20px",
                   cursor: "pointer",
-                  backgroundColor: "#e8e8e8", // Light silver background
+                  backgroundColor: "#e8e8e8",
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center", // Center the icon
-                  justifyContent: "center", // Center vertically
+                  alignItems: "center",
+                  justifyContent: "center",
                   "&:hover": {
-                    backgroundColor: "#d9d9d9", // Slightly darker silver on hover
+                    backgroundColor: "#d9d9d9",
                   },
                 }}
                 onClick={closeModal}
               >
-                <FaDollarSign size={40} color="#27ae60" /> {/* Green icon */}
+                <FaDollarSign size={40} color="#27ae60" />
                 <Typography
                   variant="body1"
                   sx={{ mt: 1, fontWeight: "bold", color: "#333" }}
