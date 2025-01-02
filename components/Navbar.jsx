@@ -16,20 +16,7 @@ const WalletMultiButton = dynamic(
       const OriginalButton = mod.WalletMultiButton;
 
       return function CustomWalletMultiButton(props) {
-        return (
-          <OriginalButton
-            {...props}
-            onClick={(e) => {
-              // Prevent default for mobile
-              if (isMobileDevice()) {
-                e.preventDefault();
-                connectMobileWallet();
-              }
-            }}
-          >
-            Connect Wallet
-          </OriginalButton>
-        );
+        return <OriginalButton {...props}>Connect Wallet</OriginalButton>;
       };
     }),
   { ssr: false }
@@ -95,71 +82,30 @@ const Navbar = () => {
   };
 
   const connectMobileWallet = () => {
-    // Phantom deep links
-    const phantomDeepLinks = {
-      // Use the specific Phantom deep link for connection
-      connect: "phantom://v2/connect",
+    const phantomDeepLink = "https://phantom.app/ul/connect";
+    const iosStoreLink =
+      "https://apps.apple.com/app/phantom-crypto-wallet/id1567713696";
+    const androidStoreLink =
+      "https://play.google.com/store/apps/details?id=io.phantom.android";
 
-      // Fallback store links
-      iosStore: "https://apps.apple.com/app/phantom-crypto-wallet/id1567713696",
-      androidStore:
-        "https://play.google.com/store/apps/details?id=io.phantom.android",
-    };
+    if (navigator.userAgent.includes("Phantom")) {
+      // Open Phantom app
+      window.location.href = phantomDeepLink;
+    } else {
+      // Prompt to install Phantom
+      const storeLink = /iPhone|iPad|iPod/i.test(navigator.userAgent)
+        ? iosStoreLink
+        : androidStoreLink;
 
-    // Check if running on mobile
-    const isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
+      const installPhantom = confirm(
+        "Phantom Wallet is not installed. Would you like to install it?"
       );
-
-    // Detect mobile OS
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const isAndroid = /Android/i.test(navigator.userAgent);
-
-    if (!isMobile) {
-      alert("This method is only for mobile devices");
-      return;
+      if (installPhantom) {
+        window.location.href = storeLink;
+      }
     }
-
-    // For local development, use a more explicit approach
-    const tryConnectPhantom = () => {
-      // First, try the deep link
-      window.location.href = phantomDeepLinks.connect;
-
-      // Create a fallback iframe method
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.src = phantomDeepLinks.connect;
-      document.body.appendChild(iframe);
-
-      // Timeout to handle different scenarios
-      setTimeout(() => {
-        // Remove iframe
-        if (iframe && iframe.parentNode) {
-          iframe.parentNode.removeChild(iframe);
-        }
-
-        // Prompt for app store if Phantom doesn't open
-        const shouldInstall = confirm(
-          "Phantom Wallet not found. Would you like to install it?"
-        );
-
-        if (shouldInstall) {
-          window.location.href = isIOS
-            ? phantomDeepLinks.iosStore
-            : phantomDeepLinks.androidStore;
-        }
-      }, 1500); // Give some time for app to open
-    };
-
-    // Additional logging for debugging
-    console.log("Attempting to connect Phantom Wallet");
-    console.log("Current URL:", window.location.href);
-    console.log("Connecting from local IP:", window.location.hostname);
-
-    // Execute connection attempt
-    tryConnectPhantom();
   };
+
   const handleSignOut = () => {
     disconnect();
     clearCookies();
