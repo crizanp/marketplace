@@ -1,19 +1,28 @@
-import '@/styles/globals.css';
-import '@solana/wallet-adapter-react-ui/styles.css'; // Default styles for wallet adapter
-
-import { useMemo } from 'react';
+import React from 'react';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
+
+import '@/styles/globals.css';
+import '@solana/wallet-adapter-react-ui/styles.css'; // Default styles for wallet adapter
+
+import { useMemo } from 'react';
+
 import { clusterApiUrl } from '@solana/web3.js';
 import Script from 'next/script'; // Import Next.js Script component
 
 export default function App({ Component, pageProps }) {
-  const network = clusterApiUrl('mainnet-beta'); // Change this to 'mainnet-beta' for production
-  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
+  const network = WalletAdapterNetwork.Mainnet;
+
+  const endpoint = 'https://api.mainnet-beta.solana.com';
+  const wallets = [
+    new PhantomWalletAdapter(),
+    new SolflareWalletAdapter(),
+  ];
 
   return (
     <>
@@ -25,7 +34,7 @@ export default function App({ Component, pageProps }) {
         defer
       />
 
-      <ConnectionProvider endpoint={network}>
+      <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
             <div className="font-inter">
