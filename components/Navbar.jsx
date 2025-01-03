@@ -72,7 +72,6 @@ const Navbar = () => {
 
       const signature = await signMessage(encodedMessage);
 
-      // Log for debugging
       console.log("Signature:", signature);
       console.log("Public Key:", publicKey.toString());
 
@@ -88,7 +87,8 @@ const Navbar = () => {
   };
 
   const connectMobileWallet = () => {
-    const phantomDeepLink = "https://phantom.app/ul/connect?network=devnet";
+    const phantomDeepLink =
+      "https://phantom.app/ul/connect?network=mainnet-beta";
     const iosStoreLink =
       "https://apps.apple.com/app/phantom-crypto-wallet/id1567713696";
     const androidStoreLink =
@@ -130,12 +130,13 @@ const Navbar = () => {
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+
   const ensureCorrectNetwork = async () => {
     try {
       const walletNetwork = await window.solana.getCluster();
-      if (walletNetwork !== "devnet") {
+      if (walletNetwork !== "mainnet-beta") {
         alert(
-          "Your wallet is not connected to the Testnet network. Please switch to Testnet in your wallet settings."
+          "Your wallet is not connected to the Mainnet network. Please switch to Mainnet in your wallet settings."
         );
         return false;
       }
@@ -230,13 +231,7 @@ const Navbar = () => {
                   padding: "20px",
                   cursor: "pointer",
                   backgroundColor: "#e8e8e8",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  "&:hover": {
-                    backgroundColor: "#d9d9d9",
-                  },
+                  "&:hover": { backgroundColor: "#d9d9d9" },
                 }}
                 onClick={closeModal}
               >
@@ -259,15 +254,8 @@ const Navbar = () => {
                   padding: "20px",
                   cursor: "pointer",
                   backgroundColor: "#e8e8e8",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  "&:hover": {
-                    backgroundColor: "#d9d9d9",
-                  },
+                  "&:hover": { backgroundColor: "#d9d9d9" },
                 }}
-                onClick={closeModal}
               >
                 <FaDollarSign size={40} color="#27ae60" />
                 <Typography
