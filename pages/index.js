@@ -4,6 +4,7 @@ import AgentsList from "../components/AgentsList";
 import Footer from "../components/Footer";
 import styles from "../styles/Home.module.css";
 import AgentsTable from "@/components/AgentsTable";
+import PartnerShowcase from "@/components/PartnerShowcase";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <main className={styles.main}>
         <HeroSection />
         <AgentsTable />
+        <PartnerShowcase />
       </main>
       <Footer />
     </div>
