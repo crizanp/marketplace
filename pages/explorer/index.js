@@ -89,7 +89,7 @@ const Explorer = () => {
         marketCap: gekkoMarketData.fdv || 1000000, // Use FDV from DexScreener or fallback
         price: gekkoMarketData.priceUsd || "0.12345", // Use price from DexScreener or fallback
         upvotes: 9999,
-        submittedAt: "3000-01-01", // Custom listed time
+        submittedAt: "2024-12-20", // Custom listed time
       };
 
       // Assign random upvotes (2-4 digit numbers) to each agent
@@ -321,7 +321,7 @@ const Explorer = () => {
                   </td>
                   <td className="px-4 py-3">
                     {agent.contractAddress === "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
-                      ? "3000 BCE" // Exceptional case for Gekko AI
+                      ? getRelativeTime(agent.submittedAt) // Exceptional case for Gekko AI
                       : getRelativeTime(agent.submittedAt)}
                   </td>
 

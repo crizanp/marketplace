@@ -181,7 +181,7 @@ const Navbar = () => {
         </li>
         <li>
           <a onClick={openModal} style={{ cursor: "pointer" }}>
-            📤 List Agent
+            📤 Create Agent
           </a>
         </li>
       </ul>

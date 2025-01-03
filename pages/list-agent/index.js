@@ -144,7 +144,7 @@ const ListAgent = () => {
     if (tab === "New Submission") {
       router.push("/list-agent");
     } else if (tab === "AI Agent Launchpad") {
-      router.push("/launch-agent");
+      router.push("/list-agent?tab=launch-agent");
     }
   };
 
