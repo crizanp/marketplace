@@ -61,7 +61,6 @@ const TokenDetail = () => {
         }
         const apiData = await apiResponse.json();
 
-        // Update state with API data
         setDexData((prev) => ({
           ...prev,
           ...apiData,
@@ -77,9 +76,8 @@ const TokenDetail = () => {
 
         const priceChange24h = tokenData.priceChange?.h24 ? parseFloat(tokenData.priceChange.h24) : null;
         const chainId = tokenData.chainId || null;
-        const website = tokenData.info.websites?.[0]?.url || "N/A";
+        const website = tokenData.info?.websites?.[0]?.url || "https://aigekko.fun";
 
-        // Update state with DexScreener data
         setDexData((prev) => ({
           ...prev,
           priceChange24h,
@@ -88,25 +86,24 @@ const TokenDetail = () => {
         }));
         setChainId(chainId);
 
-        // Fetch comments
         const commentsResponse = await fetch(`/api/comments?contractAddress=${contractaddress}`);
         if (!commentsResponse.ok) {
           throw new Error("Failed to fetch comments.");
         }
         const commentsData = await commentsResponse.json();
-
-        // Update state with comments
         setComments(commentsData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
+
     fetchData();
   }, [contractaddress]);
 
   const transformedChainId =
     chainId?.toLowerCase() === "sui" ? "sui-network" : chainId;
+  chainId?.toLowerCase() === "Bsc" ? "bsc" : chainId;
 
   const handleVote = (type) => {
     if (type === "upvote") {

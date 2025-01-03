@@ -1,6 +1,19 @@
 import { MongoClient } from "mongodb";
 import fetch from "node-fetch"; // Import node-fetch to make external API calls
 
+// Chain logo mapping
+const chainLogos = {
+    polygon: "https://dd.dexscreener.com/ds-data/chains/polygon.png",
+    arbitrum: "https://dd.dexscreener.com/ds-data/chains/arbitrum.png",
+    hyperliquid: "https://dd.dexscreener.com/ds-data/chains/hyperliquid.png",
+    ton: "https://dd.dexscreener.com/ds-data/chains/ton.png",
+    pulsechain: "https://dd.dexscreener.com/ds-data/chains/pulsechain.png",
+    sui: "https://dd.dexscreener.com/ds-data/chains/sui.png",
+    bsc: "https://dd.dexscreener.com/ds-data/chains/bsc.png",
+    base: "https://dd.dexscreener.com/ds-data/chains/base.png",
+    ethereum: "https://dd.dexscreener.com/ds-data/chains/ethereum.png",
+    solana: "https://dd.dexscreener.com/ds-data/chains/solana.png",
+};
 // Replace with your MongoDB URI and Database Name
 const MONGODB_URI = process.env.MONGODB_URI;
 const DATABASE_NAME = process.env.DATABASE_NAME;
@@ -102,7 +115,7 @@ export default async function handler(req, res) {
                 ticker: agent.ticker,
                 description: agent.description,
                 type: agent.type,
-                chain: agent.chain,
+                chain: agent.chain, // Use the `chain` property from the agent object
                 social: agent.social,
                 utility: agent.utility,
                 contractAddress: agent.contractAddress,
@@ -111,7 +124,7 @@ export default async function handler(req, res) {
                 liquidity: dexData.liquidity || 0,
                 price: dexData.price || "N/A",
                 priceChange24h: dexData.priceChange?.h24 || "N/A", // Include 24h price change
-                logo: dexData.logo || "https://via.placeholder.com/50",
+                logo: dexData.logo || chainLogos[agent.chain?.toLowerCase()] || null, // Use agent.chain safely
                 status: agent.status,
                 submittedAt: agent.submittedAt,
             };
@@ -170,7 +183,7 @@ export default async function handler(req, res) {
                     ticker: agent.ticker,
                     description: agent.description,
                     type: agent.type,
-                    chain: agent.chain,
+                    chain: agent.chain, // Ensure the chain property is used from agent
                     social: agent.social,
                     utility: agent.utility,
                     contractAddress: agent.contractAddress,
@@ -179,12 +192,13 @@ export default async function handler(req, res) {
                     liquidity: dexData.liquidity || 0,
                     price: dexData.price || "N/A",
                     priceChange24h: dexData.priceChange?.h24 || "N/A", // Include 24h price change
-                    logo: dexData.logo || "https://via.placeholder.com/50",
+                    logo: dexData.logo || chainLogos[agent.chain?.toLowerCase()] || null, // Use agent.chain safely
                     status: agent.status,
                     submittedAt: agent.submittedAt,
                 };
             })
         );
+
 
         if (query === "top10") {
             const top10Agents = agentsWithDexData
@@ -216,9 +230,10 @@ export default async function handler(req, res) {
                     contractAddress: token.contractAddress,
                     price: token.price,
                     score: normalizedScore,
-                    logo: token.logo || "https://via.placeholder.com/50",
+                    logo: token.logo || chainLogos[token.chain?.toLowerCase()],
                 };
             });
+
 
             const sortedTrendingTokens = trendingTokens
                 .sort((a, b) => b.score - a.score)
