@@ -31,19 +31,20 @@ async function fetchDexData(contractAddress) {
         if (data?.pairs?.length > 0) {
             const pair = data.pairs[0]; // Use the first pair for scoring
             return {
-                marketCap: pair.marketCap || null, // Fetch marketCap if available
+                marketCap: pair.marketCap || null,
                 volume24h: pair.volume?.h24 || 0,
                 liquidity: pair.liquidity?.usd || 0,
-                price: pair.priceUsd || null, // Fetch price
+                price: pair.priceUsd || null,
+                priceChange: pair.priceChange || {}, // Include price change details
                 logo: pair.info?.imageUrl || null,
             };
         }
 
         console.warn(`No data available for contract: ${contractAddress}`);
-        return { marketCap: null, volume24h: 0, liquidity: 0, price: null, logo: null };
+        return { marketCap: null, volume24h: 0, liquidity: 0, price: null, priceChange: {}, logo: null };
     } catch (error) {
         console.error(`Error fetching Dex data for ${contractAddress}:`, error);
-        return { marketCap: null, volume24h: 0, liquidity: 0, price: null, logo: null };
+        return { marketCap: null, volume24h: 0, liquidity: 0, price: null, priceChange: {}, logo: null };
     }
 }
 
@@ -69,7 +70,7 @@ export default async function handler(req, res) {
             const agent = await db.collection("agents").findOne(
                 {
                     contractAddress: contractAddress,
-                    status: "approved" // Ensure the agent is approved
+                    status: "approved"
                 },
                 {
                     projection: {
@@ -78,7 +79,7 @@ export default async function handler(req, res) {
                         description: 1,
                         type: 1,
                         chain: 1,
-                        marketCap: 1, // Include marketCap for fallback
+                        marketCap: 1,
                         contractAddress: 1,
                         social: 1,
                         utility: 1,
@@ -105,10 +106,11 @@ export default async function handler(req, res) {
                 social: agent.social,
                 utility: agent.utility,
                 contractAddress: agent.contractAddress,
-                marketCap: dexData.marketCap || agent.marketCap || 0, // Prioritize Dex data
+                marketCap: dexData.marketCap || agent.marketCap || 0,
                 volume24h: dexData.volume24h || 0,
                 liquidity: dexData.liquidity || 0,
                 price: dexData.price || "N/A",
+                priceChange24h: dexData.priceChange?.h24 || "N/A", // Include 24h price change
                 logo: dexData.logo || "https://via.placeholder.com/50",
                 status: agent.status,
                 submittedAt: agent.submittedAt,
@@ -176,12 +178,21 @@ export default async function handler(req, res) {
                     volume24h: dexData.volume24h || 0,
                     liquidity: dexData.liquidity || 0,
                     price: dexData.price || "N/A",
+                    priceChange24h: dexData.priceChange?.h24 || "N/A", // Include 24h price change
                     logo: dexData.logo || "https://via.placeholder.com/50",
                     status: agent.status,
                     submittedAt: agent.submittedAt,
                 };
             })
         );
+
+        if (query === "top10") {
+            const top10Agents = agentsWithDexData
+                .sort((a, b) => (b.marketCap || 0) - (a.marketCap || 0))
+                .slice(0, 9); // Fetch exactly 9 results
+
+            return res.status(200).json(top10Agents);
+        }
 
         if (query === "trending") {
             const agentsWithScores = agentsWithDexData.map((agent) => {

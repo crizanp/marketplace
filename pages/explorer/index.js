@@ -83,7 +83,7 @@ const Explorer = () => {
       const pinnedToken = {
         contractAddress: "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump",
         name: "Gekko AI",
-        ticker: "GEK",
+        ticker: "GEKKO",
         chain: "solana",
         logo: "https://aigekko.vercel.app/D.png", // Replace with actual logo URL
         marketCap: gekkoMarketData.fdv || 1000000, // Use FDV from DexScreener or fallback
@@ -276,11 +276,11 @@ const Explorer = () => {
               <tr className="bg-gray-700 text-green-400 text-left">
                 <th className="px-4 py-3 uppercase font-medium">#</th>
                 <th className="px-4 py-3 uppercase font-medium">Name</th>
+                <th className="px-4 py-3 uppercase font-medium">Ticker</th>
                 <th className="px-4 py-3 uppercase font-medium">Chain</th>
                 <th className="px-4 py-3 uppercase font-medium">Market Cap</th>
                 <th className="px-4 py-3 uppercase font-medium">Listed On</th>
                 <th className="px-4 py-3 uppercase font-medium">Price</th>
-                <th className="px-4 py-3 uppercase font-medium">Upvotes</th>
                 <th className="px-4 py-3 uppercase font-medium">Action</th>
               </tr>
             </thead>
@@ -304,6 +304,8 @@ const Explorer = () => {
                     />
                     <span>{agent.name}</span>
                   </td>
+                  <td className="px-4 py-3">{agent.ticker}</td>
+
                   <td className="px-4 py-3">
                     {agent.chain
                       ? agent.chain.charAt(0).toUpperCase() + agent.chain.slice(1)
@@ -324,12 +326,11 @@ const Explorer = () => {
                   </td>
 
                   <td className="px-4 py-3">{agent.price || "N/A"}</td>
-                  <td className="px-4 py-3">{agent.upvotes}</td>
                   <td className="px-4 py-3">
                     <button
                       className={`px-3 py-1 rounded ${agent.contractAddress === "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
-                          ? "bg-green-400 text-gray-900 hover:bg-green-500" // Green background for Gekko AI
-                          : "border border-green-400 text-green-400 hover:bg-green-400 hover:text-gray-900"
+                        ? "bg-green-400 text-gray-900 hover:bg-green-500" // Green background for Gekko AI
+                        : "border border-green-400 text-green-400 hover:bg-green-400 hover:text-gray-900"
                         }`}
                       onClick={() => handleViewDetails(agent.contractAddress)}
                     >

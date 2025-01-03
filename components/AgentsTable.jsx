@@ -21,21 +21,46 @@ const AgentsTable = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch data from API
     const fetchAgents = async () => {
+      setIsLoading(true);
+
       try {
+        // Fetch top 10 agents
         const response = await fetch("/api/getdata?query=top10");
-        if (!response.ok) {
-          throw new Error("Failed to fetch agents");
-        }
+        if (!response.ok) throw new Error("Failed to fetch agents");
+
         const data = await response.json();
 
-        // Sort by market cap in descending order and select the top 10
-        const sortedAgents = data
-          .sort((a, b) => b.marketCap - a.marketCap)
-          .slice(0, 10);
+        // Fetch Gekko AI data from DexScreener
+        const gekkoResponse = await fetch(
+          "https://api.dexscreener.io/latest/dex/tokens/G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
+        );
+        if (!gekkoResponse.ok) throw new Error("Failed to fetch Gekko AI data");
 
-        setAgents(sortedAgents);
+        const gekkoData = await gekkoResponse.json();
+        const gekkoMarketData = gekkoData.pairs[0] || {};
+
+        // Define the pinned token
+        const pinnedToken = {
+          contractAddress: "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump",
+          name: "Gekko AI",
+          ticker: "GEKKO",
+          chain: "Solana",
+          logo: "https://aigekko.vercel.app/D.png", // Replace with actual logo URL
+          marketCap: gekkoMarketData.fdv || 1000000, // Use FDV or fallback
+          price: gekkoMarketData.priceUsd || "0.12345", // Use price or fallback
+          volume24h: gekkoMarketData.volume?.h24 || 0, // Use volume or fallback
+          priceChange24h: gekkoMarketData.priceChange?.h24 || 0, // Use price change or fallback
+          submittedAt: "3000-01-01", // Custom listed time
+        };
+
+        // Ensure pinned token is not duplicated
+        const filteredAgents = data.filter(
+          (agent) => agent.contractAddress !== pinnedToken.contractAddress
+        );
+
+        // Add the pinned token to the top of the list
+        setAgents([pinnedToken, ...filteredAgents]);
       } catch (error) {
         console.error("Error fetching agents:", error);
       } finally {
@@ -46,11 +71,19 @@ const AgentsTable = () => {
     fetchAgents();
   }, []);
 
+  // Function to format large numbers
+  const formatNumber = (num) => {
+    if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`;
+    if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
+    if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
+    return num.toString();
+  };
+
   // Function to calculate relative time
   const getRelativeTime = (date) => {
     const now = new Date();
     const submitted = new Date(date);
-    const diff = now - submitted; // Difference in milliseconds
+    const diff = now - submitted;
 
     const seconds = Math.floor(diff / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -75,20 +108,18 @@ const AgentsTable = () => {
 
   return (
     <div className="lg:px-10 lg:p-5 pb-5 bg-gray-900 text-gray-100">
-      {/* Centered Heading */}
       <div className="text-center mb-5">
         <h2 className="text-2xl font-bold text-green-400 pt-4">
           TOP 10 AGENTS
         </h2>
       </div>
 
-      {/* Agents Table */}
       <div className="overflow-x-auto rounded-lg scrollbar-hide">
         <table className="w-full min-w-[900px] border-collapse bg-gray-800 text-gray-300 text-sm">
           <thead>
             <tr className="bg-gray-700 text-green-400 text-left">
               <th className="px-4 py-3 uppercase font-medium text-center">#</th>
-              <th className="px-4 py-3 uppercase font-medium ">Name</th>
+              <th className="px-4 py-3 uppercase font-medium">Name</th>
               <th className="px-4 py-3 uppercase font-medium text-left">
                 Chain
               </th>
@@ -96,45 +127,44 @@ const AgentsTable = () => {
                 Market Cap
               </th>
               <th className="px-4 py-3 uppercase font-medium text-center">
-                Listed Time
+                24h Volume
               </th>
               <th className="px-4 py-3 uppercase font-medium text-center">
                 Price
               </th>
               <th className="px-4 py-3 uppercase font-medium text-center">
-                Upvotes
+                Listed Time
               </th>
             </tr>
           </thead>
           <tbody>
             {agents.map((agent, index) => (
               <tr
-                key={agent._id}
-                className="border-b border-gray-700 hover:bg-gray-700"
+                key={agent.contractAddress}
+                className={`border-b border-gray-700 hover:bg-gray-700 ${
+                  agent.contractAddress ===
+                  "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
+                    ? ""
+                    : ""
+                }`}
               >
-                {/* Index */}
                 <td className="px-4 py-3 text-center">{index + 1}</td>
 
-                {/* Name */}
                 <td className="px-4 py-3 truncate max-w-xs flex items-center gap-2">
                   <img
-                    src={
-                      agent.logo ||
-                      "https://cryptologos.cc/logos/solana-sol-logo.png"
-                    }
+                    src={agent.logo || "https://via.placeholder.com/50"}
                     alt="Agent Logo"
                     className="h-6 w-6 rounded-full"
                   />
                   {agent.name} ({agent.ticker})
                 </td>
 
-                {/* Chain */}
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <img
                       src={
                         chainLogos[agent.chain.toLowerCase()] ||
-                        "https://cryptologos.cc/logos/solana-sol-logo.png"
+                        "https://via.placeholder.com/50"
                       }
                       alt="Chain Logo"
                       className="h-6 w-6 rounded-full"
@@ -143,7 +173,6 @@ const AgentsTable = () => {
                   </div>
                 </td>
 
-                {/* Market Cap */}
                 <td className="px-4 py-3 text-center">
                   {agent.marketCap.toLocaleString("en-US", {
                     style: "currency",
@@ -151,23 +180,28 @@ const AgentsTable = () => {
                   })}
                 </td>
 
-                {/* Listed Time */}
                 <td className="px-4 py-3 text-center">
-                  {getRelativeTime(agent.submittedAt)}
+                  {formatNumber(agent.volume24h)}
                 </td>
 
-                {/* Price */}
-                <td className="px-4 py-3 text-center">
-                  {parseFloat(agent.price).toLocaleString("en-US", {
+                <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
+                  {agent.price.toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
                   })}
+                  {agent.priceChange24h > 0 ? (
+                    <span className="text-green-500">&#9650;</span>
+                  ) : agent.priceChange24h < 0 ? (
+                    <span className="text-red-500">&#9660;</span>
+                  ) : (
+                    <span className="text-gray-500">&#8213;</span>
+                  )}
                 </td>
 
-                {/* Upvotes */}
                 <td className="px-4 py-3 text-center">
-                  {/* Dummy Upvotes */}
-                  {Math.floor(Math.random() * 1000)}
+                  {agent.submittedAt === "3000-01-01"
+                    ? "-"
+                    : getRelativeTime(agent.submittedAt)}
                 </td>
               </tr>
             ))}
@@ -175,7 +209,6 @@ const AgentsTable = () => {
         </table>
       </div>
 
-      {/* See More Link */}
       <div className="text-center mt-5">
         <Link
           href="/explorer"

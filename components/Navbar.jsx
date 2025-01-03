@@ -130,6 +130,22 @@ const Navbar = () => {
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+  const ensureCorrectNetwork = async () => {
+    try {
+      const walletNetwork = await window.solana.getCluster();
+      if (walletNetwork !== "devnet") {
+        alert(
+          "Your wallet is not connected to the Testnet network. Please switch to Testnet in your wallet settings."
+        );
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Failed to check wallet network:", error);
+      alert("An error occurred while checking the network. Please try again.");
+      return false;
+    }
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -176,7 +192,7 @@ const Navbar = () => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: 350,
             bgcolor: "#f5f5f5",
             borderRadius: "12px",
             boxShadow: 24,

@@ -11,11 +11,12 @@ const HomepageTableSkeleton = () => {
                         <tr className="bg-gray-700 text-green-400">
                             <th className="px-4 py-3 uppercase font-medium text-left">#</th>
                             <th className="px-4 py-3 uppercase font-medium text-left">Name</th>
+                            <th className="px-4 py-3 uppercase font-medium text-left">Ticker</th>
+
                             <th className="px-4 py-3 uppercase font-medium text-left">Chain</th>
                             <th className="px-4 py-3 uppercase font-medium text-left">Market Cap</th>
                             <th className="px-4 py-3 uppercase font-medium text-left">Listed Time</th>
                             <th className="px-4 py-3 uppercase font-medium text-left">Price</th>
-                            <th className="px-4 py-3 uppercase font-medium text-left">Upvotes</th>
                         </tr>
                     </thead>
                     <tbody>

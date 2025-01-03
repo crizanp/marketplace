@@ -86,7 +86,7 @@ export default async function handler(req, res) {
         const client = await connectToDatabase();
         const db = client.db(DATABASE_NAME);
 
-        const pageSize = 10; // Number of items per page
+        const pageSize = 9; // Number of items per page
         const skip = (page - 1) * pageSize;
 
         // Base filter
