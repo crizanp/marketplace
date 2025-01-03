@@ -48,7 +48,11 @@ const Navbar = () => {
   useEffect(() => {
     const walletAddress = Cookies.get("walletAddress");
     if (connected && !isSignedIn && !walletAddress) {
-      handleSignIn();
+      if (isMobileDevice()) {
+        handleConnectOnly(); // Connect only on mobile devices
+      } else {
+        handleSignIn(); // Sign in on non-mobile devices
+      }
     }
   }, [connected]);
 
@@ -83,6 +87,16 @@ const Navbar = () => {
       alert(
         `Failed to sign in: ${error.message || "An unexpected error occurred."}`
       );
+    }
+  };
+
+  const handleConnectOnly = () => {
+    if (connected) {
+      Cookies.set("walletAddress", publicKey.toString(), { path: "/" });
+      setIsSignedIn(true); // Set as signed in when connected on mobile
+      console.log("Wallet connected on mobile:", publicKey?.toString());
+    } else {
+      connectMobileWallet();
     }
   };
 
@@ -130,23 +144,6 @@ const Navbar = () => {
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
-
-  const ensureCorrectNetwork = async () => {
-    try {
-      const walletNetwork = await window.solana.getCluster();
-      if (walletNetwork !== "mainnet-beta") {
-        alert(
-          "Your wallet is not connected to the Mainnet network. Please switch to Mainnet in your wallet settings."
-        );
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error("Failed to check wallet network:", error);
-      alert("An error occurred while checking the network. Please try again.");
-      return false;
-    }
-  };
 
   return (
     <nav className={styles.navbar}>
