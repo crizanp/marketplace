@@ -24,12 +24,18 @@ const WalletMultiButton = dynamic(
 
 // Detect if running on a mobile device
 const isMobileDevice = () => {
-  if (typeof window === "undefined" || typeof navigator === "undefined") {
-    return false;
-  }
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
+  if (typeof window === "undefined") return false;
+
+  const mobileRegex =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+  const isMobile = mobileRegex.test(navigator.userAgent);
+
+  // Additional checks for screen size
+  const screenWidth = window.innerWidth || document.documentElement.clientWidth;
+  const screenHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+
+  return isMobile || screenWidth <= 768;
 };
 
 // Navbar Component
@@ -54,15 +60,22 @@ const Navbar = () => {
 
   const handleSignIn = async () => {
     try {
+      // Check wallet connection status
       if (!connected) {
         if (isMobileDevice()) {
-          connectMobileWallet();
+          // Improved mobile wallet connection logic
+          if (!window.solana || !window.solana.isPhantom) {
+            alert("Phantom wallet not detected. Please install first.");
+            connectMobileWallet();
+            return;
+          }
         } else {
           alert("Please connect your wallet first.");
+          return;
         }
-        return;
       }
 
+      // Rest of the sign-in logic remains the same
       const message = `Sign in to GekkoAI at ${new Date().toISOString()}`;
       const encodedMessage = new TextEncoder().encode(message);
 
@@ -72,41 +85,70 @@ const Navbar = () => {
 
       const signature = await signMessage(encodedMessage);
 
-      console.log("Signature:", signature);
-      console.log("Public Key:", publicKey.toString());
+      // Additional validation
+      if (!signature) {
+        throw new Error("Signature creation failed.");
+      }
 
       Cookies.set("walletAddress", publicKey.toString(), { path: "/" });
       setIsSignedIn(true);
       alert("Successfully signed in!");
     } catch (error) {
-      console.error("Error signing message:", error);
-      alert(
-        `Failed to sign in: ${error.message || "An unexpected error occurred."}`
-      );
+      console.error("Sign-in Error:", error);
+
+      // Detailed error messaging
+      const errorMessage = error.message || "An unexpected error occurred.";
+
+      if (errorMessage.includes("no installed wallet")) {
+        alert(
+          "No compatible Solana wallet found. Please install Phantom or Solflare."
+        );
+        connectMobileWallet();
+      } else {
+        alert(`Failed to sign in: ${errorMessage}`);
+      }
     }
   };
 
   const connectMobileWallet = () => {
-    const phantomDeepLink =
-      "https://phantom.app/ul/connect?network=mainnet-beta";
-    const iosStoreLink =
-      "https://apps.apple.com/app/phantom-crypto-wallet/id1567713696";
-    const androidStoreLink =
-      "https://play.google.com/store/apps/details?id=io.phantom.android";
-
-    if (navigator.userAgent.includes("Phantom")) {
-      // Open Phantom app
-      window.location.href = phantomDeepLink;
+    // Check for specific mobile wallet providers
+    if (window.solana && window.solana.isPhantom) {
+      // Phantom wallet detected
+      window.solana.connect();
+    } else if (window.solflare && window.solflare.isSolflare) {
+      // Solflare wallet detected
+      window.solflare.connect();
     } else {
-      const storeLink = /iPhone|iPad|iPod/i.test(navigator.userAgent)
-        ? iosStoreLink
-        : androidStoreLink;
+      // Provide clear wallet installation guidance
+      const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 
-      const installPhantom = confirm(
-        "Phantom Wallet is not installed. Would you like to install it?"
-      );
-      if (installPhantom) {
-        window.location.href = storeLink;
+      if (isMobile) {
+        const walletOptions = [
+          {
+            name: "Phantom",
+            ios: "https://apps.apple.com/app/phantom-crypto-wallet/id1567713696",
+            android:
+              "https://play.google.com/store/apps/details?id=io.phantom.android",
+          },
+          {
+            name: "Solflare",
+            ios: "https://apps.apple.com/app/solflare/id1580902014",
+            android:
+              "https://play.google.com/store/apps/details?id=com.solflare.mobile",
+          },
+        ];
+
+        const platform = /iPhone|iPad/.test(navigator.userAgent)
+          ? "ios"
+          : "android";
+
+        const message = `No compatible mobile wallet found. Would you like to install ${walletOptions[0].name}?`;
+
+        if (confirm(message)) {
+          window.location.href = walletOptions[0][platform];
+        }
+      } else {
+        alert("Please install a Solana wallet like Phantom or Solflare");
       }
     }
   };

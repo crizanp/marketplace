@@ -7,13 +7,21 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
+  // Consider adding mobile-specific adapters
+  SolongWalletAdapter,
+  TorusWalletAdapter
 } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import Script from 'next/script'; // Import Next.js Script component
 
 export default function App({ Component, pageProps }) {
   const network = clusterApiUrl('mainnet-beta'); // Change this to 'mainnet-beta' for production
-  const wallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], []);
+  const wallets = useMemo(() => [
+    new PhantomWalletAdapter(),
+    new SolflareWalletAdapter(),
+    new SolongWalletAdapter(),
+    new TorusWalletAdapter()
+  ], []);
 
   return (
     <>
