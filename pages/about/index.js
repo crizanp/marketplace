@@ -64,29 +64,49 @@ const About = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                         {/* Card 1 */}
                         <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                            <h3 className="text-2xl font-semibold text-green-300 mb-4">AI Agent Launchpad</h3>
+                            <h3 className="text-2xl font-semibold text-green-300 mb-4">AI Agent Marketplace</h3>
                             <p className="text-gray-300">
-                                Build, deploy, and scale AI agents seamlessly on Solana&apos;s high-speed and low-cost blockchain network. Leverage cutting-edge tools to redefine decentralized intelligence.
+                                Discover a diverse range of AI agents tailored for multiple blockchains, including Solana, Ethereum, and BSC. Easily browse, deploy, and integrate AI solutions for trading, analytics, and automation.
                             </p>
                         </div>
                         {/* Card 2 */}
                         <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Developer Resources</h3>
+                            <h3 className="text-2xl font-semibold text-green-300 mb-4">AI Agent Launchpad</h3>
                             <p className="text-gray-300">
-                                Access comprehensive developer resources, including SDKs, APIs, and funding opportunities, to bring your AI solutions to life on Solana.
+                                Empower developers with the tools and support needed to build and deploy AI agents on Solana&apos;s high-speed blockchain. Kickstart your AI projects with ease using our state-of-the-art launchpad.
                             </p>
                         </div>
                         {/* Card 3 */}
                         <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
+                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Multichain Support</h3>
+                            <p className="text-gray-300">
+                                Enable seamless interoperability with AI agents across various chains like Polygon, Ethereum, Solana, and more. Unlock the true potential of decentralized AI with multichain capabilities.
+                            </p>
+                        </div>
+                        {/* Card 4 */}
+                        <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
+                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Developer Resources</h3>
+                            <p className="text-gray-300">
+                                Access comprehensive SDKs, APIs, and documentation to create, test, and deploy AI agents. Benefit from grant programs and community support to accelerate your development.
+                            </p>
+                        </div>
+                        {/* Card 5 */}
+                        <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
                             <h3 className="text-2xl font-semibold text-green-300 mb-4">Scalable Blockchain Infrastructure</h3>
                             <p className="text-gray-300">
-                                Harness the power of Solana’s scalable and efficient blockchain infrastructure to deploy AI agents optimized for speed and cost-effectiveness.
+                                Leverage Solana&apos;s scalable and efficient blockchain infrastructure to ensure fast, low-cost transactions, making AI agent deployment seamless and reliable.
+                            </p>
+                        </div>
+                        {/* Card 6 */}
+                        <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
+                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Community Collaboration</h3>
+                            <p className="text-gray-300">
+                                Join a thriving community of developers and innovators to co-create and refine groundbreaking AI solutions. Share knowledge and push the boundaries of decentralized AI.
                             </p>
                         </div>
                     </div>
                 </div>
             </section>
-
 
             {/* Why Choose Gekko AI Section */}
             <section className="py-16">
