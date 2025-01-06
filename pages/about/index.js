@@ -58,53 +58,35 @@ const About = () => {
             {/* What We Offer Section */}
             <section className="py-16 bg-gray-800">
                 <div className="container mx-auto px-6 lg:px-20">
-                    <h2 className="text-4xl lg:text-5xl font-bold text-green-400 mb-12 text-center">What We Offer</h2>
+                    <h2 className="text-4xl lg:text-5xl font-bold text-green-400 mb-12 text-center">
+                        What We Offer
+                    </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                         {/* Card 1 */}
                         <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                            <h3 className="text-2xl font-semibold text-green-300 mb-4">AI Agent Marketplace</h3>
+                            <h3 className="text-2xl font-semibold text-green-300 mb-4">AI Agent Launchpad</h3>
                             <p className="text-gray-300">
-                                Discover and deploy AI agents tailored for trading, research, DeFi, and NFT analysis. Our marketplace is your gateway to cutting-edge AI tools.
+                                Build, deploy, and scale AI agents seamlessly on Solana&apos;s high-speed and low-cost blockchain network. Leverage cutting-edge tools to redefine decentralized intelligence.
                             </p>
                         </div>
                         {/* Card 2 */}
                         <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Tokenized AI Agents</h3>
+                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Developer Resources</h3>
                             <p className="text-gray-300">
-                                Each AI agent is tokenized, ensuring secure ownership, transparent trading, and collaboration within a decentralized environment.
+                                Access comprehensive developer resources, including SDKs, APIs, and funding opportunities, to bring your AI solutions to life on Solana.
                             </p>
                         </div>
                         {/* Card 3 */}
                         <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Launchpad for Developers</h3>
+                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Scalable Blockchain Infrastructure</h3>
                             <p className="text-gray-300">
-                                Empowering developers with tools, funding, and resources to create and deploy AI solutions that shape the blockchain future.
-                            </p>
-                        </div>
-                        {/* Card 4 */}
-                        <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                            <h3 className="text-2xl font-semibold text-green-300 mb-4">GEKKO Token Utility</h3>
-                            <p className="text-gray-300">
-                                Use GEKKO tokens for transactions, governance, staking, and exclusive access to premium AI agent features.
-                            </p>
-                        </div>
-                        {/* Card 5 */}
-                        <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Educational Resources</h3>
-                            <p className="text-gray-300">
-                                Access tutorials, insights, and guides to bridge the gap between blockchain and AI, empowering users to innovate.
-                            </p>
-                        </div>
-                        {/* Card 6 */}
-                        <div className="p-6 bg-gray-700 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                            <h3 className="text-2xl font-semibold text-green-300 mb-4">Community Collaboration</h3>
-                            <p className="text-gray-300">
-                                Engage in a transparent, decentralized community of developers and users to co-create groundbreaking AI solutions.
+                                Harness the power of Solana’s scalable and efficient blockchain infrastructure to deploy AI agents optimized for speed and cost-effectiveness.
                             </p>
                         </div>
                     </div>
                 </div>
             </section>
+
 
             {/* Why Choose Gekko AI Section */}
             <section className="py-16">
