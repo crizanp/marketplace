@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FloatingMessage from "./FloatingMessage";
 
 const truncateCommentAddress = (address) => {
     if (!address) return "Unknown";
@@ -12,7 +13,10 @@ const CommentsSection = ({ contractAddress, publicKey, connected }) => {
     const [captchaToken, setCaptchaToken] = useState(null); // hCaptcha token
 
     const siteKey = "6c4cfef2-0abc-483a-a4b4-5f1897a2f2dc"; // Replace with your hCaptcha site key
-
+    const [floatingMessage, setFloatingMessage] = useState(null);
+    const showFloatingMessage = (message, type) => {
+        setFloatingMessage({ message, type });
+    };
     // Fetch comments from the server
     useEffect(() => {
         const fetchComments = async () => {
@@ -49,17 +53,26 @@ const CommentsSection = ({ contractAddress, publicKey, connected }) => {
     // Add a new comment
     const addComment = async () => {
         if (!connected || !publicKey) {
-            alert("Please connect your wallet to add a comment.");
+            showFloatingMessage(
+                `Please connect your wallet to add a comment.`,
+                "failure"
+            );
             return;
         }
 
         if (!newComment.trim()) {
-            alert("Comment cannot be empty.");
+            showFloatingMessage(
+                `Comment cannot be empty.`,
+                "failure"
+            );
             return;
         }
 
         if (!captchaToken) {
-            alert("Please complete the CAPTCHA verification.");
+            showFloatingMessage(
+                `Please complete the CAPTCHA verification.`,
+                "failure"
+            );
             return;
         }
 
@@ -92,7 +105,10 @@ const CommentsSection = ({ contractAddress, publicKey, connected }) => {
             setCaptchaToken(null); // Reset CAPTCHA
         } catch (error) {
             console.error("Error submitting comment:", error);
-            alert("Failed to add comment. Please try again.");
+            showFloatingMessage(
+                `Failed to add comment. Please try again.`,
+                "failure"
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -101,7 +117,10 @@ const CommentsSection = ({ contractAddress, publicKey, connected }) => {
     // Handle comment likes
     const handleLike = async (commentId) => {
         if (!connected || !publicKey) {
-            alert("Please connect your wallet to like a comment.");
+            showFloatingMessage(
+                `Please connect your wallet to like a comment`,
+                "failure"
+            );
             return;
         }
 
@@ -134,6 +153,13 @@ const CommentsSection = ({ contractAddress, publicKey, connected }) => {
 
     return (
         <div className="mt-4 bg-gray-800 p-4 rounded-lg shadow-md">
+            {floatingMessage && (
+                <FloatingMessage
+                    message={floatingMessage.message}
+                    type={floatingMessage.type}
+                    onClose={() => setFloatingMessage(null)}
+                />
+            )}
             <h2 className="text-xl font-bold text-white border-b border-gray-700 pb-1 mb-3">
                 Community Comments
             </h2>

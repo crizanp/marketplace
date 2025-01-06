@@ -8,10 +8,14 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import AgentEditor from "@/components/AgentEditor";
 import { useRouter } from "next/router";
 
+import Head from "next/head";
 
 const ListAgent = () => {
   const { connected, publicKey } = useWallet();
-
+  const [floatingMessage, setFloatingMessage] = useState(null);
+  const showFloatingMessage = (message, type) => {
+    setFloatingMessage({ message, type });
+  };
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [contractAddress, setContractAddress] = useState("");
   const [agentDetails, setAgentDetails] = useState({
@@ -55,7 +59,7 @@ const ListAgent = () => {
 
   const fetchAgentData = async () => {
     if (!contractAddress) {
-      alert("Please enter a contract address.");
+      showFloatingMessage("Please enter a contract address.", "warning");
       return;
     }
 
@@ -89,11 +93,17 @@ const ListAgent = () => {
           type: prev.type,
         }));
       } else {
-        alert("No data found for the provided contract address.");
+        showFloatingMessage(
+          `No data found for the provided contract address.`,
+          "failure"
+        );
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      alert("Failed to fetch data. Please try again.");
+      showFloatingMessage(
+        `Failed to fetch data. Please try again.`,
+        "failure"
+      );
     }
     setIsLoading(false);
   };
@@ -152,14 +162,20 @@ const ListAgent = () => {
     e.preventDefault();
 
     if (!connected) {
-      alert("You must connect your wallet before submitting.");
+      showFloatingMessage(
+        `You must connect your wallet before submitting.`,
+        "warning"
+      );
       return;
     }
 
     try {
       // Ensure the wallet address is available
       if (!publicKey) {
-        alert("Wallet address is not available.");
+        showFloatingMessage(
+          `Wallet address is not available`,
+          "failure"
+        );
         return;
       }
 
@@ -189,10 +205,16 @@ const ListAgent = () => {
       console.log("Submission result:", result);
 
       setIsSubmitted(true);
-      alert("🎉 Your submission has been received!");
+      showFloatingMessage(
+        `🎉 Your submission has been received!`,
+        "success"
+      );
     } catch (error) {
       console.error("Error submitting agent:", error);
-      alert("Failed to submit. Please try again.");
+      showFloatingMessage(
+        `Failed to submit. Please try again.`,
+        "failure"
+      );
     }
   };
 
@@ -200,6 +222,47 @@ const ListAgent = () => {
 
   return (
     <>
+      <Head>
+        <title>List Your AI Agent - Gekko AI Marketplace</title>
+        <meta
+          name="description"
+          content="List your AI agent on the Gekko AI marketplace. Showcase your project to a global audience and join the future of AI innovation on the Solana blockchain."
+        />
+        <meta
+          name="keywords"
+          content="AI agent marketplace, AI launchpad, Gekko AI, list AI agents, Solana blockchain, blockchain innovation, crypto AI agents"
+        />
+        <meta
+          property="og:title"
+          content="List Your AI Agent - Gekko AI Marketplace"
+        />
+        <meta
+          property="og:description"
+          content="Showcase your AI agent on the Gekko AI marketplace and gain exposure to a global audience. Join the forefront of AI innovation."
+        />
+        <meta
+          property="og:image"
+          content="/gekkobanner.jpg"
+        />
+        <meta property="og:url" content="https://www.aigekko.fun/list-agent" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="List Your AI Agent - Gekko AI Marketplace"
+        />
+        <meta
+          name="twitter:description"
+          content="List and showcase your AI agents on the Gekko AI marketplace. Empower the future of AI on Solana."
+        />
+        <meta
+          name="twitter:image"
+          content="/gekkobanner.jpg"
+        />
+        <link
+          rel="canonical"
+          href="https://www.aigekko.fun/list-agent"
+        />
+      </Head>
       <Navbar />
       <div className="flex flex-col ">
         <div className="bg-gray-800 text-white">

@@ -25,8 +25,9 @@ const Footer = () => {
             <h2 className="text-xl font-semibold">&lt;GekkoAI/&gt;</h2>
           </div>
           <p className="text-sm leading-relaxed text-gray-400">
-            GekkoAI is your one-stop marketplace for AI agents. Explore, list,
-            and integrate advanced AI solutions seamlessly.
+            GekkoAI is your go-to platform for AI agents and a launchpad for
+            innovation. Easily explore, list, and integrate powerful AI
+            solutions to transform your blockchain projects
           </p>
         </div>
 

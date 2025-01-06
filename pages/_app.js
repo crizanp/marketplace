@@ -9,7 +9,7 @@ import {
 
 import '@/styles/globals.css';
 import '@solana/wallet-adapter-react-ui/styles.css'; // Default styles for wallet adapter
-
+import Head from 'next/head';
 import { useMemo } from 'react';
 
 import { clusterApiUrl } from '@solana/web3.js';
@@ -26,6 +26,15 @@ export default function App({ Component, pageProps }) {
 
   return (
     <>
+      <Head>
+        {/* Add custom favicon */}
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#ffffff" />
+      </Head>
       {/* Add the hCaptcha script */}
       <Script
         src="https://js.hcaptcha.com/1/api.js"

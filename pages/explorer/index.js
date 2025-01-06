@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExplorerSkeleton from "@/components/Skeleton/ExplorerSkeleton";
 import { FaSearch } from "react-icons/fa";
+import Head from "next/head";
 
 // Chain Logos Mapping
 const chainLogos = {
@@ -170,6 +171,39 @@ const Explorer = () => {
 
   return (
     <>
+      <Head>
+        <title>GekkoAI Explorer - Discover AI Agents and Blockchain Solutions</title>
+        <meta
+          name="description"
+          content="Explore GekkoAI's marketplace and launchpad for AI agents. Discover, list, and integrate innovative blockchain solutions with ease."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="keywords" content="GekkoAI, AI Agents, Blockchain, Solana, Marketplace, Launchpad, Decentralized Solutions" />
+        <meta name="author" content="GekkoAI Team" />
+
+        {/* Open Graph / Social Media Metadata */}
+        <meta property="og:title" content="GekkoAI Explorer - Discover AI Agents and Blockchain Solutions" />
+        <meta
+          property="og:description"
+          content="Dive into GekkoAI's ecosystem and uncover cutting-edge AI solutions tailored for the blockchain. Your gateway to innovation starts here!"
+        />
+        <meta property="og:image" content="/gekkobanner.jpg" />
+        <meta property="og:url" content="https://aigekko.fun/explorer" />
+        <meta property="og:type" content="website" />
+
+        {/* Twitter Card Metadata */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="GekkoAI Explorer - Discover AI Agents and Blockchain Solutions" />
+        <meta
+          name="twitter:description"
+          content="Explore GekkoAI's marketplace and launchpad for AI agents. Discover, list, and integrate innovative blockchain solutions with ease."
+        />
+        <meta name="twitter:image" content="https://aigekko.fun/gekkobanner.jpg" />
+
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
       <Navbar />
       <div className="lg:px-10 p-0 bg-gray-900 text-gray-100 overflow-x-hidden">
         <div className="flex gap-4 my-5 py-2 mx-4 overflow-x-auto scrollbar-hide sm:justify-center">

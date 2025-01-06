@@ -8,6 +8,7 @@ import { Modal, Box, Typography, IconButton } from "@mui/material";
 import { FaRocket, FaDollarSign } from "react-icons/fa";
 import { Close as CloseIcon } from "@mui/icons-material";
 import styles from "../styles/Home.module.css";
+import FloatingMessage from "./FloatingMessage";
 
 // Dynamically load WalletMultiButton
 const WalletMultiButton = dynamic(
@@ -37,6 +38,11 @@ const Navbar = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const { connected, publicKey, signMessage, disconnect } = useWallet();
+  const [floatingMessage, setFloatingMessage] = useState(null);
+
+  const showFloatingMessage = (message, type) => {
+    setFloatingMessage({ message, type });
+  };
 
   useEffect(() => {
     const walletAddress = Cookies.get("walletAddress");
@@ -62,7 +68,7 @@ const Navbar = () => {
         if (isMobileDevice()) {
           connectMobileWallet();
         } else {
-          alert("Please connect your wallet first.");
+          showFloatingMessage("Please connect your wallet first.", "warning");
         }
         return;
       }
@@ -74,19 +80,25 @@ const Navbar = () => {
         throw new Error("Your wallet does not support message signing.");
       }
 
-      const signature = await signMessage(encodedMessage);
+      // Show info message while waiting for user action
+      showFloatingMessage(
+        "Please approve the wallet signature request.",
+        "warning"
+      );
 
-      console.log("Signature:", signature);
-      console.log("Public Key:", publicKey.toString());
+      const signature = await signMessage(encodedMessage);
 
       Cookies.set("walletAddress", publicKey.toString(), { path: "/" });
       setIsSignedIn(true);
-      alert("Successfully signed in!");
+      showFloatingMessage("Successfully signed in!", "success");
     } catch (error) {
-      console.error("Error signing message:", error);
-      alert(
-        `Failed to sign in: ${error.message || "An unexpected error occurred."}`
-      );
+      const errorMessage =
+        error.message === "User rejected the request."
+          ? "Signature request rejected by the user."
+          : `Failed to sign in: ${error.message || "Unexpected error"}`;
+
+      // Show floating message for any error
+      showFloatingMessage(errorMessage, "failure");
     }
   };
 
@@ -129,7 +141,7 @@ const Navbar = () => {
     disconnect();
     clearCookies();
     setIsSignedIn(false);
-    alert("Successfully signed out!");
+    showFloatingMessage("Successfully signed out!", "success");
   };
 
   const clearCookies = () => {
@@ -147,6 +159,13 @@ const Navbar = () => {
 
   return (
     <nav className={styles.navbar}>
+      {floatingMessage && (
+        <FloatingMessage
+          message={floatingMessage.message}
+          type={floatingMessage.type}
+          onClose={() => setFloatingMessage(null)}
+        />
+      )}
       <div className={styles.topRow}>
         <div className={styles.logo}>
           <Image

@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { FaRegCopy, FaCheck } from "react-icons/fa";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import icons
 import { useWallet } from "@solana/wallet-adapter-react";
+import Head from 'next/head';
 
 import {
   FaTelegram,
@@ -179,6 +180,20 @@ const TokenDetail = () => {
   });
   return (
     <>
+      <Head>
+        <title>{dexData.name} ({dexData.ticker}) - Market Details | Gekko AI</title>
+        <meta name="description" content={`${dexData.name} (${dexData.ticker}) is a DeFi token on ${dexData.chain}. Current price: $${dexData.price}. Market cap: ${dexData.marketCap}. Learn more on Gekko AI.`} />
+        <meta name="keywords" content={`crypto, token, ${dexData.name}, ${dexData.ticker}, ${dexData.chain}, DeFi, ${dexData.baseToken?.name}`} />
+        <meta property="og:title" content={`${dexData.name} (${dexData.ticker}) - Market Details | Gekko AI`} />
+        <meta property="og:description" content={`Explore ${dexData.name} (${dexData.ticker}), a ${dexData.chain}-based token. Price: $${dexData.price}, Market Cap: ${dexData.marketCap}, Volume: ${dexData.volume24h}.`} />
+        <meta property="og:image" content={dexData.logo || "/gekkobanner.jpg"} />
+        <meta property="og:url" content={`https://www.aigekko.fun/token/${dexData.contractAddress}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${dexData.name} (${dexData.ticker}) - Market Details | Gekko AI`} />
+        <meta name="twitter:description" content={`Explore ${dexData.name} (${dexData.ticker}) with current price $${dexData.price} and market cap ${dexData.marketCap}.`} />
+        <meta name="twitter:image" content={dexData.logo || "/gekkobanner.jpg"} />
+        <link rel="canonical" href={`https://www.aigekko.fun/token/${dexData.contractAddress}`} />
+      </Head>
       <Navbar />
       <div className="min-h-screen bg-gray-900 text-white font-professional">
         {/* Desktop Layout */}

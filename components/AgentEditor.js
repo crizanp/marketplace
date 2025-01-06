@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import FloatingMessage from './FloatingMessage';
 
 const AgentEditor = ({ walletAddress }) => {
     const { publicKey } = useWallet();
@@ -7,7 +8,10 @@ const AgentEditor = ({ walletAddress }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedAgent, setSelectedAgent] = useState(null);
     const [formData, setFormData] = useState({});
-
+    const [floatingMessage, setFloatingMessage] = useState(null);
+    const showFloatingMessage = (message, type) => {
+        setFloatingMessage({ message, type });
+    };
     useEffect(() => {
         if (publicKey) {
             fetchAgentData();
@@ -20,17 +24,37 @@ const AgentEditor = ({ walletAddress }) => {
             const response = await fetch(
                 `/api/agent/${walletAddress}?walletAddress=${publicKey.toString()}`
             );
+
             if (!response.ok) {
-                throw new Error('Failed to fetch agent data');
+                if (response.status === 404) {
+                    // Handle case where no agents are found
+                    setAgents([]); // Ensure `agents` is an empty array
+                    showFloatingMessage("No agents found for this wallet.", "warning");
+                    return;
+                }
+                throw new Error("Failed to fetch agent data");
             }
+
             const data = await response.json();
-            setAgents(data);
+
+            if (data.length === 0) {
+                // Handle empty data array
+                setAgents([]);
+                showFloatingMessage("No agents found for this wallet.", "warning");
+            } else {
+                setAgents(data);
+            }
         } catch (error) {
-            console.error('Error fetching agent:', error);
-            alert('Failed to fetch agent data');
+            console.error("Error fetching agent:", error);
+            showFloatingMessage(
+                `An error occurred while fetching agents`,
+                "failure"
+            );
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     };
+
 
     const openEditModal = (agent) => {
         setSelectedAgent(agent);
@@ -78,12 +102,17 @@ const AgentEditor = ({ walletAddress }) => {
             if (!response.ok) {
                 throw new Error('Failed to update agent');
             }
-            alert('Agent updated successfully!');
+            showFloatingMessage(
+                `Agent updated sucessfully`,
+                "success"
+            );
             closeEditModal();
             fetchAgentData();
         } catch (error) {
-            console.error('Error updating agent:', error);
-            alert('Failed to update agent');
+            showFloatingMessage(
+                `Failed to update agent`,
+                "failure"
+            );
         }
         setIsLoading(false);
     };
@@ -120,6 +149,13 @@ const AgentEditor = ({ walletAddress }) => {
 
     return (
         <div className="p-4 bg-gray-800 text-white rounded-lg ">
+            {floatingMessage && (
+                <FloatingMessage
+                    message={floatingMessage.message}
+                    type={floatingMessage.type}
+                    onClose={() => setFloatingMessage(null)}
+                />
+            )}
             <h2 className="text-2xl font-bold py-4">Your Submission Agents</h2>
             <div className="grid gap-4">
                 {agents.map((agent) => (
