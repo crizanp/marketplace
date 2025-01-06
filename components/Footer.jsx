@@ -65,6 +65,14 @@ const Footer = () => {
               </li>
               <li>
                 <Link
+                  href="/about"
+                  className="flex items-center gap-2 hover:text-green-400"
+                >
+                  <FiList /> About
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="https://gekkoais-organization.gitbook.io/aigekko.fun-or-usdgekko-ai-marketplace/"
                   className="flex items-center gap-2 hover:text-green-400"
                 >
