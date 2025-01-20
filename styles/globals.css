@@ -11,7 +11,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ASCII Background */
 body::after {
   content: '░▒▓▒░ GEKKOAI.fun - The Future of AI Agents ░▒▓▒░';
   position: fixed;
