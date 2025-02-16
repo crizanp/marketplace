@@ -1,7 +1,7 @@
 /* Base Hero Section */
 .hero {
-    background: radial-gradient(circle at center, #0d1117, #000000);
-    color: #00ff84;
+    background: radial-gradient(circle at center, #ffffff, #f0f7f4);
+    color: #00cc6a;
     font-family: "Fira Code", "Courier New", monospace;
     text-align: center;
     padding: 60px 20px;
@@ -12,50 +12,41 @@
 /* ASCII Art */
 .heroAscii {
     font-size: clamp(0.6rem, 2.5vw, 1rem);
-    /* Dynamic font size */
     line-height: 1.2;
-    /* Tighter line spacing */
     white-space: pre-wrap;
-    /* Wrap text if it overflows */
-    color: #00ff84;
-    text-shadow: 0 0 8px #00ff84, 0 0 16px #00ff84;
-    /* Slight glow */
+    color: #084a2a;
+    text-shadow: 0 0 8px rgba(0, 204, 106, 0.5), 0 0 16px rgba(0, 204, 106, 0.3);
     overflow-x: auto;
-    /* Enable horizontal scrolling for narrow screens */
     max-width: 100%;
-    /* Prevent overflowing container */
 }
 
 /* Glow Animation */
 @keyframes glowOffOn {
     0% {
-        text-shadow: 0 0 10px #00ff84, 0 0 20px #00ff84, 0 0 30px #00ff84;
-        color: #00ff84;
+        text-shadow: 0 0 10px rgba(0, 204, 106, 0.5), 0 0 20px rgba(0, 204, 106, 0.3);
+        color: #00cc6a;
     }
-
     50% {
-        text-shadow: 0 0 2px #004f24;
-        color: #006f3c;
+        text-shadow: 0 0 2px rgba(0, 79, 36, 0.3);
+        color: #008f4c;
     }
-
     100% {
-        text-shadow: 0 0 10px #00ff84, 0 0 20px #00ff84, 0 0 30px #00ff84;
-        color: #00ff84;
+        text-shadow: 0 0 10px rgba(0, 204, 106, 0.5), 0 0 20px rgba(0, 204, 106, 0.3);
+        color: #00cc6a;
     }
 }
 
 /* Hero Subtitle */
 .heroSubtitle {
     font-size: clamp(1rem, 2.5vw, 1.2rem);
-    /* Responsive font size */
-    color: #d1d5db;
+    color: #2c332f;
     margin: 20px 0;
 }
 
 .heroSubtitle .highlight {
-    color: #00ff84;
+    color: #00cc6a;
     font-weight: bold;
-    text-shadow: 0 0 8px #00ff84;
+    text-shadow: 0 0 8px rgba(0, 204, 106, 0.3);
 }
 
 /* Hero Buttons */
@@ -63,44 +54,37 @@
     margin-top: 30px;
     display: flex;
     justify-content: center;
-    /* Center buttons horizontally */
     flex-wrap: wrap;
-    /* Wrap buttons for small screens */
     gap: 20px;
-    /* Space between buttons */
     align-items: center;
-    /* Vertical alignment */
 }
 
 .ctaPrimary,
 .ctaSecondary {
     background: transparent;
-    border: 2px solid #00ff84;
-    color: #00ff84;
+    border: 2px solid #00cc6a;
+    color: #084a2a;
     font-family: "Fira Code", "Courier New", monospace;
     font-size: clamp(0.8rem, 1.5vw, 1rem);
-    /* Responsive font size */
     padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
     max-width: 300px;
-    /* Prevent buttons from becoming too wide */
     width: 100%;
-    /* Make buttons stretch full width */
 }
 
 .ctaPrimary:hover {
-    background: #00ff84;
-    color: #0d1117;
+    background: #00cc6a;
+    color: #ffffff;
     text-shadow: none;
 }
 
 .ctaSecondary:hover {
-    background: #000000;
-    color: #00ff84;
-    text-shadow: 0 0 8px #00ff84;
+    background: rgba(0, 204, 106, 0.1);
+    color: #00cc6a;
+    text-shadow: 0 0 8px rgba(0, 204, 106, 0.3);
 }
 
 /* Decorative Animations */
@@ -110,10 +94,10 @@
     position: absolute;
     width: 300px;
     height: 300px;
-    background: conic-gradient(from 0deg, transparent, #00ff84, transparent);
+    background: conic-gradient(from 0deg, transparent, rgba(7, 180, 97, 0.829), transparent);
     animation: spin 5s linear infinite;
     border-radius: 50%;
-    opacity: 0.2;
+    opacity: 0.3;
 }
 
 .hero::after {
@@ -131,7 +115,6 @@
     from {
         transform: rotate(0deg);
     }
-
     to {
         transform: rotate(360deg);
     }
@@ -153,15 +136,12 @@
 
     .heroButtons {
         gap: 10px;
-        /* Smaller gap between buttons */
     }
 
     .ctaPrimary,
     .ctaSecondary {
         font-size: clamp(0.7rem, 1.2vw, 0.9rem);
-        /* Smaller button text */
         max-width: 300px;
-        /* Limit button width */
     }
 }
 
@@ -179,29 +159,23 @@
 
     .heroButtons {
         flex-direction: column;
-        /* Stack buttons vertically */
         gap: 10px;
-        /* Smaller spacing between stacked buttons */
     }
 
     .ctaPrimary,
     .ctaSecondary {
         max-width: 300px;
-        /* Full-width buttons with limit */
     }
 }
 
 @media (max-width: 420px) {
     .heroAscii {
         font-size: 0.4rem;
-        /* Smallest font size for extra narrow screens */
         line-height: 1;
-        /* Compact line spacing */
     }
 
     .ctaPrimary,
     .ctaSecondary {
         padding: 8px 15px;
-        /* Smaller padding for compact buttons */
     }
 }

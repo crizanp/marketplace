@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import HomepageTableSkeleton from "./Skeleton/HomepageTable"; // Import Skeleton Component
-import Link from "next/link"; // Import Next.js Link for navigation
+import HomepageTableSkeleton from "./Skeleton/HomepageTable";
+import Link from "next/link";
 
-// Mapping of chain names to their respective logo URLs
 const chainLogos = {
   polygon: "https://dd.dexscreener.com/ds-data/chains/polygon.png",
   arbitrum: "https://dd.dexscreener.com/ds-data/chains/arbitrum.png",
@@ -25,44 +24,14 @@ const AgentsTable = () => {
       setIsLoading(true);
 
       try {
-        // Fetch top 10 agents
         const response = await fetch("/api/getdata?query=top10");
         if (!response.ok) throw new Error("Failed to fetch agents");
-
+        
         const data = await response.json();
-
-        // Fetch Gekko AI data from DexScreener
-        const gekkoResponse = await fetch(
-          "https://api.dexscreener.io/latest/dex/tokens/G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
-        );
-        if (!gekkoResponse.ok) throw new Error("Failed to fetch Gekko AI data");
-
-        const gekkoData = await gekkoResponse.json();
-        const gekkoMarketData = gekkoData.pairs[0] || {};
-
-        // Define the pinned token
-        const pinnedToken = {
-          contractAddress: "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump",
-          name: "Gekko AI",
-          ticker: "GEKKO",
-          chain: "Solana",
-          logo: "https://aigekko.vercel.app/D.png", // Replace with actual logo URL
-          marketCap: gekkoMarketData.fdv || 1000000, // Use FDV or fallback
-          price: gekkoMarketData.priceUsd || "0.12345", // Use price or fallback
-          volume24h: gekkoMarketData.volume?.h24 || 0, // Use volume or fallback
-          priceChange24h: gekkoMarketData.priceChange?.h24 || 0, // Use price change or fallback
-          submittedAt: "3000-01-01", // Custom listed time
-        };
-
-        // Ensure pinned token is not duplicated
-        const filteredAgents = data.filter(
-          (agent) => agent.contractAddress !== pinnedToken.contractAddress
-        );
-
-        // Add the pinned token to the top of the list
-        setAgents([pinnedToken, ...filteredAgents]);
+        setAgents(data);
       } catch (error) {
         console.error("Error fetching agents:", error);
+        setAgents([]);
       } finally {
         setIsLoading(false);
       }
@@ -71,7 +40,6 @@ const AgentsTable = () => {
     fetchAgents();
   }, []);
 
-  // Function to format large numbers
   const formatNumber = (num) => {
     if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`;
     if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
@@ -79,7 +47,6 @@ const AgentsTable = () => {
     return num.toString();
   };
 
-  // Function to calculate relative time
   const getRelativeTime = (date) => {
     const now = new Date();
     const submitted = new Date(date);
@@ -107,101 +74,78 @@ const AgentsTable = () => {
   }
 
   return (
-    <div className="lg:px-10 lg:p-5 pb-5 bg-gray-900 text-gray-100">
+    <div className="lg:px-10 lg:p-5 pb-5 bg-gradient-to-r from-white to-[#f0f7f4] border-t border-green-500 text-gray-800">
       <div className="text-center mb-5">
-        <h2 className="text-2xl font-bold text-green-400 pt-4">
-          TOP 10 AGENTS
+        <h2 className="text-2xl font-bold text-[rgb(25 146 88)] pt-4">
+          Featured AGENTS
         </h2>
       </div>
 
-      <div className="overflow-x-auto rounded-lg scrollbar-hide">
-        <table className="w-full min-w-[900px] border-collapse bg-gray-800 text-gray-300 text-sm">
+      <div className="overflow-x-auto rounded-lg scrollbar-hide shadow-lg">
+        <table className="w-full min-w-[900px] border-collapse bg-white text-gray-700 text-sm">
           <thead>
-            <tr className="bg-gray-700 text-green-400 text-left">
+            <tr className="border-b border-[#e6f3ed] text-[#00cc6a]">
               <th className="px-4 py-3 uppercase font-medium text-center">#</th>
               <th className="px-4 py-3 uppercase font-medium">Name</th>
-              <th className="px-4 py-3 uppercase font-medium text-left">
-                Chain
-              </th>
-              <th className="px-4 py-3 uppercase font-medium text-center">
-                Market Cap
-              </th>
-              <th className="px-4 py-3 uppercase font-medium text-center">
-                24h Volume
-              </th>
-              <th className="px-4 py-3 uppercase font-medium text-center">
-                Price
-              </th>
-              <th className="px-4 py-3 uppercase font-medium text-center">
-                Listed Time
-              </th>
+              <th className="px-4 py-3 uppercase font-medium text-left">Chain</th>
+              <th className="px-4 py-3 uppercase font-medium text-center">Market Cap</th>
+              <th className="px-4 py-3 uppercase font-medium text-center">24h Volume</th>
+              <th className="px-4 py-3 uppercase font-medium text-center">Price</th>
+              <th className="px-4 py-3 uppercase font-medium text-center">Listed Time</th>
             </tr>
           </thead>
           <tbody>
             {agents.map((agent, index) => (
               <tr
                 key={agent.contractAddress}
-                className={`border-b border-gray-700 hover:bg-gray-700 ${
-                  agent.contractAddress ===
-                  "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
-                    ? ""
-                    : ""
-                }`}
+                className="border-b border-[#e6f3ed] hover:bg-[#f0f7f4] transition-colors duration-200"
               >
                 <td className="px-4 py-3 text-center">{index + 1}</td>
-
                 <td className="px-4 py-3 truncate max-w-xs flex items-center gap-2">
                   <img
                     src={agent.logo || "https://via.placeholder.com/50"}
                     alt="Agent Logo"
                     className="h-6 w-6 rounded-full"
                   />
-                  {agent.name} ({agent.ticker})
+                  <span className="font-medium">{agent.name}</span>
+                  <span className="text-gray-500">({agent.ticker})</span>
                 </td>
-
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <img
-                      src={
-                        chainLogos[agent.chain.toLowerCase()] ||
-                        "https://via.placeholder.com/50"
-                      }
+                      src={chainLogos[agent.chain.toLowerCase()] || "https://via.placeholder.com/50"}
                       alt="Chain Logo"
                       className="h-6 w-6 rounded-full"
                     />
                     <span className="whitespace-nowrap">{agent.chain}</span>
                   </div>
                 </td>
-
-                <td className="px-4 py-3 text-center">
+                <td className="px-4 py-3 text-center font-medium">
                   {agent.marketCap.toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
                   })}
                 </td>
-
                 <td className="px-4 py-3 text-center">
                   {formatNumber(agent.volume24h)}
                 </td>
-
                 <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
-                  {agent.price.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  })}
+                  <span className="font-medium">
+                    {agent.price.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </span>
                   {agent.priceChange24h > 0 ? (
-                    <span className="text-green-500">&#9650;</span>
+                    <span className="text-[#00cc6a]">▲</span>
                   ) : agent.priceChange24h < 0 ? (
-                    <span className="text-red-500">&#9660;</span>
+                    <span className="text-red-500">▼</span>
                   ) : (
-                    <span className="text-gray-500">&#8213;</span>
+                    <span className="text-gray-400">―</span>
                   )}
                 </td>
-
-                <td className="px-4 py-3 text-center">
-                  {agent.submittedAt === "3000-01-01"
-                    ? "-"
-                    : getRelativeTime(agent.submittedAt)}
+                <td className="px-4 py-3 text-center text-gray-500">
+                  {getRelativeTime(agent.submittedAt)}
                 </td>
               </tr>
             ))}
@@ -210,11 +154,24 @@ const AgentsTable = () => {
       </div>
 
       <div className="text-center mt-5">
-        <Link
-          href="/explorer"
-          className="text-green-500 hover:underline font-medium"
+        <Link 
+          href="/explorer" 
+          className="text-[#00cc6a] hover:text-[#00a857] font-medium transition-colors duration-200 inline-flex items-center gap-2"
         >
           See More
+          <svg 
+            className="w-4 h-4" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
         </Link>
       </div>
     </div>

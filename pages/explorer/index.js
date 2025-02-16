@@ -58,6 +58,7 @@ const Explorer = () => {
   const router = useRouter();
   const itemsPerPage = 10;
 
+  // Replace this entire fetchAgents function
   const fetchAgents = async () => {
     setIsLoading(true);
     try {
@@ -73,39 +74,13 @@ const Explorer = () => {
 
       const data = await response.json();
 
-      // Fetch Gekko AI data from DexScreener
-      const gekkoResponse = await fetch(
-        "https://api.dexscreener.io/latest/dex/tokens/G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
-      );
-      if (!gekkoResponse.ok) throw new Error("Failed to fetch Gekko AI data.");
-      const gekkoData = await gekkoResponse.json();
-
-      const gekkoMarketData = gekkoData.pairs[0] || {}; // Use the first pair's data
-      const pinnedToken = {
-        contractAddress: "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump",
-        name: "Gekko AI",
-        ticker: "GEKKO",
-        chain: "solana",
-        logo: "https://aigekko.vercel.app/D.png", // Replace with actual logo URL
-        marketCap: gekkoMarketData.fdv || 1000000, // Use FDV from DexScreener or fallback
-        price: gekkoMarketData.priceUsd || "0.12345", // Use price from DexScreener or fallback
-        upvotes: 9999,
-        submittedAt: "2024-12-20", // Custom listed time
-      };
-
-      // Assign random upvotes (2-4 digit numbers) to each agent
+      // Assign random upvotes to each agent
       const agentsWithRandomUpvotes = data.data.map((agent) => ({
         ...agent,
         upvotes: Math.floor(Math.random() * (9999 - 100) + 100),
       }));
 
-      // Ensure pinned token is not duplicated
-      const filteredAgents = agentsWithRandomUpvotes.filter(
-        (agent) => agent.contractAddress !== pinnedToken.contractAddress
-      );
-
-      // Add the pinned token to the top of the list
-      setAgents([pinnedToken, ...filteredAgents]);
+      setAgents(agentsWithRandomUpvotes);
       setTotalPages(data.pagination.totalPages);
     } catch (error) {
       console.error("Error fetching agents:", error);
@@ -113,7 +88,6 @@ const Explorer = () => {
       setIsLoading(false);
     }
   };
-
 
   const formatPrice = (price) => {
     if (!price) return "N/A";
@@ -150,6 +124,7 @@ const Explorer = () => {
     setSelectedChain(chain);
     setCurrentPage(1); // Reset to the first page on filter change
   };
+  
   // Fetch Trending Tokens
   useEffect(() => {
     const fetchTrendingTokens = async () => {
@@ -167,6 +142,7 @@ const Explorer = () => {
 
     fetchTrendingTokens();
   }, []);
+  
   if (isLoading) return <ExplorerSkeleton />;
 
   return (
@@ -205,15 +181,16 @@ const Explorer = () => {
       </Head>
 
       <Navbar />
-      <div className="lg:px-10 p-0 bg-gray-900 text-gray-100 overflow-x-hidden">
+      <div className="lg:px-10 p-0 bg-gradient-to-r from-white to-[#f0f7f4] text-gray-800 overflow-x-hidden">
+        {/* Trending Agents Scrollbar */}
         <div className="flex gap-4 my-5 py-2 mx-4 overflow-x-auto scrollbar-hide sm:justify-center">
           {trendingAgents.map((agent, index) => (
             <div
               key={agent.contractAddress}
-              className="relative flex flex-col items-center bg-gray-800 rounded-lg w-20 h-20 text-center gap-2 p-2 shadow-lg shrink-0 cursor-pointer hover:bg-gray-700"
+              className="relative flex flex-col items-center bg-white rounded-lg w-20 h-20 text-center gap-2 p-2 shadow-md shrink-0 cursor-pointer hover:bg-[#f0f7f4] border border-[#e6f3ed]"
               onClick={() => handleViewDetails(agent.contractAddress)}
             >
-              <span className="absolute top-1 left-1 bg-yellow-400 text-black text-[10px] font-bold px-1 rounded">
+              <span className="absolute top-1 left-1 bg-[#FFC107] text-gray-800 text-[10px] font-bold px-1 rounded">
                 #{index + 1}
               </span>
               <img
@@ -221,21 +198,22 @@ const Explorer = () => {
                 alt={agent.name}
                 className="w-10 h-12 rounded-full"
               />
-              <span className="text-xs text-green-400">{agent.ticker}</span>
+              <span className="text-xs text-[#00cc6a]">{agent.ticker}</span>
             </div>
           ))}
         </div>
+        
         {/* Search Bar */}
         <div className="flex justify-center items-center my-6 px-4 gap-2">
           <input
             type="text"
             placeholder="Search AI Agent..."
-            className="w-full max-w-md px-4 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+            className="w-full max-w-md px-4 py-2 border border-[#00cc6a] rounded bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00cc6a] transition-all duration-200"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button
-            className="p-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="p-2 bg-[#00cc6a] text-white rounded hover:bg-[#00a857] transition-colors duration-200"
             onClick={() => {
               setCurrentPage(1); // Reset to the first page
               fetchAgents(); // Trigger the search function
@@ -245,21 +223,20 @@ const Explorer = () => {
           </button>
         </div>
 
-
         {/* Sorting and Chain Filtering */}
         <div className="flex flex-row items-center gap-4 mb-6 px-4">
           {/* Sort By Filter */}
           <div className="flex items-center gap-2">
             <label
               htmlFor="sort"
-              className="text-gray-300 hidden sm:inline-block"
+              className="text-gray-700 hidden sm:inline-block"
             >
               Sort By:
             </label>
 
             <select
               id="sort"
-              className="w-22 sm:w-32 px-3 py-2  rounded bg-gray-800 text-gray-300 focus:outline-none"
+              className="w-22 sm:w-32 px-3 py-2 rounded bg-white text-gray-700 border border-[#00cc6a] focus:outline-none focus:ring-2 focus:ring-[#00cc6a] transition-all duration-200"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
@@ -274,7 +251,7 @@ const Explorer = () => {
           <div className="flex items-center gap-2">
             <select
               id="chain"
-              className="w-22 sm:w-32 px-3 py-2 border border-green-600 rounded bg-gray-800 text-gray-300 focus:outline-none"
+              className="w-22 sm:w-32 px-3 py-2 border border-[#00cc6a] rounded bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00cc6a] transition-all duration-200"
               value={selectedChain}
               onChange={(e) => handleChainFilter(e.target.value)}
             >
@@ -290,7 +267,7 @@ const Explorer = () => {
           {/* Clear Filters Button */}
           {(selectedChain || sortBy !== "listedTime") && (
             <button
-              className="text-red-500 hover:text-red-800 hover:text-white"
+              className="text-red-500 hover:text-red-700 transition-colors duration-200"
               onClick={() => {
                 setSortBy("listedTime"); // Reset Sort By to default
                 handleChainFilter(""); // Reset Chain to default
@@ -302,12 +279,11 @@ const Explorer = () => {
           )}
         </div>
 
-
         {/* Agents Table */}
-        <div className="overflow-x-auto rounded-lg scrollbar-hide">
-          <table className="w-full min-w-[900px] border-collapse bg-gray-800 text-gray-300 text-sm">
+        <div className="overflow-x-auto rounded-lg scrollbar-hide shadow-lg">
+          <table className="w-full min-w-[900px] border-collapse bg-white text-gray-700 text-sm">
             <thead>
-              <tr className="bg-gray-700 text-green-400 text-left">
+              <tr className="border-b border-[#e6f3ed] text-[#00cc6a]">
                 <th className="px-4 py-3 uppercase font-medium">#</th>
                 <th className="px-4 py-3 uppercase font-medium">Name</th>
                 <th className="px-4 py-3 uppercase font-medium">Ticker</th>
@@ -322,60 +298,61 @@ const Explorer = () => {
               {agents.map((agent, index) => (
                 <tr
                   key={agent.contractAddress}
-                  className={`border-b border-gray-700 hover:bg-gray-700 ${agent.contractAddress === "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
-                    ? "bg-yellow-500 text-black  hover:bg-yellow-600" // Unique background for pinned token
-                    : ""
-                    }`}
+                  className="border-b border-[#e6f3ed] hover:bg-[#f0f7f4] transition-colors duration-200"
                 >
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     {(currentPage - 1) * itemsPerPage + index + 1}
                   </td>
                   <td className="px-4 py-3 truncate max-w-xs">
-                    <img
-                      src={agent.logo || "https://via.placeholder.com/50"}
-                      alt="Agent Logo"
-                      className="inline-block h-6 w-6 rounded-full mr-2"
-                    />
-                    <span>{agent.name}</span>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={agent.logo || "https://via.placeholder.com/50"}
+                        alt="Agent Logo"
+                        className="h-6 w-6 rounded-full"
+                      />
+                      <span className="font-medium">{agent.name}</span>
+                    </div>
                   </td>
-                  <td className="px-4 py-3">{agent.ticker}</td>
-
+                  <td className="px-4 py-3 text-gray-500">{agent.ticker}</td>
                   <td className="px-4 py-3">
-                    {agent.chain
-                      ? agent.chain.charAt(0).toUpperCase() + agent.chain.slice(1)
-                      : "N/A"}
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={chainLogos[agent.chain?.toLowerCase()] || "https://via.placeholder.com/50"}
+                        alt="Chain Logo"
+                        className="h-6 w-6 rounded-full"
+                      />
+                      <span className="whitespace-nowrap">
+                        {agent.chain
+                          ? agent.chain.charAt(0).toUpperCase() + agent.chain.slice(1)
+                          : "N/A"}
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center font-medium">
                     {agent.marketCap
                       ? agent.marketCap.toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      })
+                          style: "currency",
+                          currency: "USD",
+                        })
                       : "N/A"}
                   </td>
-                  <td className="px-4 py-3">
-                    {agent.contractAddress === "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
-                      ? getRelativeTime(agent.submittedAt) // Exceptional case for Gekko AI
-                      : getRelativeTime(agent.submittedAt)}
+                  <td className="px-4 py-3 text-center text-gray-500">
+                    {getRelativeTime(agent.submittedAt)}
                   </td>
-
-                  <td className="px-4 py-3">{agent.price || "N/A"}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center font-medium">
+                    {agent.price || "N/A"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
                     <button
-                      className={`px-3 py-1 rounded ${agent.contractAddress === "G4YyirkFcHU4Xn6jJ5GyTLv291n3Sxtv8vzJnBM2pump"
-                        ? "bg-green-400 text-gray-900 hover:bg-green-500" // Green background for Gekko AI
-                        : "border border-green-400 text-green-400 hover:bg-green-400 hover:text-gray-900"
-                        }`}
+                      className="px-3 py-1 rounded border border-[#00cc6a] text-[#00cc6a] hover:bg-[#00cc6a] hover:text-white transition-colors duration-200"
                       onClick={() => handleViewDetails(agent.contractAddress)}
                     >
                       View Details
                     </button>
                   </td>
-
                 </tr>
               ))}
             </tbody>
-
           </table>
         </div>
 
@@ -384,8 +361,11 @@ const Explorer = () => {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`px-3 py-1 border border-green-600 rounded hover:bg-green-600 ${currentPage === i + 1 ? "bg-green-400 text-gray-900" : "text-gray-300"
-                }`}
+              className={`px-3 py-1 border rounded transition-colors duration-200 ${
+                currentPage === i + 1
+                  ? "bg-[#00cc6a] text-white border-[#00cc6a]"
+                  : "border-[#00cc6a] text-[#00cc6a] hover:bg-[#e6f3ed]"
+              }`}
               onClick={() => handlePageChange(i + 1)}
             >
               {i + 1}

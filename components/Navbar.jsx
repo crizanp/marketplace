@@ -169,12 +169,12 @@ const Navbar = () => {
       <div className={styles.topRow}>
         <div className={styles.logo}>
           <Image
-            src="https://aigekko.vercel.app/D.png"
+            src="/D.png"
             alt="Gekko AI Logo"
             width={50}
             height={50}
           />
-          <span>&lt;GekkoAI/&gt;</span>
+          <span>&lt;BullAI/&gt;</span>
         </div>
         <div className={styles.walletButton}>
           {connected ? (
