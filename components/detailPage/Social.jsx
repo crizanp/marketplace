@@ -18,7 +18,7 @@ import {
 const Social = ({ links }) => {
   return (
     <div className="mt-6">
-      <h2 className="text-xl font-semibold text-white mb-4">Social Info</h2>
+      <h2 className="text-xl font-semibold text-gray-700 mb-4">Social Info</h2>
       <div className="flex gap-4 flex-wrap">
         {/* Website */}
         {links.website && (

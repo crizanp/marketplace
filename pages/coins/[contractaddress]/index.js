@@ -195,12 +195,12 @@ const TokenDetail = () => {
         <link rel="canonical" href={`https://www.aigekko.fun/token/${dexData.contractAddress}`} />
       </Head>
       <Navbar />
-      <div className="min-h-screen bg-gray-900 text-white font-professional">
+      <div className="min-h-screen bg-white text-gray-900 font-professional">
         {/* Desktop Layout */}
-        <div className="bg-gray-800 p-2 text-white">
+        <div className="bg-green-50 p-2 text-gray-900">
           <Breadcrumb
             paths={[
-              { name: "Marketplace", link: "/" },
+              { name: "Trade", link: "/" },
               { name: "Explorer", link: "/explorer" },
               { name: dexData.name, ticker: dexData.ticker },
             ]}
@@ -210,90 +210,7 @@ const TokenDetail = () => {
         <div className="hidden lg:flex p-4 gap-8">
           {/* Left Section */}
 
-          <div className="bg-gray-800 p-6 rounded-lg w-1/3">
-            <div className="flex items-center justify-between mt-4">
-              {/* Logo and Name */}
-              <div className="flex items-center gap-4">
-                <img
-                  src={dexData.logo || "/default-logo.png"}
-                  alt={dexData.baseToken?.name || "Token Logo"}
-                  className="w-16 h-16 rounded-full border-2 border-green-400"
-                />
-                <div>
-                  <h1 className="text-2xl font-bold uppercase text-white">
-                    {dexData.name || "Token Name"}
-                  </h1>
-                  <span className="text-sm bg-green-400 text-black px-2 py-1 rounded-md">
-                    {dexData.ticker || "Token Symbol"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Price */}
-              <div className="text-right">
-                <p className="text-2xl text-green-400">
-                  ${dexData.price || "N/A"}
-                </p>
-                <p className={dexData.priceChange24h < 0 ? "text-red-500" : "text-green-500"}>
-                  {dexData.priceChange24h !== null ? `${dexData.priceChange24h}%` : "N/A"}
-                </p>
-              </div>
-            </div>
-
-            {/* Upvote and Downvote Section */}
-            <VoteButtons contractAddress={contractaddress} walletAddress={publicKey?.toString()} />
-
-
-            {/* Description Section */}
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Description</h2>
-              <p className="text-gray-200">
-                {showFullDescription
-                  ? dexData.description || "No description provided."
-                  : (dexData.description || "No description provided.")
-                    .split(" ")
-                    .slice(0, 20)
-                    .join(" ")}
-                {!showFullDescription &&
-                  dexData.description &&
-                  dexData.description.split(" ").length > 20 &&
-                  "..."}
-              </p>
-              {dexData.description && dexData.description.split(" ").length > 20 && (
-                <button
-                  onClick={() => setShowFullDescription(!showFullDescription)}
-                  className="text-green-400 hover:text-green-300 mt-2 flex items-center gap-2"
-                >
-                  {showFullDescription ? (
-                    <>
-                      See Less <FaChevronUp />
-                    </>
-                  ) : (
-                    <>
-                      See More <FaChevronDown />
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-
-
-            <TokenInfo
-              data={{
-                marketCap: dexData.marketCap,
-                liquidity: dexData.liquidity,
-                volume24h: dexData.volume24h,
-                contractAddress: dexData.contractAddress,
-                chain: dexData.chain, // Add chain field here
-              }}
-              copied={copied}
-              copyToClipboard={copyToClipboard}
-              truncateAddress={truncateAddress}
-            />
-
-            {/* Social Info Section */}
-            <Social links={socialLinks} />
-          </div>
+        
           {/* Right Section */}
           <div className="w-2/3">
             <IframeSection chainId={transformedChainId} contractAddress={dexData.contractAddress} />
@@ -310,6 +227,93 @@ const TokenDetail = () => {
 
 
           </div>
+          <div className="bg-green-50 p-6 rounded-lg w-1/3">
+            <div className="flex items-center justify-between mt-4">
+              {/* Logo and Name */}
+              <div className="flex items-center gap-4">
+                <img
+                  src={dexData.logo || "/default-logo.png"}
+                  alt={dexData.baseToken?.name || "Token Logo"}
+                  className="w-16 h-16 rounded-full border-2 border-green-400"
+                />
+                <div>
+                  <h1 className="text-2xl font-bold uppercase text-gray-900">
+                    {dexData.name || "Token Name"}
+                  </h1>
+                  <span className="text-sm bg-green-400 text-white px-2 py-1 rounded-md">
+                    {dexData.ticker || "Token Symbol"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Price */}
+              <div className="text-right">
+                <p className="text-2xl text-green-600">
+                  ${dexData.price || "N/A"}
+                </p>
+                <p className={dexData.priceChange24h < 0 ? "text-red-500" : "text-green-500"}>
+                  {dexData.priceChange24h !== null ? `${dexData.priceChange24h}%` : "N/A"}
+                </p>
+              </div>
+            </div>
+
+            {/* Upvote and Downvote Section */}
+            <VoteButtons contractAddress={contractaddress} walletAddress={publicKey?.toString()} />
+
+
+            {/* Description Section */}
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Description</h2>
+              <p className="text-gray-700">
+                {showFullDescription
+                  ? dexData.description || "No description provided."
+                  : (dexData.description || "No description provided.")
+                    .split(" ")
+                    .slice(0, 20)
+                    .join(" ")}
+                {!showFullDescription &&
+                  dexData.description &&
+                  dexData.description.split(" ").length > 20 &&
+                  "..."}
+              </p>
+              {dexData.description && dexData.description.split(" ").length > 20 && (
+                <button
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="text-green-600 hover:text-green-500 mt-2 flex items-center gap-2"
+                >
+                  {showFullDescription ? (
+                    <>
+                      See Less <FaChevronUp />
+                    </>
+                  ) : (
+                    <>
+                      See More <FaChevronDown />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+
+            <TokenInfo
+  data={{
+    marketCap: dexData.marketCap,
+    liquidity: dexData.liquidity,
+    volume24h: dexData.volume24h,
+    contractAddress: dexData.contractAddress,
+    chain: dexData.chain,
+    ticker: dexData.ticker, // Add ticker here
+    name: dexData.name,     // Add name here
+    logo: dexData.logo      // Optional: add logo if you want to display it
+  }}
+  copied={copied}
+  copyToClipboard={copyToClipboard}
+  truncateAddress={truncateAddress}
+/>
+
+            {/* Social Info Section */}
+            <Social links={socialLinks} />
+          </div>
         </div>
 
         {/* Mobile Layout with Tabs */}
@@ -318,17 +322,17 @@ const TokenDetail = () => {
 
           <AgentShowcase agents={agents} />
 
-          <div className="flex justify-around bg-green-600 text-black py-3 text-lg font-semibold">
+          <div className="flex justify-around bg-green-600 text-white py-3 text-lg font-semibold">
             <button
               onClick={() => setActiveTab("Info")}
-              className={activeTab === "Info" ? "border-b-2 border-black" : ""}
+              className={activeTab === "Info" ? "border-b-2 border-white" : ""}
             >
               Info
             </button>
             <button
               onClick={() => setActiveTab("Replies")}
               className={
-                activeTab === "Replies" ? "border-b-2 border-black" : ""
+                activeTab === "Replies" ? "border-b-2 border-white" : ""
               }
             >
               Replies
@@ -349,7 +353,7 @@ const TokenDetail = () => {
                     <h1 className="text-2xl font-bold uppercase">
                       {dexData.name || "Token Name"}
                     </h1>
-                    <span className="text-sm bg-green-400 text-black px-2 py-1 rounded-md">
+                    <span className="text-sm bg-green-400 text-white px-2 py-1 rounded-md">
                       {dexData.ticker}
                     </span>
                   </div>
@@ -357,7 +361,7 @@ const TokenDetail = () => {
 
                 {/* Price */}
                 <div className="text-right">
-                  <p className="text-2xl text-green-400">
+                  <p className="text-2xl text-green-600">
                     ${dexData.price || "N/A"}
                   </p>
                   <p className={dexData.priceChange24h < 0 ? "text-red-500" : "text-green-500"}>
@@ -370,8 +374,8 @@ const TokenDetail = () => {
 
               {/* Description Section */}
               <div className="mt-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Description</h2>
-                <p className="text-gray-200">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Description</h2>
+                <p className="text-gray-700">
                   {showFullDescription
                     ? dexData.description || "No description provided."
                     : (dexData.description || "No description provided.")
@@ -386,7 +390,7 @@ const TokenDetail = () => {
                 {dexData.description && dexData.description.split(" ").length > 20 && (
                   <button
                     onClick={() => setShowFullDescription(!showFullDescription)}
-                    className="text-green-400 hover:text-green-300 mt-2 flex items-center gap-2"
+                    className="text-green-600 hover:text-green-500 mt-2 flex items-center gap-2"
                   >
                     {showFullDescription ? (
                       <>
@@ -401,17 +405,20 @@ const TokenDetail = () => {
                 )}
               </div>
               <TokenInfo
-                data={{
-                  marketCap: dexData.marketCap,
-                  liquidity: dexData.liquidity,
-                  volume24h: dexData.volume24h,
-                  contractAddress: dexData.contractAddress,
-                  chain: dexData.chain, // Add chain field here
-                }}
-                copied={copied}
-                copyToClipboard={copyToClipboard}
-                truncateAddress={truncateAddress}
-              />
+  data={{
+    marketCap: dexData.marketCap,
+    liquidity: dexData.liquidity,
+    volume24h: dexData.volume24h,
+    contractAddress: dexData.contractAddress,
+    chain: dexData.chain,
+    ticker: dexData.ticker, // Add ticker here
+    name: dexData.name,     // Add name here
+    logo: dexData.logo      // Optional: add logo if you want to display it
+  }}
+  copied={copied}
+  copyToClipboard={copyToClipboard}
+  truncateAddress={truncateAddress}
+/>
 
               <Social links={socialLinks} />
             </div>

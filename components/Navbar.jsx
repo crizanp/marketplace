@@ -1,21 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Cookies from "js-cookie";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Modal, Box, Typography, IconButton } from "@mui/material";
-import { FaRocket, FaDollarSign } from "react-icons/fa";
-import { Close as CloseIcon } from "@mui/icons-material";
-import styles from "../styles/Home.module.css";
-import FloatingMessage from "./FloatingMessage";
+import { FaHome, FaCompass, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
 
 // Dynamically load WalletMultiButton
 const WalletMultiButton = dynamic(
   () =>
     import("@solana/wallet-adapter-react-ui").then((mod) => {
       const OriginalButton = mod.WalletMultiButton;
-
       return function CustomWalletMultiButton(props) {
         return <OriginalButton {...props}>Connect Wallet</OriginalButton>;
       };
@@ -23,26 +17,10 @@ const WalletMultiButton = dynamic(
   { ssr: false }
 );
 
-// Detect if running on a mobile device
-const isMobileDevice = () => {
-  if (typeof window === "undefined" || typeof navigator === "undefined") {
-    return false;
-  }
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
-};
-
-// Navbar Component
 const Navbar = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const { connected, publicKey, signMessage, disconnect } = useWallet();
-  const [floatingMessage, setFloatingMessage] = useState(null);
-
-  const showFloatingMessage = (message, type) => {
-    setFloatingMessage({ message, type });
-  };
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { connected, publicKey, disconnect } = useWallet();
 
   useEffect(() => {
     const walletAddress = Cookies.get("walletAddress");
@@ -52,239 +30,107 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const walletAddress = Cookies.get("walletAddress");
-    if (connected && !isSignedIn && !walletAddress) {
-      if (isMobileDevice()) {
-        handleConnectOnly(); // Connect only on mobile devices
-      } else {
-        handleSignIn(); // Sign in on non-mobile devices
+    // Close mobile menu when clicking outside
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && !event.target.closest('nav')) {
+        setIsMobileMenuOpen(false);
       }
-    }
-  }, [connected]);
+    };
 
-  const handleSignIn = async () => {
-    try {
-      if (!connected) {
-        if (isMobileDevice()) {
-          connectMobileWallet();
-        } else {
-          showFloatingMessage("Please connect your wallet first.", "warning");
-        }
-        return;
-      }
-
-      const message = `Sign in to GekkoAI at ${new Date().toISOString()}`;
-      const encodedMessage = new TextEncoder().encode(message);
-
-      if (!signMessage) {
-        throw new Error("Your wallet does not support message signing.");
-      }
-
-      // Show info message while waiting for user action
-      showFloatingMessage(
-        "Please approve the wallet signature request.",
-        "warning"
-      );
-
-      const signature = await signMessage(encodedMessage);
-
-      Cookies.set("walletAddress", publicKey.toString(), { path: "/" });
-      setIsSignedIn(true);
-      showFloatingMessage("Successfully signed in!", "success");
-    } catch (error) {
-      const errorMessage =
-        error.message === "User rejected the request."
-          ? "Signature request rejected by the user."
-          : `Failed to sign in: ${error.message || "Unexpected error"}`;
-
-      // Show floating message for any error
-      showFloatingMessage(errorMessage, "failure");
-    }
-  };
-
-  const handleConnectOnly = () => {
-    if (connected) {
-      Cookies.set("walletAddress", publicKey.toString(), { path: "/" });
-      setIsSignedIn(true); // Set as signed in when connected on mobile
-      console.log("Wallet connected on mobile:", publicKey?.toString());
-    } else {
-      connectMobileWallet();
-    }
-  };
-
-  const connectMobileWallet = () => {
-    const phantomDeepLink =
-      "https://phantom.app/ul/connect?network=mainnet-beta";
-    const iosStoreLink =
-      "https://apps.apple.com/app/phantom-crypto-wallet/id1567713696";
-    const androidStoreLink =
-      "https://play.google.com/store/apps/details?id=io.phantom.android";
-
-    if (navigator.userAgent.includes("Phantom")) {
-      // Open Phantom app
-      window.location.href = phantomDeepLink;
-    } else {
-      const storeLink = /iPhone|iPad|iPod/i.test(navigator.userAgent)
-        ? iosStoreLink
-        : androidStoreLink;
-
-      const installPhantom = confirm(
-        "Phantom Wallet is not installed. Would you like to install it?"
-      );
-      if (installPhantom) {
-        window.location.href = storeLink;
-      }
-    }
-  };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMobileMenuOpen]);
 
   const handleSignOut = () => {
     disconnect();
-    clearCookies();
-    setIsSignedIn(false);
-    showFloatingMessage("Successfully signed out!", "success");
-  };
-
-  const clearCookies = () => {
-    const cookies = document.cookie.split(";");
-    cookies.forEach((cookie) => {
-      const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
-    });
     Cookies.remove("walletAddress");
+    setIsSignedIn(false);
+    setIsMobileMenuOpen(false);
   };
 
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
+  const NavigationLinks = () => (
+    <>
+      <Link 
+        href="/" 
+        className="flex items-center gap-2 text-gray-700 hover:text-[#0d9050] transition-colors"
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        <FaHome className="text-[#27ae60]" />
+        <span className="font-medium">Home</span>
+      </Link>
+      <Link 
+        href="/explorer" 
+        className="flex items-center gap-2 text-gray-700 hover:text-[#0d9050] transition-colors"
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        <FaCompass className="text-[#27ae60]" />
+        <span className="font-medium">Explorer</span>
+      </Link>
+    </>
+  );
+
+  const WalletButton = () => (
+    <>
+      {connected ? (
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-2 px-4 py-2 border-2 border-[#27ae60] rounded-lg text-[#27ae60] hover:bg-[#27ae60] hover:text-white transition-colors font-semibold w-full md:w-auto justify-center md:justify-start"
+        >
+          <FaSignOutAlt />
+          <span>Disconnect Wallet</span>
+        </button>
+      ) : (
+        <WalletMultiButton className="px-4 py-2 border-2 border-[#27ae60] rounded-lg text-[#27ae60] hover:bg-[#27ae60] hover:text-white transition-colors font-semibold bg-white w-full md:w-auto flex justify-center" />
+      )}
+    </>
+  );
 
   return (
-    <nav className={styles.navbar}>
-      {floatingMessage && (
-        <FloatingMessage
-          message={floatingMessage.message}
-          type={floatingMessage.type}
-          onClose={() => setFloatingMessage(null)}
-        />
-      )}
-      <div className={styles.topRow}>
-        <div className={styles.logo}>
-          <Image
+    <nav className="relative bg-white ">
+      <div className="h-16 px-4 md:px-8 flex items-center justify-between">
+        {/* Logo */}
+        <div className="h-12">
+          <img
             src="/D.png"
             alt="Gekko AI Logo"
-            width={50}
-            height={50}
+            className="h-full w-auto"
           />
-          <span>&lt;BullAI/&gt;</span>
         </div>
-        <div className={styles.walletButton}>
-          {connected ? (
-            <button onClick={handleSignOut} className={styles.walletButton}>
-              Disconnect Wallet
-            </button>
-          ) : (
-            <WalletMultiButton
-              className={styles.walletButton}
-              onClick={isMobileDevice() ? connectMobileWallet : undefined}
-            />
-          )}
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex gap-8">
+          <NavigationLinks />
+        </div>
+
+        {/* Desktop Wallet Button */}
+        <div className="hidden md:block">
+          <WalletButton />
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-[#27ae60] p-2"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      <div 
+        className={`absolute top-16 left-0 right-0 bg-white border-b border-[#00af5a] md:hidden transition-all duration-300 ease-in-out ${
+          isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        }`}
+      >
+        <div className="flex flex-col gap-4 p-4">
+          <div className="flex flex-col gap-4">
+            <NavigationLinks />
+          </div>
+          <div className="pt-2 border-t border-gray-200">
+            <WalletButton />
+          </div>
         </div>
       </div>
-      <ul className={styles.navLinks}>
-        <li>
-          <Link href="/">🏠 Home</Link>
-        </li>
-        <li>
-          <Link href="/explorer">🧠 Explore</Link>
-        </li>
-        <li>
-          <a onClick={openModal} style={{ cursor: "pointer" }}>
-            📤 Create Agent
-          </a>
-        </li>
-      </ul>
-      <Modal open={modalOpen} onClose={closeModal}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 350,
-            bgcolor: "#f5f5f5",
-            borderRadius: "12px",
-            boxShadow: 24,
-            p: 4,
-            color: "#333",
-            border: "2px solid #27ae60",
-          }}
-        >
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", color: "#27ae60" }}
-            >
-              Create New AI Agent
-            </Typography>
-            <IconButton onClick={closeModal} sx={{ color: "#27ae60" }}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 2,
-              mt: 2,
-            }}
-          >
-            <Link href="/list-agent?tab=launch-agent" passHref>
-              <Box
-                sx={{
-                  flex: 1,
-                  textAlign: "center",
-                  border: "2px solid #27ae60",
-                  borderRadius: "12px",
-                  padding: "20px",
-                  cursor: "pointer",
-                  backgroundColor: "#e8e8e8",
-                  "&:hover": { backgroundColor: "#d9d9d9" },
-                }}
-                onClick={closeModal}
-              >
-                <FaRocket size={40} color="#27ae60" />
-                <Typography
-                  variant="body1"
-                  sx={{ mt: 1, fontWeight: "bold", color: "#333" }}
-                >
-                  Launch a New Token
-                </Typography>
-              </Box>
-            </Link>
-            <Link href="/list-agent?tab=new-submission" passHref>
-              <Box
-                sx={{
-                  flex: 1,
-                  textAlign: "center",
-                  border: "2px solid #27ae60",
-                  borderRadius: "12px",
-                  padding: "20px",
-                  cursor: "pointer",
-                  backgroundColor: "#e8e8e8",
-                  "&:hover": { backgroundColor: "#d9d9d9" },
-                }}
-              >
-                <FaDollarSign size={40} color="#27ae60" />
-                <Typography
-                  variant="body1"
-                  sx={{ mt: 1, fontWeight: "bold", color: "#333" }}
-                >
-                  I Have My Own Token
-                </Typography>
-              </Box>
-            </Link>
-          </Box>
-        </Box>
-      </Modal>
     </nav>
   );
 };
